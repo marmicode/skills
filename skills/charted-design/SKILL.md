@@ -7,7 +7,7 @@ description: Interviews the user section by section to collaboratively produce d
 
 ## Goal
 
-Interview the user section by section to produce a design document.
+Interview the user section by section to produce a design document. Use AskUserQuestion tool if available.
 IMPORTANT: Write the current state to `design-docs/` after each section.
 Adapt the interview to feature complexity.
 
