@@ -11,6 +11,14 @@ Interview the user section by section to produce a design document. Use AskUserQ
 IMPORTANT: Write the current state to `design-docs/` after each section.
 Adapt the interview to feature complexity.
 
+## Writing Style
+
+Apply these rules to the **design doc output only** (not to this skill file):
+
+- Prefer short bullet sentences over paragraphs.
+- One idea per bullet; keep lines roughly screen-width (~150 chars).
+- Use this style when proposing draft content during the interview and in the final assembled doc.
+
 ## Output File
 
 - **Path**: `design-docs/`
@@ -43,7 +51,12 @@ Ask: _What is explicitly out of scope? What might people assume is included but 
 
 Ask: _Describe the user-visible behavior. What does the user see, click, or experience? Walk through the scenarios step by step._
 
-Format as a bullet list of concrete, observable behaviors.
+Format each behavior as a checkbox:
+
+```markdown
+- [ ] User sees a search input and a list of rules below it.
+- [ ] Typing in the search input filters the visible rules by name.
+```
 
 ### 4. Design
 
@@ -55,11 +68,11 @@ Produce a Mermaid `flowchart` of key components and interactions.
 
 **Legend**:
 
-- Square corners = Angular components
-- Round corners = Angular services
+- Square corners = Angular/React/Vue components or backend HTTP Controllers
+- Round corners = Services
 - Arrows: `methodName({param1: Type1}): ReturnType`
-- `[input1: Type1]` = Angular inputs
-- `(output1: Type1)` = Angular outputs
+- `[input1: Type1]` = Angular/React/Vue inputs/props or backend request/event parameters
+- `(output1: Type1)` = Angular/React/Vue outputs/callbacks or backend response/events
 - Use `<br>` in labels to avoid truncation
 
 Show diagram to user and ask for corrections.
@@ -68,18 +81,25 @@ Show diagram to user and ask for corrections.
 
 Ask: _Any algorithms, edge cases, or conventions?_ Leave empty if nothing to add.
 
+Format each item as a checkbox. Do **not** add PR numbers yet — that happens after the PR Plan (see PR Linking below).
+
+```markdown
+- [ ] Add CartRepository interface with getItems().
+- [ ] Cart component reads items via inject(CartRepository).
+```
+
 ### 5. Testing Strategy
 
 Ask: _For each component or unit from the design, what behaviors are important to test?_
 
-Format: grouped by component/unit, each scenario with a descriptive name and arrange/act/assert steps.
+Format: grouped by component (`##`), each test scenario as a `###` heading with plain bullet steps underneath. Do **not** add checkboxes or PR numbers to headings yet — that happens after the PR Plan (see PR Linking below).
 
 **Example**:
 
 ```markdown
 ## Cart component
 
-### Displays cart items:
+### Displays cart items
 
 - Arrange fake cart repository to return 3 items: keyboard, mouse, monitor.
 - Mount `Cart` component.
@@ -100,7 +120,44 @@ Propose ordered, incremental PRs that:
 - **Pre-tidy-up PR**: If interfaces must change, do backward-compatible changes first (optional params, deprecations)
 - **Feature PRs**: Each adds one slice of user-visible or testable functionality
 
-Include a Mermaid `flowchart` of PR dependencies. List each PR with a short description. Ask for feedback.
+Include a Mermaid `flowchart` of PR dependencies. List each PR as a checkbox:
+
+```markdown
+- [ ] PR#1 — Scaffold Cart component, repository interface, and test files.
+- [ ] PR#2 — Display cart items from repository.
+```
+
+Ask for feedback.
+
+#### PR Linking
+
+After the user confirms the PR Plan, link PR numbers back into Implementation Details and Testing Strategy:
+
+1. Map each implementation detail item to a PR; update to `- [ ] PR#N — description`.
+2. Map each test scenario heading to a PR; update to `### - [ ] PR#N — scenario name`.
+3. Show updated sections 4b and 5 to the user for confirmation.
+4. Rewrite Implementation Details and Testing Strategy in `design-docs/`.
+
+**Final formats**:
+
+Implementation Details:
+
+```markdown
+- [ ] PR#1 — Add CartRepository interface with getItems().
+- [ ] PR#2 — Cart component reads items via inject(CartRepository).
+```
+
+Testing Strategy:
+
+```markdown
+## Cart component
+
+### - [ ] PR#2 — displays cart items
+
+- Arrange fake cart repository to return 3 items: keyboard, mouse, monitor.
+- Mount `Cart` component.
+- Assert 3 items displayed with labels: "Keyboard", "Mouse", "Monitor".
+```
 
 ### 7. Alternatives Considered
 
@@ -112,7 +169,7 @@ Ask: _Anything else — open questions, risks, future ideas?_ Leave empty if not
 
 ## Final Step
 
-Assemble the full doc from the template below, write to the output file, show the user the path.
+Assemble the full doc from the template below (with PR numbers linked in sections 4b and 5), write to the output file, show the user the path.
 
 ## Template
 
@@ -163,3 +220,7 @@ Assemble the full doc from the template below, write to the output file, show th
 
 {kitchen_sink}
 ````
+
+## Additional Resources
+
+- For a complete example, see [resources/example-design-doc.md](resources/example-design-doc.md)
