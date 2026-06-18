@@ -14,18 +14,20 @@ Using the design doc at `${designDocPath}` as the single source of truth, progre
 
 # Steps
 
-Categorize each test in `${testFilePath}` as:
+1. Categorize each test in `${testFilePath}` as:
 
 - Implemented tests: tests that contain actual test code (not just empty or comments)
 - Empty tests: tests that are empty or only contain comments - TOTALLY IGNORE THESE
 
-For each implemented test, convert `it.todo(...)` into `it(...)`, but do it strictly one test at a time, then update the implementation just enough for that specific test to turn green — NOTHING MORE.
+2. For each implemented test, convert `it.todo(...)` into `it(...)`, but do it strictly one test at a time, then update the implementation just enough for that specific test to turn green — NOTHING MORE.
 
 DO NOT IMPLEMENT ANYTHING THAT IS NOT DIRECTLY RELATED TO THE CURRENT TEST.
 
-After the current test passes, update progress in `${designDocPath}` (see Design Doc Progress below).
+3. After the current test passes, update progress in `${designDocPath}` (see [Design Doc Progress](#design-doc-progress) below).
 
-STOP when these tests are green.
+4. STOP when these tests are green.
+
+5. Remove the wiprecation (@deprecated 🚧 work in progress) jsdoc from the implementated item if it is done and safe to use.
 
 # Design Doc Progress
 
