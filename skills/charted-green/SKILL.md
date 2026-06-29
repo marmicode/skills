@@ -51,6 +51,8 @@ NEVER implement tests.
 
 ONLY EDIT TESTS as a last resort after you have tried everything else.
 
-**Design doc edits are checkbox-only.** Never reword, reorder, add, or remove content in `${designDocPath}`.
+**Design doc edits are only checkbox-based or `🚧` to `✅` replacements.** Never reword, reorder, add, or remove content in `${designDocPath}`.
 
-Use the Wallaby MCP server to verify test results after each change. Only once the current test passes should you advance to the next one.
+Run tests after each change. Only once the current test passes should you advance to the next one.
+
+Use the Wallaby Skill if available to run tests, otherwise run tests using the recommended approach for the project.
