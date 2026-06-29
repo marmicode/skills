@@ -33,13 +33,13 @@ DO NOT IMPLEMENT ANYTHING THAT IS NOT DIRECTLY RELATED TO THE CURRENT TEST.
 
 After each test turns green, update `${designDocPath}` to reflect completed work.
 
-**Only change checkboxes** — flip `- [ ]` to `- [x]`. Do not edit any other text, headings, diagrams, or structure in the design doc.
+Flip `🚧` to `✅` and `- [ ]` to `- [x]`. Do not edit any other text, headings, diagrams, or structure in the design doc.
 
 Check off items in these sections only:
 
-1. **Testing Strategy** — the `### - [ ] PR#N — scenario name` heading that matches the test you just activated.
-2. **Implementation Details** — every `- [ ] PR#N — …` item whose work is now done and verified by the passing test.
-3. **PR Plan** — the `- [ ] PR#N — …` entry when all Implementation Details and Testing Strategy items for that PR are checked off.
+1. **PR's Testing Strategy** — the `### 🚧 {test_title}` heading that matches the test you just activated.
+2. **PR's Tasks** — every `- [ ] ...taslk description...` item whose work is now done and verified by the passing test.
+3. **PR Plan** — the `## 🚧 {pr_title}` entry when all PR's Tasks and Testing Strategy items are checked off.
 
 If you are unsure whether an Implementation Details item is done, leave it unchecked.
 

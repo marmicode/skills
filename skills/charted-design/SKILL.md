@@ -108,7 +108,7 @@ Format: grouped by component (`##`), each test scenario as a `###` heading with 
 
 ### 6. PR Plan
 
-Propose ordered, incremental PRs that:
+Propose ordered, small, focused, incremental PRs that:
 
 - Never break existing behavior
 - Are independently reviewable and mergeable
@@ -117,7 +117,7 @@ Propose ordered, incremental PRs that:
 **Rules**:
 
 - **Scaffolding PR**: If many new files, put WIP scaffolding in its own PR
-- **Pre-tidy-up PR**: If interfaces must change, do backward-compatible changes first (optional params, deprecations)
+- **Tidy-first PR**: If interfaces must change, do backward-compatible changes first (optional params, deprecations)
 - **Feature PRs**: Each adds one slice of user-visible or testable functionality
 
 Include a Mermaid `flowchart` of PR dependencies. List each PR as a checkbox:
@@ -129,41 +129,19 @@ Include a Mermaid `flowchart` of PR dependencies. List each PR as a checkbox:
 
 Ask for feedback.
 
-#### PR Linking
+### 7. PR List
 
-After the user confirms the PR Plan, link PR numbers back into Implementation Details and Testing Strategy:
+After the user confirms the PR Plan, move PRs in the lists under the PR plan.
+Each PR has two sections: Tasks and Testing Strategy.
+Move the right tasks from Implementation Details into the Tasks section.
+Move the right test scenarios from Testing Strategy into the Testing Strategy section.
+Remove the PR list from the PR Plan.
 
-1. Map each implementation detail item to a PR; update to `- [ ] PR#N — description`.
-2. Map each test scenario heading to a PR; update to `### - [ ] PR#N — scenario name`.
-3. Show updated sections 4b and 5 to the user for confirmation.
-4. Rewrite Implementation Details and Testing Strategy in `design-docs/`.
-
-**Final formats**:
-
-Implementation Details:
-
-```markdown
-- [ ] PR#1 — Add CartRepository interface with getItems().
-- [ ] PR#2 — Cart component reads items via inject(CartRepository).
-```
-
-Testing Strategy:
-
-```markdown
-## Cart component
-
-### - [ ] PR#2 — displays cart items
-
-- Arrange fake cart repository to return 3 items: keyboard, mouse, monitor.
-- Mount `Cart` component.
-- Assert 3 items displayed with labels: "Keyboard", "Mouse", "Monitor".
-```
-
-### 7. Alternatives Considered
+### 8. Alternatives Considered
 
 Ask: _Did we consider other approaches? Why were they rejected?_
 
-### 8. Kitchen Sink
+### 9. Kitchen Sink
 
 Ask: _Anything else — open questions, risks, future ideas?_ Leave empty if nothing.
 
@@ -211,6 +189,20 @@ Assemble the full doc from the template below (with PR numbers linked in section
 ```
 
 {pr_details}
+
+# 🚧 PR#N - {pr_title}
+
+## Tasks
+
+- [ ] {task_description}
+- [ ] {task_description}
+
+## Testing Strategy
+
+### 🚧 {test_title}
+
+- {step_1}
+- {step_2}
 
 # Alternatives Considered
 
