@@ -18,6 +18,7 @@
 <tr><td><a href="#3-scaffold"><code>charted-scaffold</code></a></td><td>Writes work-in-progress code and tests based on design doc</td></tr>
 <tr><td><a href="#4-red"><code>charted-red</code></a></td><td>Writes the next failing test based on provided design doc and existing todo tests</td></tr>
 <tr><td><a href="#5-green"><code>charted-green</code></a></td><td>Progressively activates todo tests one at a time, updates implementation code until each passes (verified via Wallaby), then moves to the next—following the design doc as the single source of truth.</td></tr>
+<tr><td><a href="#continue"><code>charted-continue</code></a></td><td>Sometimes, you will forget where you left off. This skill figure it out.</td></tr>
 </tbody>
 </table>
 
@@ -107,6 +108,24 @@ The AI activates the test (converts `it.todo(...)` to `it(...)`) and writes **ju
 **Why this matters:** This is the _Green_ phase. By implementing the minimum code to satisfy each test, you get a provably correct, incrementally built feature with no dead code.
 
 **Produces:** passing tests + minimal production code
+
+## Resuming a PR
+
+> Skill: `charted-continue`
+
+When you pick up work after a break — or just want an Agent to figure out the next step — **charted-continue** reads the design doc and inspects PR state, then invokes exactly one downstream skill:
+
+| Condition                        | Skill invoked      |
+| -------------------------------- | ------------------ |
+| Scaffolding not done             | `charted-scaffold` |
+| Next 🚧 test not implemented     | `charted-red`      |
+| Next 🚧 test already implemented | `charted-green`    |
+
+It locates the PR section in the design doc, checks whether WIP files and `it.todo(...)` stubs exist, finds the first pending test (still marked 🚧), and classifies whether that test has real code or only design-doc comments. One skill per run — no skipping ahead.
+
+**Why this matters:** You don't have to remember where you left off. The skill resumes at scaffold, red, or green automatically.
+
+**Produces:** delegates to the appropriate downstream skill (one step per invocation)
 
 ## License
 
