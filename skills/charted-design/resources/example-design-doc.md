@@ -41,6 +41,8 @@ flowchart TD
 
 ## Implementation Details
 
+(Note: this section is removed after the PR Plan is created.)
+
 - [ ] PR#1 — Add `Recipe` interface with `id` and `title` fields.
 - [ ] PR#1 — Add `RecipeRepository` with `getRecipes(): Recipe[]`.
 - [ ] PR#1 — Scaffold `RecipeSearchPage` with search input and recipe list.
@@ -52,32 +54,6 @@ flowchart TD
 - [ ] PR#3 — Show confirmation toast after a recipe is added.
 
 # Testing Strategy
-
-## RecipeSearchPage
-
-### - [ ] PR#1 — list recipes
-
-- Mount `RecipeSearchPage` with fake repository returning 3 recipes.
-- Assert all 3 recipes are displayed with their titles.
-
-### - [ ] PR#2 — filter recipes with matching query
-
-- Mount `RecipeSearchPage` with fake repository returning 3 recipes.
-- Type "pasta" in search input.
-- Assert only matching recipes are displayed.
-
-### - [ ] PR#2 — filter recipes with no results
-
-- Mount `RecipeSearchPage` with fake repository returning 3 recipes.
-- Type "xyz" in search input.
-- Assert "No recipes found" message is displayed.
-
-### - [ ] PR#3 — add recipe to meal plan
-
-- Mount `RecipeSearchPage` with fake repositories.
-- Click "Add to meal plan" on the first recipe.
-- Assert `MealPlanRepository.addRecipe` was called with the first recipe.
-- Assert confirmation toast is displayed.
 
 # PR Plan
 
@@ -91,9 +67,68 @@ flowchart LR
   PR1 --> PR3
 ```
 
-- [ ] PR#1 — List recipes.
-- [ ] PR#2 — Filter recipes.
-- [ ] PR#3 — Add recipe to meal plan.
+<details>
+<summary>🚧 PR#1 — List recipes</summary>
+
+## Tasks
+
+- [ ] Add `Recipe` interface with `id` and `title` fields.
+- [ ] Add `RecipeRepository` with `getRecipes(): Recipe[]`.
+- [ ] Scaffold `RecipeSearchPage` with search input and recipe list.
+- [ ] Display all recipes from `RecipeRepository`.
+
+## Testing Strategy
+
+### 🚧 list recipes
+
+- Mount `RecipeSearchPage` with fake repository returning 3 recipes.
+- Assert all 3 recipes are displayed with their titles.
+
+</details>
+
+<details>
+<summary>🚧 PR#2 — Filter recipes</summary>
+
+## Tasks
+
+- [ ] Filter recipes by case-insensitive substring match on title.
+- [ ] Show "No recipes found" when filter matches nothing.
+
+## Testing Strategy
+
+### 🚧 filter recipes with matching query
+
+- Mount `RecipeSearchPage` with fake repository returning 3 recipes.
+- Type "pasta" in search input.
+- Assert only matching recipes are displayed.
+
+### 🚧 filter recipes with no results
+
+- Mount `RecipeSearchPage` with fake repository returning 3 recipes.
+- Type "xyz" in search input.
+- Assert "No recipes found" message is displayed.
+
+</details>
+
+<details>
+<summary>🚧 PR#3 — Add recipe to meal plan</summary>
+
+## Tasks
+
+- [ ] Add `MealPlanRepository` with `addRecipe(recipe: Recipe): void`.
+- [ ] Add "Add to meal plan" button on each recipe row.
+- [ ] Show confirmation toast after a recipe is added.
+
+## Testing Strategy
+
+### 🚧 add recipe to meal plan
+
+- Mount `RecipeSearchPage` with fake repositories.
+- Click "Add to meal plan" on the first recipe.
+- Assert `MealPlanRepository.addRecipe` was called with the first recipe.
+- Assert confirmation toast is displayed.
+
+</details>
 
 # Alternatives Considered
 

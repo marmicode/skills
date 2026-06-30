@@ -129,13 +129,17 @@ Include a Mermaid `flowchart` of PR dependencies. List each PR as a checkbox:
 
 Ask for feedback.
 
-### 7. PR List
+### 7. PR Linking
 
-After the user confirms the PR Plan, move PRs in the lists under the PR plan.
-Each PR has two sections: Tasks and Testing Strategy.
-Move the right tasks from Implementation Details into the Tasks section.
-Move the right test scenarios from Testing Strategy into the Testing Strategy section.
-Remove the PR list from the PR Plan.
+After the user confirms the PR Plan:
+
+1. For each PR in the confirmed checkbox list, add a `<details>` block under PR Plan with a `<summary>` title.
+2. Inside each block, add **Tasks** and **Testing Strategy** sections.
+3. Assign each Implementation Details task to the PR it belongs to.
+4. Assign each test scenario from the top-level Testing Strategy to the PR it belongs to.
+5. Verify nothing from Implementation Details or the top-level Testing Strategy was left unassigned.
+6. Remove the now-empty Implementation Details and top-level Testing Strategy sections.
+7. Remove the checkbox list from PR Plan; keep the dependency diagram.
 
 ### 8. Alternatives Considered
 
@@ -147,7 +151,7 @@ Ask: _Anything else — open questions, risks, future ideas?_ Leave empty if not
 
 ## Final Step
 
-Assemble the full doc from the template below (with PR numbers linked in sections 4b and 5), write to the output file, show the user the path.
+Assemble the full doc from the template below (each PR in a `<details>` block under PR Plan), write to the output file, show the user the path.
 
 ## Template
 
@@ -190,7 +194,8 @@ Assemble the full doc from the template below (with PR numbers linked in section
 
 {pr_details}
 
-# 🚧 PR#N - {pr_title}
+<details>
+<summary>🚧 PR#N — {pr_title}</summary>
 
 ## Tasks
 
@@ -203,6 +208,8 @@ Assemble the full doc from the template below (with PR numbers linked in section
 
 - {step_1}
 - {step_2}
+
+</details>
 
 # Alternatives Considered
 
