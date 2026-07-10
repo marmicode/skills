@@ -24,7 +24,7 @@ Apply these rules to the **design doc output only** (not to this skill file):
 
 - **Path**: `design-docs/`
 - **Name**: `NNN-short-kebab-title.md` — `NNN` is zero-padded (e.g. `001`, `002`)
-- **Sequence**: List files in `design-docs/`, take highest number, increment. Empty folder → start at `001`
+- **Sequence**: List files in `design-docs/`, and its subfolders (e.g. `design-docs/archived/`), take highest number, increment. Empty folder → start at `001`
 - **Title**: Derive short kebab-case title from the feature description (ask user first)
 
 ## Interview Process
