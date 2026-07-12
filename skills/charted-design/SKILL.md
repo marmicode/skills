@@ -8,7 +8,7 @@ description: Interviews the user section by section to collaboratively produce d
 ## Goal
 
 Interview the user section by section to produce a design document. Use AskUserQuestion tool if available.
-IMPORTANT: Write the current state to `design-docs/` after each section.
+IMPORTANT: Write the current state to the resolved design docs folder after each section (see **Design Docs Location** below).
 The design doc file on disk is the primary deliverable.
 Adapt the interview to feature complexity.
 
@@ -20,11 +20,28 @@ Apply these rules to the **design doc output only** (not to this skill file):
 - One idea per bullet; keep lines roughly screen-width (~150 chars).
 - Use this style when proposing draft content during the interview and in the final assembled doc.
 
+## Design Docs Location
+
+Before writing anything, resolve where design documents live in this workspace:
+
+- **Root**: `design-docs/` at the workspace root
+- **Subfolder**: e.g. `contributing/design-docs/`, `docs/design/`, or other project-specific paths
+- **Monorepo**: multiple projects may each have their own folder (e.g. `apps/web/design-docs/`, `packages/core/design-docs/`)
+
+**How to resolve**:
+
+1. Search for existing design doc folders (directories named `design-docs`, or numbered files like `001-*.md`)
+2. If the user specifies a project or path, use that
+3. If exactly one clear location exists, use it
+4. If multiple candidates or none found, **ask the user** which folder to use before writing anything
+
+Once resolved, use that folder for the rest of the session.
+
 ## Output File
 
-- **Path**: `design-docs/`
+- **Path**: the resolved design docs folder (see above)
 - **Name**: `NNN-short-kebab-title.md` — `NNN` is zero-padded (e.g. `001`, `002`)
-- **Sequence**: List files in `design-docs/`, and its subfolders (e.g. `design-docs/archived/`), take highest number, increment. Empty folder → start at `001`
+- **Sequence**: List files in that folder and its subfolders (e.g. `archived/`), take highest number, increment. Empty folder → start at `001`
 - **Title**: Derive short kebab-case title from the feature description (ask user first)
 
 ## Interview Process
