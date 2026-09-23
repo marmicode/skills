@@ -96,7 +96,7 @@ Produce a Mermaid `flowchart` of key components and interactions.
 **Legend**:
 
 - Square corners = Angular/React/Vue components or backend HTTP Controllers
-- Round corners = Services
+- Round corners (i.e. `[(xyz)]`) = Services
 - Arrows: `methodName({param1: Type1}): ReturnType`
 - `[input1: Type1]` = Angular/React/Vue inputs/props or backend request/event parameters
 - `(output1: Type1)` = Angular/React/Vue outputs/callbacks or backend response/events
