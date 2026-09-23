@@ -108,12 +108,26 @@ Write the diagram to the design doc file and ask the user to review it there.
 
 Ask: _Any algorithms, edge cases, or conventions?_ Leave empty if nothing to add.
 
-Format each item as a checkbox. Do **not** add PR numbers yet — that happens after the PR Plan (see PR Linking below).
+Prefer a code snippet over a checkbox. Snippet a type, interface, or signature only when it does not exist yet, is non-obvious, or is substantially changed. Put non-obvious behavior in JSDoc. Omit JSDoc when the signature already says it. Skip obvious existing code and small edits.
 
-```markdown
-- [ ] Add CartRepository interface with getItems().
-- [ ] Cart component reads items via inject(CartRepository).
+Use a checkbox only when the detail cannot be expressed as a type, interface, or signature (wiring, sequencing, registration).
+
+Do **not** add PR numbers yet — that happens after the PR Plan (see PR Linking below).
+
+````markdown
+```ts
+/**
+ * Empty cart returns `[]`, never null.
+ * Does not create a cart.
+ */
+interface CartRepository {
+  getItems(): CartItem[];
+}
 ```
+
+- [ ] Cart reads items with `inject(CartRepository)`.
+- [ ] Register `CartRepository` in the cart feature providers.
+````
 
 ### 5. Testing Strategy
 
@@ -162,7 +176,7 @@ After the user confirms the PR Plan:
 
 1. For each PR in the confirmed checkbox list, add a `<details>` block under PR Plan with a `<summary>` title.
 2. Inside each block, add **Tasks** and **Testing Strategy** sections.
-3. Assign each Implementation Details task to the PR it belongs to.
+3. Assign each Implementation Details item to the PR it belongs to. Do not copy code snippets as snippets under that PR's Tasks.
 4. Assign each test scenario from the top-level Testing Strategy to the PR it belongs to.
 5. Verify nothing from Implementation Details or the top-level Testing Strategy was left unassigned.
 6. Remove the now-empty Implementation Details and top-level Testing Strategy sections.
@@ -226,8 +240,16 @@ Ensure all sections are present in the file, apply PR Linking if not done yet, a
 
 ## Tasks
 
-- [ ] {task_description}
-- [ ] {task_description}
+```ts
+/**
+ * Empty cart returns `[]`, never null.
+ */
+interface CartRepository {
+  getItems(): CartItem[];
+}
+```
+
+- [ ] {task_that_cannot_be_a_snippet}
 
 ## Testing Strategy
 
