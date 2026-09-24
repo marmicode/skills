@@ -1,0 +1,10 @@
+{
+  "eval_id": 2,
+  "eval_name": "dirty-tree-preflight",
+  "prompt": "Please run the charted loop for design-docs/001-recipe-filter.md PR 1 in the repo — take it step by step, committing after each step, until PR #1 is complete. Wallaby isn't set up in this repo, so run `npm test` to check the tests instead.",
+  "assertions": [
+    "No loop commits were made — pre-flight stopped on the dirty working tree",
+    "The unrelated README.md change was never committed",
+    "The run stopped and surfaced the uncommitted change to the user (SUMMARY mentions it)"
+  ]
+}

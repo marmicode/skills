@@ -1,0 +1,40 @@
+{
+  "summary": {
+    "passed": 4,
+    "failed": 2,
+    "total": 6,
+    "pass_rate": 0.6666666666666666
+  },
+  "expectations": [
+    {
+      "text": "All tests pass at HEAD: npm test exits 0 with 2 passing and 0 todo",
+      "passed": true,
+      "evidence": "exit=0;  Test Files  1 passed (1) |       Tests  2 passed (2) |    Start at  16:10:24 |    Duration  256ms (transform 12ms, setup 0ms, collect 10ms, tests 1ms, environment 0ms, prepare 41ms)"
+    },
+    {
+      "text": "At least 3 step-scoped commits were created (one per loop step)",
+      "passed": true,
+      "evidence": "3 new commits: test: \ud83d\udd34 activate filters recipes matching keyword; feat: \u2728 implement filterRecipes keyword matching; test: \u2705 verify filterRecipes returns all recipes for empty keyword"
+    },
+    {
+      "text": "Every new commit subject uses an allowed prefix with its matching emoji (feat: \u2728, test: \u2705, refactor: \ud83d\udee0\ufe0f, ...)",
+      "passed": false,
+      "evidence": "invalid: ['test: \ud83d\udd34 activate filters recipes matching keyword']"
+    },
+    {
+      "text": "At least two feat: \u2728 commits (green steps) and at least one test: \u2705 commit (red step)",
+      "passed": false,
+      "evidence": "feat=1, test=2"
+    },
+    {
+      "text": "Design doc PR#1 is fully checked off (no \ud83d\udea7 markers, no unchecked '- [ ]')",
+      "passed": true,
+      "evidence": "\ud83d\udea7 count=0, unchecked=0"
+    },
+    {
+      "text": "Working tree is clean at the end (everything committed)",
+      "passed": true,
+      "evidence": "git status: clean"
+    }
+  ]
+}

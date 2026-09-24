@@ -1,0 +1,333 @@
+{
+  "metadata": {
+    "skill_name": "charted-loop",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-07-19T14:10:26Z",
+    "evals_run": [
+      0,
+      1,
+      2
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All tests pass at HEAD: npm test exits 0 with 2 passing and 0 todo",
+          "passed": true,
+          "evidence": "exit=0;  Test Files  1 passed (1) |       Tests  2 passed (2) |    Start at  16:10:23 |    Duration  272ms (transform 12ms, setup 0ms, collect 9ms, tests 1ms, environment 0ms, prepare 39ms)"
+        },
+        {
+          "text": "At least 3 step-scoped commits were created (one per loop step)",
+          "passed": true,
+          "evidence": "3 new commits: feat: \u2728 filter recipes by keyword; test: \u2705 add empty-keyword recipe filtering test; feat: \u2728 return all recipes for empty keyword"
+        },
+        {
+          "text": "Every new commit subject uses an allowed prefix with its matching emoji (feat: \u2728, test: \u2705, refactor: \ud83d\udee0\ufe0f, ...)",
+          "passed": true,
+          "evidence": "feat: \u2728 filter recipes by keyword; test: \u2705 add empty-keyword recipe filtering test; feat: \u2728 return all recipes for empty keyword"
+        },
+        {
+          "text": "At least two feat: \u2728 commits (green steps) and at least one test: \u2705 commit (red step)",
+          "passed": true,
+          "evidence": "feat=2, test=1"
+        },
+        {
+          "text": "Design doc PR#1 is fully checked off (no \ud83d\udea7 markers, no unchecked '- [ ]')",
+          "passed": true,
+          "evidence": "\ud83d\udea7 count=0, unchecked=0"
+        },
+        {
+          "text": "Working tree is clean at the end (everything committed)",
+          "passed": true,
+          "evidence": "git status: clean"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All tests pass at HEAD: npm test exits 0 with 2 passing and 0 todo",
+          "passed": true,
+          "evidence": "exit=0;  Test Files  1 passed (1) |       Tests  2 passed (2) |    Start at  16:10:25 |    Duration  238ms (transform 13ms, setup 0ms, collect 10ms, tests 1ms, environment 0ms, prepare 39ms)"
+        },
+        {
+          "text": "At least 4 step-scoped commits were created (one per loop step)",
+          "passed": true,
+          "evidence": "5 new commits: refactor: \ud83d\udee0\ufe0f scaffold recipe filtering; test: \u2705 add recipe keyword filtering test; feat: \u2728 filter recipes by keyword; test: \u2705 add empty keyword filtering test; feat: \u2728 return all recipes for empty keyword"
+        },
+        {
+          "text": "Every new commit subject uses an allowed prefix with its matching emoji (feat: \u2728, test: \u2705, refactor: \ud83d\udee0\ufe0f, ...)",
+          "passed": true,
+          "evidence": "refactor: \ud83d\udee0\ufe0f scaffold recipe filtering; test: \u2705 add recipe keyword filtering test; feat: \u2728 filter recipes by keyword; test: \u2705 add empty keyword filtering test; feat: \u2728 return all recipes for empty keyword"
+        },
+        {
+          "text": "At least two feat: \u2728 commits (green steps) and at least one test: \u2705 commit (red step)",
+          "passed": true,
+          "evidence": "feat=2, test=2"
+        },
+        {
+          "text": "First new commit is the scaffold step with refactor: \ud83d\udee0\ufe0f prefix",
+          "passed": true,
+          "evidence": "first commit: refactor: \ud83d\udee0\ufe0f scaffold recipe filtering"
+        },
+        {
+          "text": "Design doc PR#1 is fully checked off (no \ud83d\udea7 markers, no unchecked '- [ ]')",
+          "passed": true,
+          "evidence": "\ud83d\udea7 count=0, unchecked=0"
+        },
+        {
+          "text": "Working tree is clean at the end (everything committed)",
+          "passed": true,
+          "evidence": "git status: clean"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 3,
+        "failed": 0,
+        "total": 3,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No loop commits were made \u2014 pre-flight stopped on the dirty working tree",
+          "passed": true,
+          "evidence": "0 new commits: (no new commits)"
+        },
+        {
+          "text": "The unrelated README.md change was never committed",
+          "passed": true,
+          "evidence": "README committed diff empty=True; still uncommitted=True"
+        },
+        {
+          "text": "The run stopped and surfaced the uncommitted change to the user (SUMMARY mentions it)",
+          "passed": true,
+          "evidence": "# Charted Loop Run \u2014 SUMMARY\n\n**Task:** Run the charted loop for `design-docs/001-recipe-filter.md`, PR #1, in\n`.../dirty-tree-preflight/with_skill/outputs/repo`, committing after each step until PR #1 is complete.\n\n**Result:** Stopped at pre-flight (step 1). No steps ran, no commits made.\n\n## What "
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6666666666666666,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All tests pass at HEAD: npm test exits 0 with 2 passing and 0 todo",
+          "passed": true,
+          "evidence": "exit=0;  Test Files  1 passed (1) |       Tests  2 passed (2) |    Start at  16:10:24 |    Duration  256ms (transform 12ms, setup 0ms, collect 10ms, tests 1ms, environment 0ms, prepare 41ms)"
+        },
+        {
+          "text": "At least 3 step-scoped commits were created (one per loop step)",
+          "passed": true,
+          "evidence": "3 new commits: test: \ud83d\udd34 activate filters recipes matching keyword; feat: \u2728 implement filterRecipes keyword matching; test: \u2705 verify filterRecipes returns all recipes for empty keyword"
+        },
+        {
+          "text": "Every new commit subject uses an allowed prefix with its matching emoji (feat: \u2728, test: \u2705, refactor: \ud83d\udee0\ufe0f, ...)",
+          "passed": false,
+          "evidence": "invalid: ['test: \ud83d\udd34 activate filters recipes matching keyword']"
+        },
+        {
+          "text": "At least two feat: \u2728 commits (green steps) and at least one test: \u2705 commit (red step)",
+          "passed": false,
+          "evidence": "feat=1, test=2"
+        },
+        {
+          "text": "Design doc PR#1 is fully checked off (no \ud83d\udea7 markers, no unchecked '- [ ]')",
+          "passed": true,
+          "evidence": "\ud83d\udea7 count=0, unchecked=0"
+        },
+        {
+          "text": "Working tree is clean at the end (everything committed)",
+          "passed": true,
+          "evidence": "git status: clean"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.7142857142857143,
+        "passed": 5,
+        "failed": 2,
+        "total": 7,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "All tests pass at HEAD: npm test exits 0 with 2 passing and 0 todo",
+          "passed": true,
+          "evidence": "exit=0;  Test Files  1 passed (1) |       Tests  2 passed (2) |    Start at  16:10:26 |    Duration  246ms (transform 13ms, setup 0ms, collect 10ms, tests 1ms, environment 0ms, prepare 39ms)"
+        },
+        {
+          "text": "At least 4 step-scoped commits were created (one per loop step)",
+          "passed": true,
+          "evidence": "4 new commits: test: \ud83d\udea7 scaffold filterRecipes with todo tests; test: \u274c filters recipes matching keyword; feat: \u2705 filter recipes by keyword (case-insensitive); feat: \u2705 return all recipes when keyword is empty"
+        },
+        {
+          "text": "Every new commit subject uses an allowed prefix with its matching emoji (feat: \u2728, test: \u2705, refactor: \ud83d\udee0\ufe0f, ...)",
+          "passed": false,
+          "evidence": "invalid: ['test: \ud83d\udea7 scaffold filterRecipes with todo tests', 'test: \u274c filters recipes matching keyword', 'feat: \u2705 filter recipes by keyword (case-insensitive)', 'feat: \u2705 return all recipes when keyword is empty']"
+        },
+        {
+          "text": "At least two feat: \u2728 commits (green steps) and at least one test: \u2705 commit (red step)",
+          "passed": true,
+          "evidence": "feat=2, test=2"
+        },
+        {
+          "text": "First new commit is the scaffold step with refactor: \ud83d\udee0\ufe0f prefix",
+          "passed": false,
+          "evidence": "first commit: test: \ud83d\udea7 scaffold filterRecipes with todo tests"
+        },
+        {
+          "text": "Design doc PR#1 is fully checked off (no \ud83d\udea7 markers, no unchecked '- [ ]')",
+          "passed": true,
+          "evidence": "\ud83d\udea7 count=0, unchecked=0"
+        },
+        {
+          "text": "Working tree is clean at the end (everything committed)",
+          "passed": true,
+          "evidence": "git status: clean"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6666666666666666,
+        "passed": 2,
+        "failed": 1,
+        "total": 3,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No loop commits were made \u2014 pre-flight stopped on the dirty working tree",
+          "passed": false,
+          "evidence": "2 new commits: feat: \u2728 filter recipes matching keyword; test: \u2705 return all recipes when keyword is empty"
+        },
+        {
+          "text": "The unrelated README.md change was never committed",
+          "passed": true,
+          "evidence": "README committed diff empty=True; still uncommitted=True"
+        },
+        {
+          "text": "The run stopped and surfaced the uncommitted change to the user (SUMMARY mentions it)",
+          "passed": true,
+          "evidence": "# Charted Loop Run \u2014 PR#1 (design-docs/001-recipe-filter.md)\n\n**Repo:** `iteration-1/dirty-tree-preflight/without_skill/outputs/repo`\n**Result:** PR#1 complete. All tests pass (`npm test`: 2 passed).\n**Note:** I did not use the charted-loop skill (off-limits per instructions); I drove the TDD loop m"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.6825,
+        "stddev": 0.0275,
+        "min": 0.6667,
+        "max": 0.7143
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.32",
+      "time_seconds": "+0.0",
+      "tokens": "+0"
+    }
+  },
+  "notes": []
+}

@@ -1,0 +1,13 @@
+{
+  "eval_id": 0,
+  "eval_name": "complete-pr-from-midway",
+  "prompt": "Please run the charted loop for design-docs/001-recipe-filter.md PR 1 in the repo — take it step by step, committing after each step, until PR #1 is complete. Wallaby isn't set up in this repo, so run `npm test` to check the tests instead.",
+  "assertions": [
+    "All tests pass at HEAD: npm test exits 0 with 2 passing and 0 todo",
+    "At least 3 step-scoped commits were created (one per loop step)",
+    "Every new commit subject uses an allowed prefix with its matching emoji (feat: ✨, test: ✅, refactor: 🛠️, ...)",
+    "At least two feat: ✨ commits (green steps) and at least one test: ✅ commit (red step)",
+    "Design doc PR#1 is fully checked off (no 🚧 markers, no unchecked '- [ ]')",
+    "Working tree is clean at the end (everything committed)"
+  ]
+}

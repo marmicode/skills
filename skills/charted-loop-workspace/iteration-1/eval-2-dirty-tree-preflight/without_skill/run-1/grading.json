@@ -1,0 +1,25 @@
+{
+  "summary": {
+    "passed": 2,
+    "failed": 1,
+    "total": 3,
+    "pass_rate": 0.6666666666666666
+  },
+  "expectations": [
+    {
+      "text": "No loop commits were made \u2014 pre-flight stopped on the dirty working tree",
+      "passed": false,
+      "evidence": "2 new commits: feat: \u2728 filter recipes matching keyword; test: \u2705 return all recipes when keyword is empty"
+    },
+    {
+      "text": "The unrelated README.md change was never committed",
+      "passed": true,
+      "evidence": "README committed diff empty=True; still uncommitted=True"
+    },
+    {
+      "text": "The run stopped and surfaced the uncommitted change to the user (SUMMARY mentions it)",
+      "passed": true,
+      "evidence": "# Charted Loop Run \u2014 PR#1 (design-docs/001-recipe-filter.md)\n\n**Repo:** `iteration-1/dirty-tree-preflight/without_skill/outputs/repo`\n**Result:** PR#1 complete. All tests pass (`npm test`: 2 passed).\n**Note:** I did not use the charted-loop skill (off-limits per instructions); I drove the TDD loop m"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  },
+  "expectations": [
+    {
+      "text": "All tests pass at HEAD: npm test exits 0 with 2 passing and 0 todo",
+      "passed": true,
+      "evidence": "exit=0;  Test Files  1 passed (1) |       Tests  2 passed (2) |    Start at  16:10:25 |    Duration  238ms (transform 13ms, setup 0ms, collect 10ms, tests 1ms, environment 0ms, prepare 39ms)"
+    },
+    {
+      "text": "At least 4 step-scoped commits were created (one per loop step)",
+      "passed": true,
+      "evidence": "5 new commits: refactor: \ud83d\udee0\ufe0f scaffold recipe filtering; test: \u2705 add recipe keyword filtering test; feat: \u2728 filter recipes by keyword; test: \u2705 add empty keyword filtering test; feat: \u2728 return all recipes for empty keyword"
+    },
+    {
+      "text": "Every new commit subject uses an allowed prefix with its matching emoji (feat: \u2728, test: \u2705, refactor: \ud83d\udee0\ufe0f, ...)",
+      "passed": true,
+      "evidence": "refactor: \ud83d\udee0\ufe0f scaffold recipe filtering; test: \u2705 add recipe keyword filtering test; feat: \u2728 filter recipes by keyword; test: \u2705 add empty keyword filtering test; feat: \u2728 return all recipes for empty keyword"
+    },
+    {
+      "text": "At least two feat: \u2728 commits (green steps) and at least one test: \u2705 commit (red step)",
+      "passed": true,
+      "evidence": "feat=2, test=2"
+    },
+    {
+      "text": "First new commit is the scaffold step with refactor: \ud83d\udee0\ufe0f prefix",
+      "passed": true,
+      "evidence": "first commit: refactor: \ud83d\udee0\ufe0f scaffold recipe filtering"
+    },
+    {
+      "text": "Design doc PR#1 is fully checked off (no \ud83d\udea7 markers, no unchecked '- [ ]')",
+      "passed": true,
+      "evidence": "\ud83d\udea7 count=0, unchecked=0"
+    },
+    {
+      "text": "Working tree is clean at the end (everything committed)",
+      "passed": true,
+      "evidence": "git status: clean"
+    }
+  ]
+}

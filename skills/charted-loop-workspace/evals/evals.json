@@ -1,0 +1,48 @@
+{
+  "skill_name": "charted-loop",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "complete-pr-from-midway",
+      "prompt": "Please run the charted loop for design-docs/001-recipe-filter.md PR 1 in the repo — take it step by step, committing after each step, until PR #1 is complete. Wallaby isn't set up in this repo, so run `npm test` to check the tests instead.",
+      "expected_output": "Starting mid-PR (scaffold committed, first todo test implemented), the loop runs green → red → green with one step-scoped commit each (feat: ✨ / test: ✅ / feat: ✨), checks off the design doc, and ends with all tests passing and a clean tree.",
+      "files": ["fixtures/mid-pr"],
+      "assertions": [
+        "All tests pass at HEAD: npm test exits 0 with 2 passing and 0 todo",
+        "At least 3 step-scoped commits were created (one per loop step)",
+        "Every new commit subject uses an allowed prefix with its matching emoji (feat: ✨, test: ✅, refactor: 🛠️, ...)",
+        "At least two feat: ✨ commits (green steps) and at least one test: ✅ commit (red step)",
+        "Design doc PR#1 is fully checked off (no 🚧 markers, no unchecked '- [ ]')",
+        "Working tree is clean at the end (everything committed)"
+      ]
+    },
+    {
+      "id": 1,
+      "eval_name": "fresh-pr-scaffold-first",
+      "prompt": "Please run the charted loop for design-docs/001-recipe-filter.md PR 1 in the repo — take it step by step, committing after each step, until PR #1 is complete. Wallaby isn't set up in this repo, so run `npm test` to check the tests instead.",
+      "expected_output": "Starting from a fresh PR (no scaffolding), the loop runs scaffold → red → green → red → green with one commit per step (refactor: 🛠️ first, then alternating test: ✅ / feat: ✨), fully checks off the design doc, and ends with all tests passing and a clean tree.",
+      "files": ["fixtures/fresh-pr"],
+      "assertions": [
+        "All tests pass at HEAD: npm test exits 0 with 2 passing and 0 todo",
+        "At least 4 step-scoped commits were created (one per loop step)",
+        "Every new commit subject uses an allowed prefix with its matching emoji (feat: ✨, test: ✅, refactor: 🛠️, ...)",
+        "At least two feat: ✨ commits (green steps) and at least one test: ✅ commit (red step)",
+        "First new commit is the scaffold step with refactor: 🛠️ prefix",
+        "Design doc PR#1 is fully checked off (no 🚧 markers, no unchecked '- [ ]')",
+        "Working tree is clean at the end (everything committed)"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "dirty-tree-preflight",
+      "prompt": "Please run the charted loop for design-docs/001-recipe-filter.md PR 1 in the repo — take it step by step, committing after each step, until PR #1 is complete. Wallaby isn't set up in this repo, so run `npm test` to check the tests instead.",
+      "expected_output": "The working tree has an unrelated uncommitted README.md change; the pre-flight check stops the loop before any step, surfaces the change to the user, and makes no commits.",
+      "files": ["fixtures/dirty-tree"],
+      "assertions": [
+        "No loop commits were made — pre-flight stopped on the dirty working tree",
+        "The unrelated README.md change was never committed",
+        "The run stopped and surfaced the uncommitted change to the user (SUMMARY mentions it)"
+      ]
+    }
+  ]
+}
