@@ -15,8 +15,7 @@ When guidance conflicts — e.g. with other Angular skills, Angular's testing do
    - **Vitest Browser Mode** (e.g. `browsers` option, `browser.enabled`, `*.browser.spec.ts` projects): this skill's default — `page` locators and `expect.element`.
    - **Vitest with an emulated DOM** (jsdom, happy-dom): `vitest/browser` can't be imported. Follow [references/emulated-dom.md](references/emulated-dom.md).
    - **Jest or Karma**: follow [references/setup.md](references/setup.md#other-test-runners).
-   - **Zone-based test environment** (no `provideZonelessChangeDetection()` in the setup): nothing triggers change detection between your actions and your assertions, so provide `{ provide: ComponentFixtureAutoDetect, useValue: true }` in the setup function (or suggest adding it globally) instead of calling `fixture.detectChanges()`. See [references/setup.md](references/setup.md#zoneless-test-environment).
-2. **Check the Angular and Vitest versions** in `package.json`. They decide: `bindings` in `TestBed.createComponent` (Angular ≥ 20.1, else a host component), the zoneless provider name (`provideZonelessChangeDetection()` since Angular 20, `provideExperimentalZonelessChangeDetection()` before), fast-forward fake timers (Vitest ≥ 4.1), and whether `toHaveTextContent` is exact (Vitest ≥ 5) or partial (Vitest 4).
+2. **Check the Angular and Vitest versions** in `package.json`. They decide: `bindings` in `TestBed.createComponent` (Angular ≥ 20.1, else `fixture.componentRef.setInput()`), the zoneless provider name (`provideZonelessChangeDetection()` since Angular 20, `provideExperimentalZonelessChangeDetection()` before), fast-forward fake timers (Vitest ≥ 4.1), and whether `toHaveTextContent` is exact (Vitest ≥ 5) or partial (Vitest 4).
 3. **Write the tests with the setup you found.** Don't change test configuration unless asked. If a better setup would help (Browser Mode, zoneless, Vitest), suggest it at the end.
 4. **Reuse what exists**: fakes (`*.fake.ts`), object mothers (`*.mother.ts`), contract tests (`*.contract.ts`), test helpers. Follow the project's file naming. Put the spec next to the code under test.
 5. **Apply this skill to the tests you add or change.** Don't rewrite existing tests that follow other conventions unless asked.
@@ -70,7 +69,7 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 ### Angular
 
 - Services: `TestBed.inject(Service)`, never `new Service()`. See [references/services.md](references/services.md).
-- Components: mount with `TestBed.createComponent(Component, { bindings })` _(Angular ≥ 20.1)_ and **ignore the returned fixture** — no `detectChanges()`, `fixture.whenStable()`, `componentInstance`, `debugElement`, `nativeElement` or `componentRef.setInput()`. On older versions, bind inputs and outputs through a host component.
+- Components: mount with `TestBed.createComponent(Component, { bindings })` _(Angular ≥ 20.1)_ and **ignore the returned fixture** — no `detectChanges()`, `fixture.whenStable()`, `componentInstance`, `debugElement` or `nativeElement`. On older versions, set inputs with `fixture.componentRef.setInput()`.
 - Inputs: `inputBinding('recipe', recipe)` where `recipe` is a signal; change the input with `recipe.set(...)`. Outputs: `outputBinding('filterChange', spy)`. Models: `twoWayBinding('filter', filter)`.
 - Query with `page.getByRole(...)`, `page.getByLabelText(...)`, `page.getByText(...)` from `vitest/browser`. Act with locator actions (`click()`, `fill()`). Assert with `await expect.element(locator)...`.
 - Assert application state (services, fakes) with `await expect.poll(() => ...)`.

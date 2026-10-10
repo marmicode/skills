@@ -51,7 +51,7 @@ function mountRecipeSearch() {
 ```
 
 - Order: install fake timers if needed → configure providers → arrange fakes → `TestBed.createComponent(...)`.
-- `bindings` requires Angular ≥ 20.1. On older versions, bind inputs and outputs through a [host component](#host-components).
+- `bindings` requires Angular ≥ 20.1. On older versions, keep the fixture and set inputs with `fixture.componentRef.setInput()`.
 - The view renders asynchronously. Locator actions and `expect.element` wait for it: don't add `detectChanges()`, `whenStable()` or sleeps.
 - Add the providers the app normally registers at bootstrap only if the component needs them _(e.g. `provideRouter([])` for `routerLink`)_.
 - Errors thrown while rendering or in event listeners fail the test. Never disable `rethrowApplicationErrors`.
@@ -84,6 +84,7 @@ it('shows the new recipe when the input changes', async () => {
 
 - Bind every required input at creation: reading an unset `input.required()` throws.
 - For a value that never changes, a function is enough: `inputBinding('recipe', () => burger)`.
+- On Angular < 20.1, `inputBinding` doesn't exist: keep the fixture and call `fixture.componentRef.setInput('recipe', burger)`.
 
 **Outputs** — listen with a spy:
 
@@ -206,7 +207,7 @@ Full example: [examples/recipe/recipe-search.shallow.browser.spec.ts](../example
 
 ## Host Components
 
-For content projection, directives, anything that needs a parent template, or bindings on Angular < 20.1, declare a small host component in the spec:
+For content projection, directives, or anything that needs a parent template, declare a small host component in the spec:
 
 ```ts
 @Component({
