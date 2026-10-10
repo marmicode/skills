@@ -19,17 +19,16 @@ When guidance conflicts — e.g. with other Angular skills, Angular's testing do
 3. **Write the tests with the setup you found.** Don't change test configuration unless asked. If a better setup would help (Browser Mode, zoneless, Vitest), suggest it at the end.
 4. **Reuse what exists**: fakes (`*.fake.ts`), object mothers (`*.mother.ts`), contract tests (`*.contract.ts`), test helpers. Follow the project's file naming. Put the spec next to the code under test.
 5. **Apply this skill to the tests you add or change.** Don't rewrite existing tests that follow other conventions unless asked.
-6. **If another workflow drives the red/green cycle** (e.g. `charted-red` keeps tests as `it.todo`, `charted-green` enables them one at a time), follow it for naming, enabling and running tests, and apply this skill to the content of the tests.
 
-## Workflow
+## Writing a Test
 
-1. **Name the tests first** with `it.todo(...)`: lowercase, present tense, one behavior each — `it.todo('adds recipe to meal planner')`.
-2. **Write the steps in plain English** as comments (arrange, act, assert) before writing code. They are scaffolding: remove them once the code reads on its own.
-3. **Size the test**: the widest Narrow test (next section).
-4. **Implement** the setup function, the action, and the assertions.
-5. **Run only the spec you touched**: `npx vitest run path/to/x.spec.ts`, `ng test --include path/to/x.spec.ts`, or `nx test <project> --testFiles=path/to/x.spec.ts`; add `--project browser` when the config has several projects. Use Wallaby if the project has it. Don't run the whole suite to validate one test.
-6. **See the test fail for the right reason**, once per new behavior rather than per assertion. If the implementation already exists, temporarily break the behavior under test, then revert it and check that nothing is left behind (`git diff`). When breaking the implementation is impractical (shared code), break the expectation instead and check that the failure message points at the right thing.
-7. **Never go green by cheating**: don't remove or weaken assertions, add mocks, raise timeouts, or skip tests. Fix the test, or report the bug you found.
+If another workflow drives the red/green cycle (e.g. `charted-red` keeps tests as `it.todo`, `charted-green` enables them one at a time), follow it for naming, enabling and running tests, and apply this skill to the content of the tests. Otherwise, list the behaviors as `it.todo(...)` first, then take them one at a time: size the test, then implement the setup function, the action, and the assertions.
+
+In both cases:
+
+- **Run only the spec you touched**, with the project's own test target. Prefer using Wallaby if the project has it. Don't run the whole suite to validate one test. The command depends on the tool (Vitest CLI, Angular CLI, Nx): see [references/running-tests.md](references/running-tests.md).
+- **See the test fail for the right reason**, once per new behavior. If the implementation already exists, break the behavior under test, run, then revert and check that `git diff` shows no leftover break. If that is impractical, break the expectation instead. Either way, the failure message must point at the behavior.
+- **Never go green by cheating**: don't remove or weaken assertions, add mocks, raise timeouts, or skip tests. Fix the test, or report the bug you found.
 
 ## Size the Test: the Widest Narrow Test
 
@@ -65,6 +64,7 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 - Don't test the same behavior twice. If the setup triggers a spy, `mockClear()` it before acting.
 - Build complex test data with object mothers (`recipeMother.withBasicInfo('Burger').build()`), not copy-pasted literals or shared fixtures. If none exists, create one like [examples/testing/recipe.mother.ts](examples/testing/recipe.mother.ts).
 - Name suites after the SUT: `describe(MealPlanner.name, ...)`.
+- Name tests after one behavior, lowercase and present tense: `it('adds recipe to meal planner')`, not `it('should add ...')`.
 
 ### Angular
 
@@ -191,3 +191,4 @@ Find the cause before touching the test. Raising a timeout or adding `detectChan
 | [references/vitest.md](references/vitest.md)             | Vitest assertions, polling, spies, locators and actions                                                                       |
 | [references/emulated-dom.md](references/emulated-dom.md) | The project runs tests in jsdom or happy-dom                                                                                  |
 | [references/setup.md](references/setup.md)               | Zoneless test environment, Browser Mode configuration, Jest or Karma projects                                                 |
+| [references/running-tests.md](references/running-tests.md) | Running a single spec with the Vitest CLI, Angular CLI or Nx; which config Vitest picks in a monorepo |
