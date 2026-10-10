@@ -61,15 +61,15 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 
 ### Test Design
 
-- Test behavior through the public API. Never read or call private members.
+- Never read or call private members.
 - Use **setup functions** instead of `beforeEach` + `let`. Name them after what they do: `mountX()` for components, `createX()` for services, `setUpX()` returning `getX()` when the test must arrange things before instantiation. They return what tests need: the SUT, fakes, and small helpers ("gloves") such as `getRecipeNames()`.
 - Compose setup functions (`createMealPlannerWithBurger()`) instead of adding options or flags. A variant that needs extra providers calls `TestBed.configureTestingModule(...)` before calling the base setup function: `TestBed` can't be configured once something was injected.
 - No conditionals or loops in tests (cyclomatic complexity of 1).
 - Literal expectations: `toEqual(['Burger', 'Salad'])`, never values computed from the test data.
 - Assert only what the test is about: `expect.objectContaining(...)`, `toMatchObject(...)`.
 - Don't test the same behavior twice. If the setup triggers a spy, `mockClear()` it before acting.
-- Build complex test data with object mothers (`recipeMother.withBasicInfo('Burger').build()`), not copy-pasted literals or shared fixtures. If none exists, create one like [examples/testing/recipe.mother.ts](examples/testing/recipe.mother.ts).
-- Name suites after the SUT: `describe(MealPlanner.name, ...)`.
+- Build non-trivial test data with object mothers (`recipeMother.withBasicInfo('Burger').build()`), not copy-pasted literals or shared fixtures. If none exists, create one like [examples/testing/recipe.mother.ts](examples/testing/recipe.mother.ts).
+- Name suites after the SUT: `describe(MealPlanner, ...)`.
 - Name tests after one behavior, lowercase and present tense: `it('adds recipe to meal planner')`, not `it('should add ...')`.
 
 ### Angular
@@ -79,7 +79,7 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 - Inputs: `inputBinding('recipe', recipe)` where `recipe` is a signal; change the input with `recipe.set(...)`. Outputs: `outputBinding('filterChange', spy)`. Models: `twoWayBinding('filter', filter)`.
 - Query with `page.getByRole(...)`, `page.getByLabelText(...)`, `page.getByText(...)` from `vitest/browser`. Act with locator actions (`click()`, `fill()`). Assert with `await expect.element(locator)...`.
 - Assert application state (services, fakes) with `await expect.poll(() => ...)`.
-- Retrying assertions pass as soon as they match, so negative or unchanged expectations (`not.toBeInTheDocument()`, `toEqual([])`, `not.toHaveBeenCalled()`) can pass before the app reacts. Pair them with a positive expectation that proves the update happened, or let the app settle first: advance fake timers past any delay, then `await TestBed.inject(ApplicationRef).whenStable()`.
+- Retrying assertions pass as soon as they match, so negative or unchanged expectations (`not.toBeInTheDocument()`, `toEqual([])`, `not.toHaveBeenCalled()`) can pass before the app reacts. Pair them with a positive expectation that proves the update happened.
 - Default to integration tests (real children). Go shallow only to narrow down. Don't write renderless tests that call component methods or read component properties. See [references/components.md](references/components.md).
 
 ### Vitest
