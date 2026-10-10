@@ -1,0 +1,146 @@
+# Setup
+
+Write tests with the setup the project already has. Change test configuration only when the user asks; otherwise, suggest the improvements below at the end of the task.
+
+## Contents
+
+1. [Zoneless Test Environment](#zoneless-test-environment)
+2. [Browser Mode](#browser-mode)
+3. [Other Test Runners](#other-test-runners)
+4. [Error Sensitivity](#error-sensitivity)
+5. [Timeouts](#timeouts)
+
+## Zoneless Test Environment
+
+Zoneless is the default since Angular 21. Even if the app still uses Zone.js, write zoneless-ready tests: if they pass zoneless, they also pass with zones.
+
+- With the Angular CLI `@angular/build:unit-test` builder, add global test providers through its `providersFile` option.
+- With a custom setup _(e.g. Analog's Vite plugin or Nx)_, initialize the test environment in the setup file:
+
+  ```ts title="src/test-setup.ts"
+  /* Global styles, so that visibility and actionability checks see the real layout (Browser Mode). */
+  import './styles.css';
+  import '@testing-library/jest-dom/vitest';
+  import { NgModule, provideZonelessChangeDetection } from '@angular/core';
+  import { getTestBed } from '@angular/core/testing';
+  import {
+    BrowserTestingModule,
+    platformBrowserTesting,
+  } from '@angular/platform-browser/testing';
+
+  @NgModule({ providers: [provideZonelessChangeDetection()] })
+  class ZonelessTestModule {}
+
+  const testBed = getTestBed();
+
+  /* Reset between tests, even when test files share the same context (`isolate: false`). */
+  afterEach(() => testBed.resetTestingModule());
+
+  if (!testBed.platform) {
+    testBed.initTestEnvironment(
+      [BrowserTestingModule, ZonelessTestModule],
+      platformBrowserTesting(),
+    );
+  }
+  ```
+
+- If the test environment is zone-based and you can't change it, turn on automatic change detection in the test instead of calling `fixture.detectChanges()`:
+
+  ```ts
+  TestBed.configureTestingModule({
+    providers: [{ provide: ComponentFixtureAutoDetect, useValue: true }],
+  });
+  ```
+
+## Browser Mode
+
+**Angular CLI** _(Angular ≥ 21)_:
+
+```json title="angular.json"
+{
+  "test": {
+    "builder": "@angular/build:unit-test",
+    "options": {
+      "runner": "vitest",
+      "browsers": ["Chromium"]
+    }
+  }
+}
+```
+
+```sh
+npm install -D playwright vitest @vitest/browser-playwright
+```
+
+To get Playwright-specific locator options typed, add `"@vitest/browser-playwright"` to `compilerOptions.types` in `tsconfig.spec.json`. The `runnerConfig` option points the builder to a custom Vitest config when needed.
+
+**Vite / Analog / Nx**: split emulated and browser tests into two Vitest projects by file name, so both can coexist during a migration:
+
+```ts title="vitest.config.mts"
+import { playwright } from '@vitest/browser-playwright';
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  // ... Angular plugin (e.g. `@analogjs/vite-plugin-angular`) ...
+  test: {
+    globals: true,
+    setupFiles: ['src/test-setup.ts'],
+    testTimeout: process.env.CI ? 3_000 : 500,
+    /* TestBed already isolates tests: sharing threads between test files is much faster.
+     * Requires the `afterEach` reset in the setup file. */
+    pool: 'threads',
+    isolate: false,
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'emulated',
+          environment: 'jsdom',
+          include: ['src/**/!(*.browser).spec.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'browser',
+          include: ['src/**/*.browser.spec.ts'],
+          browser: {
+            enabled: true,
+            provider: playwright(),
+            instances: [{ browser: 'chromium' }],
+          },
+        },
+      },
+    ],
+  },
+});
+```
+
+## Other Test Runners
+
+The principles, fakes, setup functions, and assertions of this skill apply to any test runner. Only the APIs change.
+
+**Jest** _(emulated DOM only: also follow [emulated-dom.md](emulated-dom.md))_:
+
+| Vitest | Jest |
+| --- | --- |
+| `vi.fn()` | `jest.fn()` |
+| `vi.useFakeTimers()`, `vi.useRealTimers()` | `jest.useFakeTimers()`, `jest.useRealTimers()` |
+| `await vi.advanceTimersByTimeAsync(ms)`, `await vi.runAllTimersAsync()` | `await jest.advanceTimersByTimeAsync(ms)`, `await jest.runAllTimersAsync()` |
+| `onTestFinished(() => vi.useRealTimers())` | `afterEach(() => jest.useRealTimers())` |
+| `await expect.poll(() => value).toEqual(expected)` | `await waitFor(() => expect(value).toEqual(expected))` with `waitFor` from `@testing-library/dom` |
+| `toHaveBeenCalledExactlyOnceWith(value)` | `toHaveBeenCalledTimes(1)` and `toHaveBeenCalledWith(value)` |
+| `vi.useFakeTimers().setTimerTickMode('nextTimerAsync')` | not available: use [dynamic timing configuration](time.md#dynamic-timing-configuration) |
+| `page`, `expect.element` | not available |
+
+To migrate, the Jest-to-Vitest codemod handles most API changes: `npx codemod@legacy jest/vitest -t path/to/tests`. Then replace `done` callbacks with promises, and `fakeAsync` with Vitest fake timers.
+
+**Jasmine and Karma**: Karma is deprecated, so suggest migrating to Vitest _(the Angular CLI `unit-test` builder)_. Meanwhile, apply the same principles, fakes, and setup functions, and record outputs with `jasmine.createSpy()`.
+
+## Error Sensitivity
+
+Keep `TestBed`'s `rethrowApplicationErrors` option enabled _(the default)_: errors thrown while rendering or in listeners must fail tests instead of being logged and ignored.
+
+## Timeouts
+
+Keep `testTimeout` low locally _(e.g. 500ms)_ so slow or stuck tests surface immediately, with more room on CI.
