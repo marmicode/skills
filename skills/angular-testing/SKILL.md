@@ -54,7 +54,7 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 ### Test Doubles
 
 - Prefer **fakes**: provide them with `provideXFake()` and configure them through `TestBed.inject(XFake)`. See [references/fakes.md](references/fakes.md).
-- Use `vi.fn()` spies to record outputs and callbacks, e.g. `outputBinding('filterChange', spy)`. Spy on other calls only when a fake's state can't show the outcome.
+- Use `vi.fn()` spies to record outputs and callbacks, e.g. `outputBinding('filterChange', spy)`.
 - Never `vi.mock()` modules, and never `vi.spyOn()` your own services to stub their return values.
 - Don't fake what you don't own (Angular Material, CDK, Router, `HttpClient`, third-party SDKs): use the real thing, or wrap it in your own abstraction and fake that. When the code under test calls `HttpClient` directly and you can't extract a repository, see [references/fakes.md](references/fakes.md#when-there-is-no-repository-to-fake).
 - Never fake framework internals (`ChangeDetectorRef`, `ApplicationRef`, `NgZone`): assert the outcome.
