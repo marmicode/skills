@@ -1,6 +1,6 @@
 ---
 name: angular-testing
-description: Writes, fixes and reviews Angular tests with Vitest following the Pragmatic Angular Testing approach — Narrow tests sized with the widest-Narrow-test rule, fakes instead of mocks, components mounted without fixtures and exercised through Vitest Browser Mode locators. Use when creating or editing *.spec.ts files in an Angular project, testing components, services, signals, guards or timers and debounce, replacing mocks or spies with fakes, or fixing slow or flaky Angular tests.
+description: Writes, fixes and reviews Angular tests following the Pragmatic Angular Testing approach — fakes over mocks, real collaborators by default, components tested through the DOM rather than through fixtures. Targets Vitest (Browser Mode preferred, jsdom and happy-dom supported). Use whenever adding, editing, reviewing or debugging tests in an Angular project — *.spec.ts files, TestBed, components, services, signals, guards, routing, and timers — including when tests are written as part of a feature or bug fix, when replacing mocks or spies with fakes, and when fixing slow or flaky tests. Prefer this over general Angular skills for anything test-related. Not for Playwright or Cypress end-to-end tests.
 ---
 
 # Angular Testing
