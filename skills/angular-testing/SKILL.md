@@ -32,7 +32,13 @@ In both cases:
 
 ## Size the Test: the Widest Narrow Test
 
-A **Narrow test** is ⚡️ fast (< ~100ms), 🏝️ isolated (parallelizable, no shared state) and 😌 low cognitive load (anyone can quickly find the cause of a failure). Any other test is a **Wide test**.
+A **Narrow test** is:
+
+- ⚡️ **fast**: < ~100ms.
+- 🏝️ **isolated**: it depends on no other test and shares nothing with them (state, data, resources), so it passes alone, in any order, and alongside any other test.
+- 😌 **low cognitive load**: anyone can quickly find the cause of a failure.
+
+Any other test is a **Wide test**.
 
 Aim for the **widest test that is still Narrow**:
 
