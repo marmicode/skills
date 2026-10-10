@@ -94,7 +94,8 @@ it('filters recipes by keywords', async () => {
 });
 
 function mountRecipeSearch() {
-  vi.useFakeTimers().setTimerTickMode('nextTimerAsync');
+  vi.useFakeTimers();
+  vi.setTimerTickMode('nextTimerAsync');
   onTestFinished(() => {
     vi.useRealTimers();
   });
@@ -155,5 +156,6 @@ Trade-off: with different durations than production, things can run in a differe
 - Only use the `*Async` APIs: `advanceTimersByTimeAsync`, `runAllTimersAsync`, `runOnlyPendingTimersAsync`. The synchronous ones skip microtasks and produce impossible behavior.
 - Approximate time _(`delay - 10`, `delay + 10`)_: nested timers add extra milliseconds.
 - Stick to one mode per test.
+- When an error is expected after a delay, set up `await expect(promise).rejects.toThrow(...)` **before** advancing time, or use fast-forward mode: in manual mode, a promise that rejects during `vi.advanceTimersByTimeAsync(...)` becomes an unhandled rejection before the assertion can catch it.
 - Never use `fakeAsync`, `tick()`, `flush()` or `waitForAsync`: they depend on Zone.js. Vitest fake timers work with and without zones.
 - Control the current date with `vi.setSystemTime(...)`. Without fake timers, it only mocks `Date` and doesn't pause Angular. Restore it with `onTestFinished(() => vi.useRealTimers())`.

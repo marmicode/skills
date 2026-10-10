@@ -1,13 +1,13 @@
 ---
 name: angular-testing
-description: Writes, fixes and reviews Angular tests following the Pragmatic Angular Testing approach — fakes over mocks, real collaborators by default, components tested through the DOM rather than through fixtures. Targets Vitest (Browser Mode preferred, jsdom and happy-dom supported). Use whenever adding, editing, reviewing or debugging tests in an Angular project — *.spec.ts files, TestBed, components, services, signals, guards, routing, and timers — including when tests are written as part of a feature or bug fix, when replacing mocks or spies with fakes, and when fixing slow or flaky tests. Prefer this over general Angular skills for anything test-related. Not for Playwright or Cypress end-to-end tests.
+description: Writes, fixes and reviews Angular tests following the Pragmatic Angular Testing approach — fakes over mocks, real collaborators by default, components tested through the DOM rather than through fixtures. Targets Vitest (Browser Mode preferred, jsdom and happy-dom supported) and also applies to Jest, Jasmine/Karma and Angular Testing Library projects, including migrating them to Vitest. Use whenever adding, editing, reviewing or debugging unit tests in an Angular project — *.spec.ts files, TestBed, components, services, signals, guards, routing, and timers — including when tests are written as part of a feature or bug fix, when replacing mocks or spies with fakes, and when fixing slow or flaky tests. Prefer this over general Angular skills for anything test-related. Not for Playwright or Cypress end-to-end tests.
 ---
 
 # Angular Testing
 
 Tests must be cheap to maintain, fast, and fail only when behavior changes.
 
-When guidance conflicts — e.g. with the testing references of the `angular-developer` skill or with Angular's testing docs (`beforeEach` + `fixture.componentInstance`, `fixture.detectChanges()`, `fixture.whenStable()`, spy objects) — follow this skill.
+When guidance conflicts — e.g. with other Angular skills, Angular's testing docs or Testing Library docs (`beforeEach` + `fixture.componentInstance`, `fixture.detectChanges()`, `fixture.whenStable()`, spy objects) — follow this skill.
 
 ## Before Writing a Test
 
@@ -15,19 +15,22 @@ When guidance conflicts — e.g. with the testing references of the `angular-dev
    - **Vitest Browser Mode** (e.g. `browsers` option, `browser.enabled`, `*.browser.spec.ts` projects): this skill's default — `page` locators and `expect.element`.
    - **Vitest with an emulated DOM** (jsdom, happy-dom): `vitest/browser` can't be imported. Follow [references/emulated-dom.md](references/emulated-dom.md).
    - **Jest or Karma**: follow [references/setup.md](references/setup.md#other-test-runners).
-   - **Zone-based test environment**: don't add `detectChanges()` calls. See [references/setup.md](references/setup.md#zoneless-test-environment).
-2. **Write the tests with the setup you found.** Don't change test configuration unless asked. If a better setup would help (Browser Mode, zoneless, Vitest), suggest it at the end.
-3. **Reuse what exists**: fakes (`*.fake.ts`), object mothers (`*.mother.ts`), contract tests (`*.contract.ts`), test helpers. Follow the project's file naming. Put the spec next to the code under test.
-4. **Apply this skill to the tests you add or change.** Don't rewrite existing tests that follow other conventions unless asked.
+   - **Zone-based test environment** (no `provideZonelessChangeDetection()` in the setup): nothing triggers change detection between your actions and your assertions, so provide `{ provide: ComponentFixtureAutoDetect, useValue: true }` in the setup function (or suggest adding it globally) instead of calling `fixture.detectChanges()`. See [references/setup.md](references/setup.md#zoneless-test-environment).
+2. **Check the Angular and Vitest versions** in `package.json`. They decide: `bindings` in `TestBed.createComponent` (Angular ≥ 20.1, else a host component), the zoneless provider name (`provideZonelessChangeDetection()` since Angular 20, `provideExperimentalZonelessChangeDetection()` before), fast-forward fake timers (Vitest ≥ 4.1), and whether `toHaveTextContent` is exact (Vitest ≥ 5) or partial (Vitest 4).
+3. **Write the tests with the setup you found.** Don't change test configuration unless asked. If a better setup would help (Browser Mode, zoneless, Vitest), suggest it at the end.
+4. **Reuse what exists**: fakes (`*.fake.ts`), object mothers (`*.mother.ts`), contract tests (`*.contract.ts`), test helpers. Follow the project's file naming. Put the spec next to the code under test.
+5. **Apply this skill to the tests you add or change.** Don't rewrite existing tests that follow other conventions unless asked.
+6. **If another workflow drives the red/green cycle** (e.g. `charted-red` keeps tests as `it.todo`, `charted-green` enables them one at a time), follow it for naming, enabling and running tests, and apply this skill to the content of the tests.
 
 ## Workflow
 
 1. **Name the tests first** with `it.todo(...)`: lowercase, present tense, one behavior each — `it.todo('adds recipe to meal planner')`.
-2. **Write the steps in plain English** as comments (arrange, act, assert) before writing code.
+2. **Write the steps in plain English** as comments (arrange, act, assert) before writing code. They are scaffolding: remove them once the code reads on its own.
 3. **Size the test**: the widest Narrow test (next section).
 4. **Implement** the setup function, the action, and the assertions.
-5. **See the test fail for the right reason.** If the implementation already exists, temporarily break the behavior under test (or the expectation) to see the test fail, then revert it and check that nothing is left behind (`git diff`).
-6. **Never go green by cheating**: don't remove or weaken assertions, add mocks, raise timeouts, or skip tests. Fix the test, or report the bug you found.
+5. **Run only the spec you touched**: `npx vitest run path/to/x.spec.ts`, `ng test --include path/to/x.spec.ts`, or `nx test <project> --testFiles=path/to/x.spec.ts`; add `--project browser` when the config has several projects. Use Wallaby if the project has it. Don't run the whole suite to validate one test.
+6. **See the test fail for the right reason**, once per new behavior rather than per assertion. If the implementation already exists, temporarily break the behavior under test, then revert it and check that nothing is left behind (`git diff`). When breaking the implementation is impractical (shared code), break the expectation instead and check that the failure message points at the right thing.
+7. **Never go green by cheating**: don't remove or weaken assertions, add mocks, raise timeouts, or skip tests. Fix the test, or report the bug you found.
 
 ## Size the Test: the Widest Narrow Test
 
@@ -49,7 +52,7 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 - Prefer **fakes**: provide them with `provideXFake()` and configure them through `TestBed.inject(XFake)`. See [references/fakes.md](references/fakes.md).
 - Use `vi.fn()` spies to record outputs and callbacks, e.g. `outputBinding('filterChange', spy)`. Spy on other calls only when a fake's state can't show the outcome.
 - Never `vi.mock()` modules, and never `vi.spyOn()` your own services to stub their return values.
-- Don't fake what you don't own (Angular Material, CDK, Router, `HttpClient`, third-party SDKs): use the real thing, or wrap it in your own abstraction and fake that.
+- Don't fake what you don't own (Angular Material, CDK, Router, `HttpClient`, third-party SDKs): use the real thing, or wrap it in your own abstraction and fake that. When the code under test calls `HttpClient` directly and you can't extract a repository, see [references/fakes.md](references/fakes.md#when-there-is-no-repository-to-fake).
 - Never fake framework internals (`ChangeDetectorRef`, `ApplicationRef`, `NgZone`): assert the outcome.
 
 ### Test Design
@@ -77,101 +80,61 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 ### Vitest
 
 - Errors: `expect(() => fn()).toThrow('...')` or `await expect(promise).rejects.toThrow('...')`, never `try/catch`.
+- Text: `toHaveTextContent('Burger')` for the whole text, `toMatchTextContent('Burg')` or a regex for a fragment _(Vitest ≥ 5; on Vitest 4 `toHaveTextContent` matches fragments and `toMatchTextContent` doesn't exist)_.
 - Fake timers: install them before creating anything, restore them with `onTestFinished(() => vi.useRealTimers())`, and only use `*Async` APIs. See [references/time.md](references/time.md).
 - Keep timeouts low. A timeout means a missing `await`, an assertion that never passes, fake timers in manual mode pausing Angular, or a test that isn't Narrow.
 
 ## Don't → Do
 
-| Don't                                                            | Do                                                                                             |
-| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `vi.mock('./recipe-repository')`                                 | `providers: [provideRecipeRepositoryFake()]`                                                   |
-| `vi.spyOn(repo, 'search').mockReturnValue(of(recipes))`          | `TestBed.inject(RecipeRepositoryFake).setRecipes(recipes)`                                     |
-| `{ provide: RecipeRepository, useValue: { search: vi.fn() } }`   | a fake implementing the same interface                                                         |
-| `HttpTestingController` in tests of code that uses a repository  | fake the repository that wraps `HttpClient`                                                    |
-| `beforeEach(() => { fixture = ...; component = ...; })`          | `function mountRecipeSearch() { ...; return { ... }; }`                                        |
-| `fixture.detectChanges()`, `await fixture.whenStable()`          | `await expect.element(locator)...`, `await expect.poll(...)`                                   |
-| `fixture.componentRef.setInput('recipe', burger)`                | `bindings: [inputBinding('recipe', recipe)]`, then `recipe.set(...)`                           |
-| `fixture.componentInstance.filterChange.subscribe(...)`          | `bindings: [outputBinding('filterChange', spy)]`                                               |
-| `fixture.debugElement.query(By.css('h2'))`                       | `page.getByRole('heading', { name: 'Burger' })`                                                |
-| `component.search('burger')`, `component.recipes()`              | interact through the DOM, assert what the user sees                                            |
-| `page.getByRole('button').first()` when order is irrelevant      | `page.getByRole('article').filter({ hasText: 'Burger' }).getByRole('button', { name: 'ADD' })` |
-| `fireEvent` or Testing Library's `userEvent` in Browser Mode     | `await locator.click()`, `await locator.fill('...')`                                           |
-| `fakeAsync`, `tick()`, `waitForAsync`                            | Vitest fake timers with `*Async` APIs                                                          |
-| `TestBed.tick()` or `TestBed.flushEffects()` to make a test pass | `await expect.poll(...)`, `await expect.element(...)`                                          |
-| `try { ... } catch (error) { expect(error)... }`                 | `toThrow(...)`, `rejects.toThrow(...)`                                                         |
-| `expect(result).toEqual(burger)`                                 | `expect(result).toEqual(expect.objectContaining({ name: 'Burger' }))`                          |
-| `const burger = { id: '1', name: 'Burger', ... }`                | `recipeMother.withBasicInfo('Burger').build()`                                                 |
+| Don't                                                              | Do                                                                                             |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `vi.mock('./recipe-repository')`                                   | `providers: [provideRecipeRepositoryFake()]`                                                   |
+| `vi.spyOn(repo, 'search').mockReturnValue(of(recipes))`            | `TestBed.inject(RecipeRepositoryFake).setRecipes(recipes)`                                     |
+| `{ provide: RecipeRepository, useValue: { search: vi.fn() } }`     | a fake implementing the same interface                                                         |
+| `MockComponent(RecipePreview)`, `MockProvider(MealPlanner)` (ng-mocks) | real children; `CUSTOM_ELEMENTS_SCHEMA` for a shallow test; a fake for adapters            |
+| `HttpTestingController` in tests of code that uses a repository    | fake the repository that wraps `HttpClient`                                                    |
+| `beforeEach(() => { fixture = ...; component = ...; })`            | `function mountRecipeSearch() { ...; return { ... }; }`                                        |
+| `fixture.detectChanges()`, `await fixture.whenStable()`            | `await expect.element(locator)...`, `await expect.poll(...)`                                   |
+| `fixture.componentRef.setInput('recipe', burger)`                  | `bindings: [inputBinding('recipe', recipe)]`, then `recipe.set(...)`                           |
+| `fixture.componentInstance.filterChange.subscribe(...)`            | `bindings: [outputBinding('filterChange', spy)]`                                               |
+| `fixture.debugElement.query(By.css('h2'))`                         | `page.getByRole('heading', { name: 'Burger' })`                                                |
+| `component.search('burger')`, `component.recipes()`                | interact through the DOM, assert what the user sees                                            |
+| `page.getByRole('button').first()` when order is irrelevant        | `page.getByRole('article').filter({ hasText: 'Burger' }).getByRole('button', { name: 'ADD' })` |
+| `fireEvent` or Testing Library's `userEvent` in Browser Mode       | `await locator.click()`, `await locator.fill('...')`                                           |
+| `toHaveTextContent('Burg')` as a substring check (Vitest ≥ 5)      | `toMatchTextContent('Burg')`                                                                   |
+| `fakeAsync`, `tick()`, `waitForAsync`                              | Vitest fake timers with `*Async` APIs                                                          |
+| `TestBed.tick()` or `TestBed.flushEffects()` to make a test pass   | `await expect.poll(...)`, `await expect.element(...)`                                          |
+| `try { ... } catch (error) { expect(error)... }`                   | `toThrow(...)`, `rejects.toThrow(...)`                                                         |
+| `expect(result).toEqual(burger)`                                   | `expect(result).toEqual(expect.objectContaining({ name: 'Burger' }))`                          |
+| `const burger = { id: '1', name: 'Burger', ... }`                  | `recipeMother.withBasicInfo('Burger').build()`                                                 |
 
-## Examples
-
-### Service with a fake
-
-```ts
-describe(MealPlanner.name, () => {
-  it("adds recipes to meal repository", async () => {
-    const { mealPlanner, mealRepoFake, burger } = createMealPlanner();
-
-    await mealPlanner.addRecipe(burger);
-
-    expect(mealRepoFake.getMealsSync()).toEqual([
-      expect.objectContaining({ name: "Burger" }),
-    ]);
-  });
-
-  it("throws error if recipe is already present", async () => {
-    const { mealPlanner, burgerDuplicate } =
-      await createMealPlannerWithBurger();
-
-    await expect(mealPlanner.addRecipe(burgerDuplicate)).rejects.toThrow(
-      `Can't add recipe.`,
-    );
-  });
-
-  async function createMealPlannerWithBurger() {
-    const { mealPlanner, burger, ...utils } = createMealPlanner();
-    await mealPlanner.addRecipe(burger);
-    return { mealPlanner, ...utils };
-  }
-
-  function createMealPlanner() {
-    TestBed.configureTestingModule({
-      providers: [provideMealRepositoryFake()],
-    });
-
-    return {
-      mealPlanner: TestBed.inject(MealPlanner),
-      mealRepoFake: TestBed.inject(MealRepositoryFake),
-      burger: recipeMother.withBasicInfo("Burger").build(),
-      burgerDuplicate: recipeMother.withBasicInfo("Burger").build(),
-    };
-  }
-});
-```
-
-### Component in Browser Mode
+## Example: Component in Browser Mode
 
 ```ts
-import { page } from "vitest/browser";
+import { TestBed } from '@angular/core/testing';
+import { page } from 'vitest/browser';
 
 describe(RecipeSearch.name, () => {
-  it("adds recipe to meal planner", async () => {
+  it('adds recipe to meal planner', async () => {
     const { getAddButton, getMealPlannerRecipeNames } = mountRecipeSearch();
 
-    await getAddButton("Burger").click();
+    await getAddButton('Burger').click();
 
-    await expect.poll(() => getMealPlannerRecipeNames()).toEqual(["Burger"]);
+    await expect.poll(() => getMealPlannerRecipeNames()).toEqual(['Burger']);
   });
 
   function mountRecipeSearch() {
+    /* Fakes for the adapters only; MealPlanner and the child components stay real. */
     TestBed.configureTestingModule({
       providers: [provideMealRepositoryFake(), provideRecipeRepositoryFake()],
     });
 
     TestBed.inject(RecipeRepositoryFake).setRecipes([
-      recipeMother.withBasicInfo("Burger").build(),
-      recipeMother.withBasicInfo("Salad").build(),
+      recipeMother.withBasicInfo('Burger').build(),
+      recipeMother.withBasicInfo('Salad').build(),
     ]);
 
+    /* The returned fixture is deliberately ignored. */
     TestBed.createComponent(RecipeSearch);
 
     const mealPlanner = TestBed.inject(MealPlanner);
@@ -179,9 +142,9 @@ describe(RecipeSearch.name, () => {
     return {
       getAddButton: (recipeName: string) =>
         page
-          .getByRole("article")
+          .getByRole('article')
           .filter({ hasText: recipeName })
-          .getByRole("button", { name: "ADD" }),
+          .getByRole('button', { name: 'ADD' }),
       getMealPlannerRecipeNames: () =>
         mealPlanner.recipes().map((recipe) => recipe.name),
     };
@@ -189,42 +152,43 @@ describe(RecipeSearch.name, () => {
 });
 ```
 
-### Inputs without a fixture
+Complete, passing spec files live in [examples/](examples/): start with `examples/recipe/recipe-search.browser.spec.ts` (component), `examples/recipe/recipe-preview.browser.spec.ts` (inputs without a fixture) and `examples/meal-planner/meal-planner.spec.ts` (service with a fake). A service setup function is shown in [references/services.md](references/services.md#setup-functions).
 
-```ts
-describe(RecipePreview.name, () => {
-  it("shows the new recipe when the input changes", async () => {
-    const { recipe, recipeName } = mountRecipePreview();
+## Reviewing Tests
 
-    recipe.set(recipeMother.withBasicInfo("Salad").build());
+Review tests against the rules above and report findings; don't rewrite unless asked. For each finding give the file and line, the rule, why it matters, and the smallest fix. Order by impact:
 
-    await expect.element(recipeName).toHaveTextContent("Salad");
-  });
+1. **False confidence**: non-awaited assertions or actions; retrying assertions on negative or unchanged expectations without a positive counterpart; assertions inside `catch`, callbacks or conditionals; stubs returning `undefined`; `try/catch`.
+2. **Coupling to implementation**: `vi.mock()`, `vi.spyOn(...).mockReturnValue`, `useValue: { method: vi.fn() }`, `HttpTestingController` where a repository exists, `componentInstance`, private members, CSS selectors, `nth()` / `first()` when order is irrelevant.
+3. **Synchronization hacks**: `detectChanges()`, `whenStable()`, `TestBed.tick()`, `fakeAsync` / `tick()`, sleeps, raised timeouts.
+4. **Design**: `beforeEach` + `let`, flags on setup functions, conditionals or loops, computed expectations, copy-pasted literals instead of object mothers, overlapping tests, `it('should ...')` names.
+5. **Width**: tests that are not Narrow (real HTTP, shared state, > ~100ms) or over-narrow (many test doubles, renderless component tests).
 
-  function mountRecipePreview() {
-    const recipe = signal(recipeMother.withBasicInfo("Burger").build());
+Praise what is right in one line; it tells the author what to keep. The reasoning behind each rule is in [references/principles.md](references/principles.md).
 
-    TestBed.createComponent(RecipePreview, {
-      bindings: [inputBinding("recipe", recipe)],
-    });
+## Diagnosing a Failing, Slow or Flaky Test
 
-    return { recipe, recipeName: page.getByRole("heading") };
-  }
-});
-```
+Find the cause before touching the test. Raising a timeout or adding `detectChanges()` hides it.
 
-Complete, passing spec files live in [examples/](examples/): start with `examples/recipe/recipe-search.browser.spec.ts` (component) and `examples/meal-planner/meal-planner.spec.ts` (service).
+| Symptom                                                       | Likely cause                                                                                                                                                     | Check                                                                                  |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Timeout on `expect.element` or a locator action               | missing `await`; an assertion that can never pass (wrong role or name); fake timers in manual mode pausing Angular (flush after mount); zone-based env without auto-detect | run the single test; print `page.getByRole('...').elements().length`                   |
+| Passes alone, fails in the suite                              | shared state: real timers left installed, a `providedIn: 'root'` fake, a module-level variable, a URL left by a previous navigation                               | `onTestFinished` restores; fakes are `@Injectable()` without `providedIn`              |
+| Intermittent                                                  | a retrying negative assertion racing the app; real network; `.first()` on an unstable order; animations                                                          | pair with a positive assertion; fake the adapter; `provideNoopAnimations()`            |
+| Slow (> 100ms)                                                | real HTTP; heavy real children; file isolation                                                                                                                   | fake the adapter; go shallow; `isolate: false`                                         |
+| "vitest/browser can be imported only inside the Browser Mode" | file not matched by the browser project                                                                                                                          | rename to the browser pattern or follow emulated-dom.md                                |
+| `NG0950` (required input not set)                             | missing `inputBinding`                                                                                                                                           | bind every required input at creation                                                  |
 
 ## References
 
-| Read                                                     | When                                                                                      |
-| -------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [references/principles.md](references/principles.md)     | Choosing what to test, how wide, what to fake; test design; test doubles                  |
-| [references/fakes.md](references/fakes.md)               | Writing or providing a fake, simulating errors, contract tests, wrapping third-party APIs |
-| [references/services.md](references/services.md)         | Services, signals, observables, effects, resources                                        |
-| [references/components.md](references/components.md)     | Mounting, bindings, locators, integration vs. shallow, host components                    |
-| [references/time.md](references/time.md)                 | Debounce, delays, timers, dates                                                           |
-| [references/router.md](references/router.md)             | Guards, navigation, route params                                                          |
-| [references/vitest.md](references/vitest.md)             | Vitest assertions, polling, spies, locators and actions                                   |
-| [references/emulated-dom.md](references/emulated-dom.md) | The project runs tests in jsdom or happy-dom                                              |
-| [references/setup.md](references/setup.md)               | Zoneless test environment, Browser Mode configuration, Jest or Karma projects             |
+| Read                                                     | When                                                                                                              |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| [references/principles.md](references/principles.md)     | Choosing what to test, how wide, what to fake; test design; test doubles; the reasoning behind review findings    |
+| [references/fakes.md](references/fakes.md)               | Writing or providing a fake, simulating errors, contract tests, wrapping third-party APIs, code calling `HttpClient` directly |
+| [references/services.md](references/services.md)         | Services, signals, observables, effects, resources                                                                |
+| [references/components.md](references/components.md)     | Mounting, bindings, locators, integration vs. shallow, host components, NgModule components, pipes, directives, `@defer` |
+| [references/time.md](references/time.md)                 | Debounce, delays, timers, dates                                                                                   |
+| [references/router.md](references/router.md)             | Guards, navigation, route params                                                                                  |
+| [references/vitest.md](references/vitest.md)             | Vitest assertions, polling, spies, locators and actions                                                           |
+| [references/emulated-dom.md](references/emulated-dom.md) | The project runs tests in jsdom or happy-dom                                                                      |
+| [references/setup.md](references/setup.md)               | Zoneless test environment, Browser Mode configuration, Jest or Karma projects                                     |

@@ -75,7 +75,7 @@ describe(MealPlanner.name, () => {
       expect(mealPlanner.canAddRecipe(salad)).toBe(true);
     });
 
-    it('notifies when recipes change', async () => {
+    it('updates when recipes change', async () => {
       const { mealPlanner, salad } = await createMealPlannerWithBurger();
 
       const canAddRecipe = watch(() => mealPlanner.canAddRecipe(salad));

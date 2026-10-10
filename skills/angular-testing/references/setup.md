@@ -15,6 +15,7 @@ Write tests with the setup the project already has. Change test configuration on
 Zoneless is the default since Angular 21. Even if the app still uses Zone.js, write zoneless-ready tests: if they pass zoneless, they also pass with zones.
 
 - With the Angular CLI `@angular/build:unit-test` builder, add global test providers through its `providersFile` option.
+- `provideZonelessChangeDetection()` is the stable name since Angular 20. On Angular 18–19, import `provideExperimentalZonelessChangeDetection()` instead.
 - With a custom setup _(e.g. Analog's Vite plugin or Nx)_, initialize the test environment in the setup file:
 
   ```ts title="src/test-setup.ts"
@@ -62,7 +63,7 @@ Zoneless is the default since Angular 21. Even if the app still uses Zone.js, wr
     "builder": "@angular/build:unit-test",
     "options": {
       "runner": "vitest",
-      "browsers": ["Chromium"]
+      "browsers": ["chromium"]
     }
   }
 }
@@ -71,6 +72,8 @@ Zoneless is the default since Angular 21. Even if the app still uses Zone.js, wr
 ```sh
 npm install -D playwright vitest @vitest/browser-playwright
 ```
+
+Browser names are provider-specific and lowercase _(`chromium` for Playwright, `chrome` for WebdriverIO)_. Tests run headless when `CI` is set, or when the name ends with `Headless` _(`chromiumHeadless`)_.
 
 To get Playwright-specific locator options typed, add `"@vitest/browser-playwright"` to `compilerOptions.types` in `tsconfig.spec.json`. The `runnerConfig` option points the builder to a custom Vitest config when needed.
 
@@ -86,9 +89,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ['src/test-setup.ts'],
     testTimeout: process.env.CI ? 3_000 : 500,
-    /* TestBed already isolates tests: sharing threads between test files is much faster.
-     * Requires the `afterEach` reset in the setup file. */
-    pool: 'threads',
+    /* TestBed already isolates tests: sharing the context between test files is much faster.
+     * Requires the `afterEach` reset in the setup file.
+     * Vitest 5 reads this top-level option for Browser Mode too; Vitest 4 needs `browser.isolate` (below). */
     isolate: false,
     projects: [
       {
@@ -97,6 +100,8 @@ export default defineConfig({
           name: 'emulated',
           environment: 'jsdom',
           include: ['src/**/!(*.browser).spec.ts'],
+          /* Node only: `pool` doesn't apply to Browser Mode. */
+          pool: 'threads',
         },
       },
       {
@@ -108,6 +113,8 @@ export default defineConfig({
             enabled: true,
             provider: playwright(),
             instances: [{ browser: 'chromium' }],
+            /* Vitest 4 only (deprecated in Vitest 5 in favor of the top-level `isolate`). */
+            isolate: false,
           },
         },
       },
@@ -130,7 +137,7 @@ The principles, fakes, setup functions, and assertions of this skill apply to an
 | `onTestFinished(() => vi.useRealTimers())` | `afterEach(() => jest.useRealTimers())` |
 | `await expect.poll(() => value).toEqual(expected)` | `await waitFor(() => expect(value).toEqual(expected))` with `waitFor` from `@testing-library/dom` |
 | `toHaveBeenCalledExactlyOnceWith(value)` | `toHaveBeenCalledTimes(1)` and `toHaveBeenCalledWith(value)` |
-| `vi.useFakeTimers().setTimerTickMode('nextTimerAsync')` | not available: use [dynamic timing configuration](time.md#dynamic-timing-configuration) |
+| `vi.setTimerTickMode('nextTimerAsync')` | not available: use [dynamic timing configuration](time.md#dynamic-timing-configuration) |
 | `page`, `expect.element` | not available |
 
 To migrate, the Jest-to-Vitest codemod handles most API changes: `npx codemod@legacy jest/vitest -t path/to/tests`. Then replace `done` callbacks with promises, and `fakeAsync` with Vitest fake timers.

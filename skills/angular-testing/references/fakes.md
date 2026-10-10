@@ -12,6 +12,8 @@ Why fakes beat stubs, spies and mocks: [principles.md](principles.md#test-double
 6. [Wrapping What You Don't Own](#wrapping-what-you-dont-own)
 7. [Contract Tests](#contract-tests)
 8. [Testing the Adapters Themselves](#testing-the-adapters-themselves)
+9. [When There Is No Repository to Fake](#when-there-is-no-repository-to-fake)
+10. [Where Fakes Live](#where-fakes-live)
 
 ## Anatomy of a Fake
 
@@ -284,7 +286,7 @@ it('deletes recipe once confirmed', async () => {
 
   dialogFake.close(true);
 
-  await expect.element(page.getByRole('paragraph')).toHaveTextContent('deleted');
+  await expect.element(page.getByRole('paragraph')).toHaveTextContent('Recipe deleted.');
 });
 ```
 
@@ -347,4 +349,45 @@ Most tests use the fake. The real adapter still needs coverage:
 
 - Run the contract tests against the real implementation when its infrastructure is fast and deterministic _(e.g. a repository over `LocalStorage`, itself replaced by `LocalStorageFake`)_.
 - For HTTP adapters, prefer a contract test or a Wide test against a real backend _(kept in a separate project or suite if it's slow)_, or rely on end-to-end tests.
-- Don't stub `HttpClient` with `HttpTestingController` in new tests: it couples tests to request details of an API you don't own, and keeps passing when the backend changes. Don't rewrite existing `HttpTestingController` suites unless asked.
+- Avoid `HttpTestingController` for a repository: it couples tests to request details of an API you don't own, and keeps passing when the backend changes. Don't rewrite existing `HttpTestingController` suites unless asked.
+
+## When There Is No Repository to Fake
+
+Brownfield code often calls `HttpClient` _(or `httpResource()` / `resource()` with a fetcher)_ straight from a service or component, so there is no boundary you own to fake. In order of preference:
+
+1. **Extract a repository** _(`XRepository` + `XRepositoryDef`)_ around the HTTP calls and fake that, if the task allows touching production code. Otherwise, suggest it at the end.
+2. **Fake the transport** with `provideHttpClientTesting()` + `HttpTestingController`, as the documented exception. Keep the test about the behavior the SUT exposes, flush one response per test, and verify no request is left pending:
+
+   ```ts
+   function createUserService() {
+     TestBed.configureTestingModule({
+       providers: [provideHttpClient(), provideHttpClientTesting()],
+     });
+
+     const httpTesting = TestBed.inject(HttpTestingController);
+     onTestFinished(() => httpTesting.verify());
+
+     return {
+       userService: TestBed.inject(UserService),
+       respondWithUser: (user: User) =>
+         httpTesting.expectOne({ method: 'GET', url: '/api/me' }).flush(user),
+     };
+   }
+
+   it('loads the current user', async () => {
+     const { userService, respondWithUser } = createUserService();
+
+     const user = userService.load();
+     respondWithUser({ name: 'Ada' });
+
+     await expect.poll(() => userService.user()).toEqual(expect.objectContaining({ name: 'Ada' }));
+   });
+   ```
+
+   This couples the test to the request's method and URL, which is why step 1 comes first.
+
+With `httpResource()` or `resource()`, the boundary is the same: a repository that returns the resource, or the transport when no repository exists. The component or service that reads the resource is then tested through the DOM or `expect.poll` as usual.
+
+## Where Fakes Live
+
+Put the fake next to the real implementation _(`recipe-repository.fake.ts` beside `recipe-repository.ts`)_. In a library of a monorepo, export it from a `testing` entry point _(e.g. `@scope/recipes/testing`)_ so other projects can reuse it without importing test code from the main entry.

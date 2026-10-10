@@ -2,24 +2,6 @@ import { createRecipe } from '../recipe/recipe';
 import { Recipe } from '../recipe/recipe';
 
 class RecipeMother {
-  private _recipePictures = [
-    {
-      keyword: 'beer',
-      pictureUri:
-        'https://shop.ninkasi.fr/259-large_default/ninkasi-french-ipa-75cl.jpg',
-    },
-    {
-      keyword: 'burger',
-      pictureUri:
-        'https://www.ninkasi.fr/wp-content/uploads/2022/06/header_burger.jpg',
-    },
-    {
-      keyword: 'salad',
-      pictureUri:
-        'https://www.ninkasi.fr/wp-content/uploads/2022/10/lyonnaise.png',
-    },
-  ];
-
   withBasicInfo(name: string): NestedRecipeMother {
     const slug = name
       .toLowerCase()
@@ -31,19 +13,10 @@ class RecipeMother {
         name,
         description: `A delicious ${name}.`,
         ingredients: [],
-        pictureUri: this._derivatePictureUri(slug),
+        pictureUri: `https://placeholder.marmicode.io/${slug}.jpg`,
         steps: [],
       }),
     );
-  }
-
-  private _derivatePictureUri(slug: string) {
-    const recipePicture = this._recipePictures.find((recipePicture) =>
-      slug.includes(recipePicture.keyword),
-    );
-    return recipePicture
-      ? recipePicture.pictureUri
-      : `https://placeholder.marmicode.io/${slug}.jpg`;
   }
 }
 

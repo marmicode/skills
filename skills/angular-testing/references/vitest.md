@@ -20,6 +20,8 @@ Framework-agnostic Vitest usage for this skill.
 - Name tests after the behavior, lowercase, present tense: `it('adds recipes', ...)`, not `it('should work', ...)`.
 - Plan tests with `it.todo('...')` before implementing them.
 - Put the spec next to the code under test. Follow the project's file patterns _(e.g. `*.browser.spec.ts` for Browser Mode)_.
+- Keep setup functions inside the `describe` they serve. Move them to file level only when several suites in the file share them.
+- The samples in this skill assume `globals: true`. If the project doesn't enable it, import `describe`, `it`, `expect`, `vi` and `onTestFinished` from `'vitest'`; `page` always comes from `'vitest/browser'`.
 
 ## Assertions
 
@@ -84,21 +86,15 @@ expect(onChange).not.toHaveBeenCalled();
 
 ```ts
 function setUpFakeTimers() {
-  vi.useFakeTimers();
+  vi.useFakeTimers(); // manual mode: time stands still until the test advances it
+  vi.setTimerTickMode('nextTimerAsync'); // optional fast-forward mode (Vitest ≥ 4.1): delays are skipped automatically
   onTestFinished(() => {
     vi.useRealTimers();
   });
 }
 ```
 
-- Install fake timers **before** anything schedules a timer. Mixing real and fake timers is a recipe for disaster.
-- Always restore real timers with `onTestFinished`: fake timers are global.
-- **Manual mode** _(default)_: time stands still until you advance it with `await vi.advanceTimersByTimeAsync(ms)`, `await vi.runAllTimersAsync()` or `await vi.runOnlyPendingTimersAsync()`. Use it when the timing **is** the behavior under test. It also pauses the timers your UI framework and libraries rely on for scheduling: flush them after mounting, or the UI never updates.
-- **Fast-forward mode**: `vi.useFakeTimers().setTimerTickMode('nextTimerAsync')` _(Vitest ≥ 4.1)_ skips delays automatically. Use it when timing is just in the way.
-- Only use the `*Async` APIs: they flush microtasks like real timers do.
-- Approximate time: advance to `delay - 10` and `delay + 10`, not `delay - 1` and `delay`. Nested timers add extra milliseconds.
-- Stick to one mode per test.
-- Control the current date with `vi.setSystemTime(new Date('2026-01-01T12:00:00Z'))`. Without fake timers, it only mocks `Date`, so no other timer is affected. Restore it with `onTestFinished(() => vi.useRealTimers())`.
+Which mode to pick, how to flush Angular after mounting, and the full list of rules _(install before anything schedules a timer, `*Async` APIs only, approximate time, one mode per test, `vi.setSystemTime`)_ live in [time.md](time.md).
 
 ## Browser Mode: Locators, Actions and Assertions
 
@@ -136,12 +132,15 @@ await page.getByLabelText('Keywords').fill('Burger');
 **Assertions** retry until they pass or time out:
 
 ```ts
-await expect.element(page.getByRole('heading')).toHaveTextContent('Burger');
+await expect.element(page.getByRole('heading')).toHaveTextContent('Burger'); // exact text (Vitest ≥ 5), partial on Vitest 4
+await expect.element(page.getByRole('heading')).toMatchTextContent(/burger/i); // partial or regex (Vitest ≥ 5)
 await expect.element(page.getByRole('heading')).toHaveLength(2); // number of matching elements
 await expect.element(page.getByRole('button', { name: 'Add' })).toBeDisabled();
 await expect.element(page.getByLabelText('Keywords')).toHaveValue('Burger');
 await expect.element(page.getByRole('alert')).toBeVisible();
 ```
+
+Pick `toHaveTextContent` when the whole text is the behavior, `toMatchTextContent` when only a fragment matters. On Vitest 4, `toHaveTextContent` is partial and `toMatchTextContent` doesn't exist: check the Vitest major version first.
 
 **Raw elements**, when an API needs a DOM node: `locator.element()` _(exactly one, throws otherwise)_, `locator.elements()` _(all current matches, no waiting)_, `locator.query()` _(one or `null`)_.
 
@@ -149,9 +148,7 @@ await expect.element(page.getByRole('alert')).toBeVisible();
 
 ## Browser Mode vs. Emulated DOM
 
-- `vitest/browser` can only be imported in Browser Mode. In jsdom or happy-dom it throws `vitest/browser can be imported only inside the Browser Mode`.
-- When a project runs both, put browser-only tests in files matched by the browser configuration _(e.g. `*.browser.spec.ts`)_.
-- Emulated environments can't check visibility, layout, or actionability. Prefer Browser Mode for UI tests.
+`vitest/browser` can only be imported in Browser Mode; in jsdom or happy-dom it throws `vitest/browser can be imported only inside the Browser Mode`. When a project runs both, put browser-only tests in files matched by the browser configuration _(e.g. `*.browser.spec.ts`)_. What emulated environments can't do, and how to test there, is in [emulated-dom.md](emulated-dom.md).
 
 ## Timeouts
 

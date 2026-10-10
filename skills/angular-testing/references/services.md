@@ -21,6 +21,7 @@
   ```
 
 - Real collaborators _(stores, orchestration services)_ stay real unless they make the test too complex — see [principles.md](principles.md#the-widest-narrow-test).
+- If the service calls `HttpClient` directly and there is no repository to fake, see [fakes.md](fakes.md#when-there-is-no-repository-to-fake).
 
 ## Setup Functions
 

@@ -10,7 +10,8 @@
 6. [Asserting](#asserting)
 7. [Shallow Tests](#shallow-tests)
 8. [Host Components](#host-components)
-9. [Angular Material and CDK](#angular-material-and-cdk)
+9. [Pipes and Directives](#pipes-and-directives)
+10. [Angular Material and CDK](#angular-material-and-cdk)
 
 ## Choosing the Test Flavor
 
@@ -54,6 +55,8 @@ function mountRecipeSearch() {
 - The view renders asynchronously. Locator actions and `expect.element` wait for it: don't add `detectChanges()`, `whenStable()` or sleeps.
 - Add the providers the app normally registers at bootstrap only if the component needs them _(e.g. `provideRouter([])` for `routerLink`)_.
 - Errors thrown while rendering or in event listeners fail the test. Never disable `rethrowApplicationErrors`.
+- **Non-standalone components** go in `declarations`, with their `NgModule` dependencies in `imports`, in `TestBed.configureTestingModule`. Everything else _(no fixture, bindings, locators, `overrideComponent` for shallow tests)_ is identical. Don't migrate the component to standalone just to test it.
+- **`@defer` blocks** play through like in the browser _(`DeferBlockBehavior.Playthrough` is TestBed's default)_: test the deferred content through the DOM. The only reason to touch the fixture is when the `@placeholder` / `@loading` states are themselves the behavior under test _(`deferBlockBehavior: DeferBlockBehavior.Manual` + `fixture.getDeferBlocks()`)_.
 
 ## Inputs, Outputs and Models
 
@@ -225,8 +228,13 @@ it('projects content', async () => {
 });
 ```
 
+## Pipes and Directives
+
+- **Pipes**: inject the pipe class with `TestBed.inject(MyPipe)` _(provide it in `TestBed.configureTestingModule` if it isn't `providedIn: 'root'`)_ and test `transform()` as a pure function. Render it in a host component only when the behavior depends on the template _(e.g. a pipe that subscribes, like `async`)_.
+- **Directives**: always through a [host component](#host-components) and the DOM, never by instantiating the directive class.
+
 ## Angular Material and CDK
 
 - Use them for real and locate their elements by role or label: `mat-label` is associated with its input, so `page.getByLabelText('Keywords')` works.
-- Overlays _(dialogs, menus, snack bars)_ render outside the component's host element. `page` locators search the whole page, so they find them: `await expect.element(page.getByRole('dialog')).toHaveTextContent('Delete this recipe?')`.
+- Overlays _(dialogs, menus, snack bars)_ render outside the component's host element. `page` locators search the whole page, so they find them: `await expect.element(page.getByRole('dialog')).toMatchTextContent('Delete this recipe?')` _(`toHaveTextContent` on Vitest 4)_.
 - If they make a test slow or complex, wrap them in your own abstraction and fake it: see [fakes.md](fakes.md#wrapping-what-you-dont-own).

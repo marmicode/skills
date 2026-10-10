@@ -53,7 +53,8 @@ describe(RecipeSearch.name, () => {
 
   function mountRecipeSearch() {
     /* The keywords field is debounced: fast-forward timers so delays don't slow tests down. */
-    vi.useFakeTimers().setTimerTickMode('nextTimerAsync');
+    vi.useFakeTimers();
+    vi.setTimerTickMode('nextTimerAsync');
     onTestFinished(() => {
       vi.useRealTimers();
     });

@@ -46,53 +46,54 @@ describe(isSignedInGuard.name, () => {
     expect.soft(getCurrentUrl()).toBe('/search');
     await expect.element(page.getByRole('heading')).toHaveTextContent('Search');
   });
+
+  async function mountRoutes() {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(
+          [
+            {
+              path: 'landing',
+              component: Dummy,
+              data: { title: 'Landing' },
+            },
+            {
+              path: recipeRouterHelper.SEARCH_PATH,
+              component: Dummy,
+              data: { title: 'Search' },
+            },
+            {
+              path: 'meal-plan',
+              component: Dummy,
+              data: { title: 'Meal Plan' },
+              canActivate: [isSignedInGuard],
+            },
+          ],
+          withComponentInputBinding(),
+        ),
+      ],
+    });
+
+    /* No initial URL: the first `navigate()` is the app's first navigation. */
+    const harness = await RouterTestingHarness.create();
+
+    return {
+      auth: TestBed.inject(Auth),
+      getCurrentUrl: () => TestBed.inject(Router).url,
+      navigate: (
+        url:
+          | '/landing'
+          | `/${typeof recipeRouterHelper.SEARCH_PATH}`
+          | '/meal-plan',
+      ) => harness.navigateByUrl(url),
+    };
+  }
+
+  @Component({
+    template: `<h1>{{ title() }}</h1>`,
+  })
+  class Dummy {
+    /* Bound from the route's `data` thanks to `withComponentInputBinding()`. */
+    title = input.required<string>();
+  }
 });
-
-async function mountRoutes() {
-  TestBed.configureTestingModule({
-    providers: [
-      provideRouter(
-        [
-          {
-            path: 'landing',
-            component: Dummy,
-            data: { title: 'Landing' },
-          },
-          {
-            path: recipeRouterHelper.SEARCH_PATH,
-            component: Dummy,
-            data: { title: 'Search' },
-          },
-          {
-            path: 'meal-plan',
-            component: Dummy,
-            data: { title: 'Meal Plan' },
-            canActivate: [isSignedInGuard],
-          },
-        ],
-        withComponentInputBinding(),
-      ),
-    ],
-  });
-
-  /* No initial URL: the first `navigate()` is the app's first navigation. */
-  const harness = await RouterTestingHarness.create();
-
-  return {
-    auth: TestBed.inject(Auth),
-    getCurrentUrl: () => TestBed.inject(Router).url,
-    navigate: (
-      url:
-        | '/landing'
-        | `/${typeof recipeRouterHelper.SEARCH_PATH}`
-        | '/meal-plan',
-    ) => harness.navigateByUrl(url),
-  };
-}
-
-@Component({
-  template: `<h1>{{ title() }}</h1>`,
-})
-export class Dummy {
-  title = input.required<string>();
-}
