@@ -78,7 +78,7 @@ describe(isSignedInGuard.name, () => {
 });
 ```
 
-Full example: [examples/user/is-signed-in.guard.browser.spec.ts](../examples/user/is-signed-in.guard.browser.spec.ts).
+Full example: [examples/user/is-signed-in.guard.browser.spec.ts](examples/user/is-signed-in.guard.browser.spec.ts).
 
 ## Components Using Route Params
 

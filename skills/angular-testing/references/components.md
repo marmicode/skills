@@ -203,7 +203,7 @@ it('searches recipes using the filter emitted by recipe filter', async () => {
 - `CUSTOM_ELEMENTS_SCHEMA` turns unknown children into inert custom elements; their bindings become element properties _(signal inputs included)_. If Angular still complains about unknown properties on directives, use `NO_ERRORS_SCHEMA`.
 - A shallow SUT may include more than one component: keep the children that belong to the same unit of behavior.
 
-Full example: [examples/recipe/recipe-search.shallow.browser.spec.ts](../examples/recipe/recipe-search.shallow.browser.spec.ts).
+Full example: [examples/recipe/recipe-search.shallow.browser.spec.ts](examples/recipe/recipe-search.shallow.browser.spec.ts).
 
 ## Host Components
 

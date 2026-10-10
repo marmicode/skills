@@ -68,7 +68,7 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 - Literal expectations: `toEqual(['Burger', 'Salad'])`, never values computed from the test data.
 - Assert only what the test is about: `expect.objectContaining(...)`, `toMatchObject(...)`.
 - Don't test the same behavior twice. If the setup triggers a spy, `mockClear()` it before acting.
-- Build non-trivial test data with object mothers (`recipeMother.withBasicInfo('Burger').build()`), not copy-pasted literals or shared fixtures. If none exists, create one like [examples/testing/recipe.mother.ts](examples/testing/recipe.mother.ts).
+- Build non-trivial test data with object mothers (`recipeMother.withBasicInfo('Burger').build()`), not copy-pasted literals or shared fixtures. If none exists, create one like [references/examples/testing/recipe.mother.ts](references/examples/testing/recipe.mother.ts).
 - Name suites after the SUT: `describe(MealPlanner, ...)`.
 - Name tests after one behavior, lowercase and present tense: `it('adds recipe to meal planner')`, not `it('should add ...')`.
 
@@ -158,7 +158,7 @@ function mountRecipeSearch() {
 }
 ```
 
-Complete, passing spec files live in [examples/](examples/): start with `examples/recipe/recipe-search.browser.spec.ts` (component), `examples/recipe/recipe-preview.browser.spec.ts` (inputs without a fixture) and `examples/meal-planner/meal-planner.spec.ts` (service with a fake). A service setup function is shown in [references/services.md](references/services.md#setup-functions).
+Complete, passing spec files live in [references/examples/](references/examples/): start with `references/examples/recipe/recipe-search.browser.spec.ts` (component), `references/examples/recipe/recipe-preview.browser.spec.ts` (inputs without a fixture) and `references/examples/meal-planner/meal-planner.spec.ts` (service with a fake). A service setup function is shown in [references/services.md](references/services.md#setup-functions).
 
 ## Reviewing Tests
 

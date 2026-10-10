@@ -76,7 +76,7 @@ describe(MealPlanner.name, () => {
 });
 ```
 
-Full example: [examples/meal-planner/meal-planner.spec.ts](../examples/meal-planner/meal-planner.spec.ts).
+Full example: [examples/meal-planner/meal-planner.spec.ts](examples/meal-planner/meal-planner.spec.ts).
 
 ## Errors
 
