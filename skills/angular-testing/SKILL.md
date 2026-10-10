@@ -1,9 +1,9 @@
 ---
-name: pragmatic-angular-testing
+name: angular-testing
 description: Writes, fixes and reviews Angular tests with Vitest following the Pragmatic Angular Testing approach — Narrow tests sized with the widest-Narrow-test rule, fakes instead of mocks, components mounted without fixtures and exercised through Vitest Browser Mode locators. Use when creating or editing *.spec.ts files in an Angular project, testing components, services, signals, guards or timers and debounce, replacing mocks or spies with fakes, or fixing slow or flaky Angular tests.
 ---
 
-# Pragmatic Angular Testing
+# Angular Testing
 
 Tests must be cheap to maintain, fast, and fail only when behavior changes.
 
@@ -82,25 +82,25 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 
 ## Don't → Do
 
-| Don't | Do |
-| --- | --- |
-| `vi.mock('./recipe-repository')` | `providers: [provideRecipeRepositoryFake()]` |
-| `vi.spyOn(repo, 'search').mockReturnValue(of(recipes))` | `TestBed.inject(RecipeRepositoryFake).setRecipes(recipes)` |
-| `{ provide: RecipeRepository, useValue: { search: vi.fn() } }` | a fake implementing the same interface |
-| `HttpTestingController` in tests of code that uses a repository | fake the repository that wraps `HttpClient` |
-| `beforeEach(() => { fixture = ...; component = ...; })` | `function mountRecipeSearch() { ...; return { ... }; }` |
-| `fixture.detectChanges()`, `await fixture.whenStable()` | `await expect.element(locator)...`, `await expect.poll(...)` |
-| `fixture.componentRef.setInput('recipe', burger)` | `bindings: [inputBinding('recipe', recipe)]`, then `recipe.set(...)` |
-| `fixture.componentInstance.filterChange.subscribe(...)` | `bindings: [outputBinding('filterChange', spy)]` |
-| `fixture.debugElement.query(By.css('h2'))` | `page.getByRole('heading', { name: 'Burger' })` |
-| `component.search('burger')`, `component.recipes()` | interact through the DOM, assert what the user sees |
-| `page.getByRole('button').first()` when order is irrelevant | `page.getByRole('article').filter({ hasText: 'Burger' }).getByRole('button', { name: 'ADD' })` |
-| `fireEvent` or Testing Library's `userEvent` in Browser Mode | `await locator.click()`, `await locator.fill('...')` |
-| `fakeAsync`, `tick()`, `waitForAsync` | Vitest fake timers with `*Async` APIs |
-| `TestBed.tick()` or `TestBed.flushEffects()` to make a test pass | `await expect.poll(...)`, `await expect.element(...)` |
-| `try { ... } catch (error) { expect(error)... }` | `toThrow(...)`, `rejects.toThrow(...)` |
-| `expect(result).toEqual(burger)` | `expect(result).toEqual(expect.objectContaining({ name: 'Burger' }))` |
-| `const burger = { id: '1', name: 'Burger', ... }` | `recipeMother.withBasicInfo('Burger').build()` |
+| Don't                                                            | Do                                                                                             |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `vi.mock('./recipe-repository')`                                 | `providers: [provideRecipeRepositoryFake()]`                                                   |
+| `vi.spyOn(repo, 'search').mockReturnValue(of(recipes))`          | `TestBed.inject(RecipeRepositoryFake).setRecipes(recipes)`                                     |
+| `{ provide: RecipeRepository, useValue: { search: vi.fn() } }`   | a fake implementing the same interface                                                         |
+| `HttpTestingController` in tests of code that uses a repository  | fake the repository that wraps `HttpClient`                                                    |
+| `beforeEach(() => { fixture = ...; component = ...; })`          | `function mountRecipeSearch() { ...; return { ... }; }`                                        |
+| `fixture.detectChanges()`, `await fixture.whenStable()`          | `await expect.element(locator)...`, `await expect.poll(...)`                                   |
+| `fixture.componentRef.setInput('recipe', burger)`                | `bindings: [inputBinding('recipe', recipe)]`, then `recipe.set(...)`                           |
+| `fixture.componentInstance.filterChange.subscribe(...)`          | `bindings: [outputBinding('filterChange', spy)]`                                               |
+| `fixture.debugElement.query(By.css('h2'))`                       | `page.getByRole('heading', { name: 'Burger' })`                                                |
+| `component.search('burger')`, `component.recipes()`              | interact through the DOM, assert what the user sees                                            |
+| `page.getByRole('button').first()` when order is irrelevant      | `page.getByRole('article').filter({ hasText: 'Burger' }).getByRole('button', { name: 'ADD' })` |
+| `fireEvent` or Testing Library's `userEvent` in Browser Mode     | `await locator.click()`, `await locator.fill('...')`                                           |
+| `fakeAsync`, `tick()`, `waitForAsync`                            | Vitest fake timers with `*Async` APIs                                                          |
+| `TestBed.tick()` or `TestBed.flushEffects()` to make a test pass | `await expect.poll(...)`, `await expect.element(...)`                                          |
+| `try { ... } catch (error) { expect(error)... }`                 | `toThrow(...)`, `rejects.toThrow(...)`                                                         |
+| `expect(result).toEqual(burger)`                                 | `expect(result).toEqual(expect.objectContaining({ name: 'Burger' }))`                          |
+| `const burger = { id: '1', name: 'Burger', ... }`                | `recipeMother.withBasicInfo('Burger').build()`                                                 |
 
 ## Examples
 
@@ -108,18 +108,19 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 
 ```ts
 describe(MealPlanner.name, () => {
-  it('adds recipes to meal repository', async () => {
+  it("adds recipes to meal repository", async () => {
     const { mealPlanner, mealRepoFake, burger } = createMealPlanner();
 
     await mealPlanner.addRecipe(burger);
 
     expect(mealRepoFake.getMealsSync()).toEqual([
-      expect.objectContaining({ name: 'Burger' }),
+      expect.objectContaining({ name: "Burger" }),
     ]);
   });
 
-  it('throws error if recipe is already present', async () => {
-    const { mealPlanner, burgerDuplicate } = await createMealPlannerWithBurger();
+  it("throws error if recipe is already present", async () => {
+    const { mealPlanner, burgerDuplicate } =
+      await createMealPlannerWithBurger();
 
     await expect(mealPlanner.addRecipe(burgerDuplicate)).rejects.toThrow(
       `Can't add recipe.`,
@@ -140,8 +141,8 @@ describe(MealPlanner.name, () => {
     return {
       mealPlanner: TestBed.inject(MealPlanner),
       mealRepoFake: TestBed.inject(MealRepositoryFake),
-      burger: recipeMother.withBasicInfo('Burger').build(),
-      burgerDuplicate: recipeMother.withBasicInfo('Burger').build(),
+      burger: recipeMother.withBasicInfo("Burger").build(),
+      burgerDuplicate: recipeMother.withBasicInfo("Burger").build(),
     };
   }
 });
@@ -150,15 +151,15 @@ describe(MealPlanner.name, () => {
 ### Component in Browser Mode
 
 ```ts
-import { page } from 'vitest/browser';
+import { page } from "vitest/browser";
 
 describe(RecipeSearch.name, () => {
-  it('adds recipe to meal planner', async () => {
+  it("adds recipe to meal planner", async () => {
     const { getAddButton, getMealPlannerRecipeNames } = mountRecipeSearch();
 
-    await getAddButton('Burger').click();
+    await getAddButton("Burger").click();
 
-    await expect.poll(() => getMealPlannerRecipeNames()).toEqual(['Burger']);
+    await expect.poll(() => getMealPlannerRecipeNames()).toEqual(["Burger"]);
   });
 
   function mountRecipeSearch() {
@@ -167,8 +168,8 @@ describe(RecipeSearch.name, () => {
     });
 
     TestBed.inject(RecipeRepositoryFake).setRecipes([
-      recipeMother.withBasicInfo('Burger').build(),
-      recipeMother.withBasicInfo('Salad').build(),
+      recipeMother.withBasicInfo("Burger").build(),
+      recipeMother.withBasicInfo("Salad").build(),
     ]);
 
     TestBed.createComponent(RecipeSearch);
@@ -178,9 +179,9 @@ describe(RecipeSearch.name, () => {
     return {
       getAddButton: (recipeName: string) =>
         page
-          .getByRole('article')
+          .getByRole("article")
           .filter({ hasText: recipeName })
-          .getByRole('button', { name: 'ADD' }),
+          .getByRole("button", { name: "ADD" }),
       getMealPlannerRecipeNames: () =>
         mealPlanner.recipes().map((recipe) => recipe.name),
     };
@@ -192,22 +193,22 @@ describe(RecipeSearch.name, () => {
 
 ```ts
 describe(RecipePreview.name, () => {
-  it('shows the new recipe when the input changes', async () => {
+  it("shows the new recipe when the input changes", async () => {
     const { recipe, recipeName } = mountRecipePreview();
 
-    recipe.set(recipeMother.withBasicInfo('Salad').build());
+    recipe.set(recipeMother.withBasicInfo("Salad").build());
 
-    await expect.element(recipeName).toHaveTextContent('Salad');
+    await expect.element(recipeName).toHaveTextContent("Salad");
   });
 
   function mountRecipePreview() {
-    const recipe = signal(recipeMother.withBasicInfo('Burger').build());
+    const recipe = signal(recipeMother.withBasicInfo("Burger").build());
 
     TestBed.createComponent(RecipePreview, {
-      bindings: [inputBinding('recipe', recipe)],
+      bindings: [inputBinding("recipe", recipe)],
     });
 
-    return { recipe, recipeName: page.getByRole('heading') };
+    return { recipe, recipeName: page.getByRole("heading") };
   }
 });
 ```
@@ -216,14 +217,14 @@ Complete, passing spec files live in [examples/](examples/): start with `example
 
 ## References
 
-| Read | When |
-| --- | --- |
-| [references/principles.md](references/principles.md) | Choosing what to test, how wide, what to fake; test design; test doubles |
-| [references/fakes.md](references/fakes.md) | Writing or providing a fake, simulating errors, contract tests, wrapping third-party APIs |
-| [references/services.md](references/services.md) | Services, signals, observables, effects, resources |
-| [references/components.md](references/components.md) | Mounting, bindings, locators, integration vs. shallow, host components |
-| [references/time.md](references/time.md) | Debounce, delays, timers, dates |
-| [references/router.md](references/router.md) | Guards, navigation, route params |
-| [references/vitest.md](references/vitest.md) | Vitest assertions, polling, spies, locators and actions |
-| [references/emulated-dom.md](references/emulated-dom.md) | The project runs tests in jsdom or happy-dom |
-| [references/setup.md](references/setup.md) | Zoneless test environment, Browser Mode configuration, Jest or Karma projects |
+| Read                                                     | When                                                                                      |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [references/principles.md](references/principles.md)     | Choosing what to test, how wide, what to fake; test design; test doubles                  |
+| [references/fakes.md](references/fakes.md)               | Writing or providing a fake, simulating errors, contract tests, wrapping third-party APIs |
+| [references/services.md](references/services.md)         | Services, signals, observables, effects, resources                                        |
+| [references/components.md](references/components.md)     | Mounting, bindings, locators, integration vs. shallow, host components                    |
+| [references/time.md](references/time.md)                 | Debounce, delays, timers, dates                                                           |
+| [references/router.md](references/router.md)             | Guards, navigation, route params                                                          |
+| [references/vitest.md](references/vitest.md)             | Vitest assertions, polling, spies, locators and actions                                   |
+| [references/emulated-dom.md](references/emulated-dom.md) | The project runs tests in jsdom or happy-dom                                              |
+| [references/setup.md](references/setup.md)               | Zoneless test environment, Browser Mode configuration, Jest or Karma projects             |
