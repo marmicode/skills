@@ -16,14 +16,14 @@ Framework-agnostic principles behind this skill. Code samples use Vitest.
 
 Forget "unit" vs. "integration": nobody agrees on what a unit is. Categorize tests by their properties.
 
-| Category | Properties |
-| --- | --- |
+| Category      | Properties                                                                                   |
+| ------------- | -------------------------------------------------------------------------------------------- |
 | 🐜 **Narrow** | ⚡️ Fast _(< ~100ms on average)_ · 🏝️ Easy to isolate and parallelize · 😌 Low cognitive load |
-| 🐘 **Wide** | Missing at least one Narrow property: slow, hard to isolate, or hard to diagnose |
+| 🐘 **Wide**   | Missing at least one Narrow property: slow, hard to isolate, or hard to diagnose             |
 
 - **Low cognitive load is the cornerstone.** Anyone — maintainers, contributors, future maintainers, agents — should easily locate the root cause of a failing test.
 - A smaller System Under Test (SUT) does not necessarily mean a lower cognitive load: over-narrow tests add setup and test double orchestration.
-- A test using a database is still Narrow if each test gets its own fast, isolated instance _(e.g. an in-memory server)_. It is Wide if tests share data or the setup is slow.
+- A test using a database is still Narrow if each test gets its own fast, isolated instance _(e.g. `mongodb-memory-server`)_. It is Wide if tests share data or the setup is slow.
 - Wide tests are more symmetric to production, predictive, and structure-insensitive. They are also slower, harder to isolate, harder to diagnose, and more prone to flakiness.
 - Fast and precise feedback enables baby steps. When many slow, wide cases overlap, fixing one case tends to break another; turning each case into narrower ~5ms tests lets you — or an agent — iterate on a single case at a time.
 
@@ -53,11 +53,11 @@ A ──▶ B ──▶ D
 └───▶ C
 ```
 
-| Situation | Exercised code | Fakes |
-| --- | --- | --- |
-| Everything is fast and simple | A, B, C, D | none |
-| `D` is slow or remote _(e.g. a repository)_ | A, B, C | `D` |
-| `B` and `C` are too complex | A | `B`, `C` |
+| Situation                                   | Exercised code | Fakes    |
+| ------------------------------------------- | -------------- | -------- |
+| Everything is fast and simple               | A, B, C, D     | none     |
+| `D` is slow or remote _(e.g. a repository)_ | A, B, C        | `D`      |
+| `B` and `C` are too complex                 | A              | `B`, `C` |
 
 Even when `B` and `C` run for real, the SUT is still `A`: `B` may already be tested with a fake of `D`, and `C` separately. Typical mapping: `A` = component, `B` = orchestration service, `C` = store, `D` = repository.
 
@@ -74,14 +74,14 @@ Cognitive load is subjective: the right width depends on the team's experience, 
 
 ## Test Doubles
 
-| Test double | What it is | Use |
-| --- | --- | --- |
-| **Fake** | A simplified, working implementation _(e.g. in-memory)_ with testing helpers | ✅ Default |
-| **Spy** | Records calls for later verification | Outputs and callbacks; indirect outputs only when a fake is not enough |
-| **Stub** | Returns hardcoded values | ❌ Avoid |
-| **Spying stub** _("mock" in JS slang)_ | Stub + spy, e.g. `vi.fn().mockReturnValue(...)` | ❌ Avoid |
-| **Mock** | Pre-programmed with expectations before the SUT runs | ❌ Avoid |
-| **Dummy** | A placeholder that should never be used | ❌ Avoid |
+| Test double                            | What it is                                                                   | Use                                                                    |
+| -------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Fake**                               | A simplified, working implementation _(e.g. in-memory)_ with testing helpers | ✅ Default                                                             |
+| **Spy**                                | Records calls for later verification                                         | Outputs and callbacks; indirect outputs only when a fake is not enough |
+| **Stub**                               | Returns hardcoded values                                                     | ❌ Avoid                                                               |
+| **Spying stub** _("mock" in JS slang)_ | Stub + spy, e.g. `vi.fn().mockReturnValue(...)`                              | ❌ Avoid                                                               |
+| **Mock**                               | Pre-programmed with expectations before the SUT runs                         | ❌ Avoid                                                               |
+| **Dummy**                              | A placeholder that should never be used                                      | ❌ Avoid                                                               |
 
 Why fakes win:
 
@@ -110,7 +110,7 @@ Fake guidelines:
 - **Setup functions over `beforeEach`.** Hooks force `let` variables, hide what each test starts with, and get worse with nesting. A setup function returns everything the test needs:
 
   ```ts
-  it('adds two numbers', () => {
+  it("adds two numbers", () => {
     const { calculator } = createCalculator();
 
     expect(calculator.add(1, 2)).toBe(3);
@@ -127,7 +127,9 @@ Fake guidelines:
 - **Precise assertions**: check only what the test is about.
 
   ```ts
-  expect(cart.getItems()).toEqual([expect.objectContaining({ name: 'Burger' })]);
+  expect(cart.getItems()).toEqual([
+    expect.objectContaining({ name: "Burger" }),
+  ]);
   ```
 
 - **Literal expectations**: write the expected values, don't compute them from the test data or from the variables passed to the SUT. The SUT might even mutate them.
