@@ -43,8 +43,8 @@ Any other test is a **Wide test**.
 Aim for the **widest test that is still Narrow**:
 
 - Use real implementations by default: real child components, real services, real stores.
-- Replace a dependency only when it makes the test slow, non-deterministic, stateful across tests, or too complex to reason about. That is usually an adapter to the outside world: HTTP repositories _(remote services that are slow, unpredictable, shared, rate-limited or need authentication)_, storage, browser APIs.
-- Replace it with a **fake**, at the boundary of code you own.
+- Replace a dependency only when it makes the test slow, non-deterministic, stateful across tests, or too complex to reason about. That is usually an adapter to the outside world: HTTP repositories _(remote services that are slow, unpredictable, shared, rate-limited or need authentication)_, your wrappers around storage or browser APIs.
+- Replace it with a **fake** of code you own: your adapter _(e.g. `RecipeRepository`)_, never the third-party API behind it _(`HttpClient`, an SDK)_.
 - Narrow down further (more fakes, shallow rendering) only when the exercised code becomes too complex, needs too many test doubles, or is widely shared.
 
 Read [references/principles.md](references/principles.md) when deciding what to fake or how wide a test should be.
