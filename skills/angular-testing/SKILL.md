@@ -97,7 +97,7 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 | `vi.spyOn(repo, 'search').mockReturnValue(of(recipes))`                | `TestBed.inject(RecipeRepositoryFake).configure({recipes})`                                    |
 | `{ provide: RecipeRepository, useValue: { search: vi.fn() } }`         | a fake implementing the same interface                                                         |
 | `MockComponent(RecipePreview)`, `MockProvider(MealPlanner)` (ng-mocks) | real children; `CUSTOM_ELEMENTS_SCHEMA` for a shallow test; a fake for adapters                |
-| `HttpTestingController` in tests of code that uses a repository        | fake the repository that wraps `HttpClient`                                                    |
+| a fake server or `HttpTestingController` where a repository exists    | fake the repository that wraps `HttpClient`                                                    |
 | `beforeEach(() => { fixture = ...; component = ...; })`                | `function mountRecipeSearch() { ...; return { ... }; }`                                        |
 | `fixture.detectChanges()`, `await fixture.whenStable()`                | `await expect.element(locator)...`, `await expect.poll(...)`                                   |
 | `fixture.componentRef.setInput('recipe', burger)`                      | `bindings: [inputBinding('recipe', recipe)]`, then `recipe.set(...)`                           |
@@ -166,7 +166,7 @@ Complete, passing spec files live in [references/examples/](references/examples/
 Review tests against the rules above and report findings; don't rewrite unless asked. For each finding give the file and line, the rule, why it matters, and the smallest fix. Order by impact:
 
 1. **False confidence**: non-awaited assertions or actions; retrying assertions on negative or unchanged expectations without a positive counterpart; assertions inside `catch`, callbacks or conditionals; stubs returning `undefined`; `try/catch`.
-2. **Coupling to implementation**: `vi.mock()`, `vi.spyOn(...).mockReturnValue`, `useValue: { method: vi.fn() }`, `HttpTestingController` where a repository exists, `componentInstance`, private members, CSS selectors, `nth()` / `first()` when order is irrelevant.
+2. **Coupling to implementation**: `vi.mock()`, `vi.spyOn(...).mockReturnValue`, `useValue: { method: vi.fn() }`, a fake server or `HttpTestingController` where a repository exists, `componentInstance`, private members, CSS selectors, `nth()` / `first()` when order is irrelevant.
 3. **Synchronization hacks**: `detectChanges()`, `whenStable()`, `TestBed.tick()`, `fakeAsync` / `tick()`, sleeps, raised timeouts.
 4. **Design**: `beforeEach` + `let`, flags on setup functions, conditionals or loops, computed expectations, copy-pasted literals instead of object mothers, overlapping tests, `it('should ...')` names.
 5. **Width**: tests that are not Narrow (real HTTP, shared state, > ~100ms) or over-narrow (many test doubles, renderless component tests).

@@ -8,12 +8,11 @@ Why fakes beat stubs, spies and mocks: [principles.md](principles.md#test-double
 2. [Providing and Configuring a Fake](#providing-and-configuring-a-fake)
 3. [Arranging Before Instantiation](#arranging-before-instantiation)
 4. [Simulating Errors](#simulating-errors)
-5. [Faking Browser APIs](#faking-browser-apis)
-6. [Wrapping What You Don't Own](#wrapping-what-you-dont-own)
-7. [Contract Tests](#contract-tests)
-8. [Testing the Adapters Themselves](#testing-the-adapters-themselves)
-9. [When There Is No Repository to Fake](#when-there-is-no-repository-to-fake)
-10. [Where Fakes Live](#where-fakes-live)
+5. [Wrapping What You Don't Own](#wrapping-what-you-dont-own)
+6. [Contract Tests](#contract-tests)
+7. [Testing the Adapters Themselves](#testing-the-adapters-themselves)
+8. [When There Is No Repository to Fake](#when-there-is-no-repository-to-fake)
+9. [Where Fakes Live](#where-fakes-live)
 
 ## Anatomy of a Fake
 
@@ -41,11 +40,13 @@ export class RecipeRepository implements RecipeRepositoryDef {
 export class RecipeRepositoryFake implements RecipeRepositoryDef {
   private _recipes: Recipe[] = [];
 
-  search({
-    keywords,
-    maxIngredientCount,
-    maxStepCount,
-  }: RecipeFilterCriteria = createDefaultRecipeFilterCriteria()): Observable<Recipe[]> {
+  search(
+    {
+      keywords,
+      maxIngredientCount,
+      maxStepCount,
+    }: RecipeFilterCriteria = createDefaultRecipeFilterCriteria(),
+  ): Observable<Recipe[]> {
     return defer(() => {
       const recipes = this._recipes.filter((recipe) => {
         const conditions = [
@@ -92,7 +93,7 @@ TestBed.configureTestingModule({
 });
 
 TestBed.inject(RecipeRepositoryFake).setRecipes([
-  recipeMother.withBasicInfo('Burger').build(),
+  recipeMother.withBasicInfo("Burger").build(),
 ]);
 ```
 
@@ -102,7 +103,7 @@ TestBed.inject(RecipeRepositoryFake).setRecipes([
 
   ```ts
   expect(mealRepoFake.getMealsSync()).toEqual([
-    expect.objectContaining({ name: 'Burger' }),
+    expect.objectContaining({ name: "Burger" }),
   ]);
   ```
 
@@ -111,14 +112,14 @@ TestBed.inject(RecipeRepositoryFake).setRecipes([
 When the service reads its dependencies at construction time, return a getter so the test can arrange first. Arrange through the fake's testing helpers (`setMeals()`): its lazy API (`addMeal()`) does nothing until someone subscribes.
 
 ```ts
-it('fetches recipes from meal repository', async () => {
+it("fetches recipes from meal repository", async () => {
   const { getMealPlanner, mealRepoFake, burger } = setUpMealPlanner();
 
   mealRepoFake.setMeals([burger]);
 
   const mealPlanner = getMealPlanner();
   expect(mealPlanner.recipes()).toEqual([
-    expect.objectContaining({ name: 'Burger' }),
+    expect.objectContaining({ name: "Burger" }),
   ]);
 });
 
@@ -135,7 +136,7 @@ function setUpMealPlanner() {
   return {
     getMealPlanner: () => TestBed.inject(MealPlanner),
     mealRepoFake: TestBed.inject(MealRepositoryFake),
-    burger: recipeMother.withBasicInfo('Burger').build(),
+    burger: recipeMother.withBasicInfo("Burger").build(),
   };
 }
 ```
@@ -167,48 +168,12 @@ export class CookbookRepositoryFake implements CookbookRepositoryDef {
 await typeKeywords(`Ottolenghi ${CookbookRepositoryFake.INVALID_TOKEN}`);
 ```
 
-## Faking Browser APIs
-
-Fakes are not only for the network. Turn the browser API into an injectable abstraction whose default implementation is the real API:
-
-```ts title="local-storage.ts"
-@Service({
-  factory: () => localStorage,
-})
-export abstract class LocalStorage {
-  abstract getItem(key: string): string | null;
-  abstract setItem(key: string, value: string): void;
-}
-```
-
-```ts title="local-storage.fake.ts"
-@Service({ autoProvided: false })
-export class LocalStorageFake implements LocalStorage {
-  private _map = new Map<string, string>();
-
-  getItem(key: string) {
-    return this._map.get(key) ?? null;
-  }
-
-  setItem(key: string, value: string) {
-    this._map.set(key, value);
-  }
-}
-
-export function provideLocalStorageFake(): EnvironmentProviders {
-  return makeEnvironmentProviders([
-    LocalStorageFake,
-    { provide: LocalStorage, useExisting: LocalStorageFake },
-  ]);
-}
-```
-
 ## Wrapping What You Don't Own
 
 Never fake Angular Material, CDK, Router, `HttpClient` or third-party SDKs directly. In order of preference:
 
 1. **Collaborate with the real thing**: open the real `MatDialog`, interact with it through `page`, and assert the outcome. This is usually the widest Narrow test.
-2. **Wrap it in your own abstraction** when the real thing makes the test too complex or slow, then fake your abstraction. Keep the abstraction tailored to your needs, not a copy of the library's API.
+2. **Wrap it in your own abstraction** when the real thing makes the test too complex or slow, then fake your abstraction. Keep the abstraction tailored to your needs, not a copy of the library's API. When the code calls `HttpClient` and there is no such abstraction yet, put a fake server in front of the real client — see [When There Is No Repository to Fake](#when-there-is-no-repository-to-fake).
 
 ```ts title="dialog.ts"
 export interface DialogRef<RESULT> {
@@ -240,7 +205,7 @@ export class DialogFake implements DialogDef {
 
   open<RESULT>(component: Type<unknown>): DialogRef<RESULT> {
     if (this._openDialog) {
-      throw new Error('DialogFake: a dialog is already open.');
+      throw new Error("DialogFake: a dialog is already open.");
     }
     const closed$ = new Subject<RESULT | undefined>();
     this._openDialog = {
@@ -259,7 +224,7 @@ export class DialogFake implements DialogDef {
 
   close(result?: unknown) {
     if (!this._openDialog) {
-      throw new Error('DialogFake: no dialog is open.');
+      throw new Error("DialogFake: no dialog is open.");
     }
     const { close } = this._openDialog;
     this._openDialog = undefined;
@@ -276,16 +241,18 @@ export function provideDialogFake(): EnvironmentProviders {
 ```
 
 ```ts
-it('deletes recipe once confirmed', async () => {
+it("deletes recipe once confirmed", async () => {
   const { dialogFake } = mountDeleteRecipeButton();
 
-  await page.getByRole('button', { name: 'Delete' }).click();
+  await page.getByRole("button", { name: "Delete" }).click();
 
   expect(dialogFake.getOpenDialogSync()).toBe(ConfirmDeletion);
 
   dialogFake.close(true);
 
-  await expect.element(page.getByRole('paragraph')).toHaveTextContent('Recipe deleted.');
+  await expect
+    .element(page.getByRole("paragraph"))
+    .toHaveTextContent("Recipe deleted.");
 });
 ```
 
@@ -299,22 +266,22 @@ A contract test runs the same suite against the real implementation and the fake
 export function verifyMealRepositoryContract(
   createMealRepository: () => { mealRepo: MealRepositoryDef },
 ) {
-  const burger = recipeMother.withBasicInfo('Burger').build();
-  const salad = recipeMother.withBasicInfo('Salad').build();
+  const burger = recipeMother.withBasicInfo("Burger").build();
+  const salad = recipeMother.withBasicInfo("Salad").build();
 
-  it('adds recipes', async () => {
+  it("adds recipes", async () => {
     const { mealRepo } = createMealRepository();
 
     await lastValueFrom(mealRepo.addMeal(burger));
     await lastValueFrom(mealRepo.addMeal(salad));
 
     expect(await lastValueFrom(mealRepo.getMeals())).toEqual([
-      expect.objectContaining({ name: 'Burger' }),
-      expect.objectContaining({ name: 'Salad' }),
+      expect.objectContaining({ name: "Burger" }),
+      expect.objectContaining({ name: "Salad" }),
     ]);
   });
 
-  it('returns empty array initially', async () => {
+  it("returns empty array initially", async () => {
     const { mealRepo } = createMealRepository();
 
     expect(await lastValueFrom(mealRepo.getMeals())).toEqual([]);
@@ -355,37 +322,11 @@ Most tests use the fake. The real adapter still needs coverage:
 Brownfield code often calls `HttpClient` _(or `httpResource()` / `resource()` with a fetcher)_ straight from a service or component, so there is no boundary you own to fake. In order of preference:
 
 1. **Extract a repository** _(`XRepository` + `XRepositoryDef`)_ around the HTTP calls and fake that, if the task allows touching production code. Otherwise, suggest it at the end.
-2. **Fake the transport** with `provideHttpClientTesting()` + `HttpTestingController`, as the documented exception. Keep the test about the behavior the SUT exposes, flush one response per test, and verify no request is left pending:
+2. **Stand up a fake server** and keep the real `HttpClient` _(the same `provideHttpClient()` options the application uses)_. The fake answers the request the application actually sends, so `HttpClient`, `httpResource()`, and a `resource()` loader that calls `fetch` all hit it. MSW is the usual way; a real fake server — a small HTTP server the test owns — is the other. Keep the test about the behavior the SUT exposes, and arrange the response before the SUT runs.
 
-   ```ts
-   function createUserService() {
-     TestBed.configureTestingModule({
-       providers: [provideHttpClient(), provideHttpClientTesting()],
-     });
+   A fake server still names the method and the URL, which is why step 1 comes first. `HttpTestingController` is the wrong tool here: it replaces `HttpClient`'s backend instead of answering the network.
 
-     const httpTesting = TestBed.inject(HttpTestingController);
-     onTestFinished(() => httpTesting.verify());
-
-     return {
-       userService: TestBed.inject(UserService),
-       respondWithUser: (user: User) =>
-         httpTesting.expectOne({ method: 'GET', url: '/api/me' }).flush(user),
-     };
-   }
-
-   it('loads the current user', async () => {
-     const { userService, respondWithUser } = createUserService();
-
-     const user = userService.load();
-     respondWithUser({ name: 'Ada' });
-
-     await expect.poll(() => userService.user()).toEqual(expect.objectContaining({ name: 'Ada' }));
-   });
-   ```
-
-   This couples the test to the request's method and URL, which is why step 1 comes first.
-
-With `httpResource()` or `resource()`, the boundary is the same: a repository that returns the resource, or the transport when no repository exists. The component or service that reads the resource is then tested through the DOM or `expect.poll` as usual.
+With `httpResource()` or `resource()`, the boundary is the same: a repository that returns the resource, or the fake server when no repository exists. The component or service that reads the resource is then tested through the DOM or `expect.poll` as usual.
 
 ## Where Fakes Live
 
