@@ -8,7 +8,7 @@
 
 ## Rules
 
-- Use the real router: `provideRouter(routes)` and `RouterTestingHarness`. Never stub `Router` or `ActivatedRoute`.
+- Use the real router: `provideRouter(routes)` and `RouterTestingHarness`. Never stub or mock `Router` or `ActivatedRoute`.
 - Declare test-only routes with a tiny `Dummy` component that displays its title, rather than loading real pages.
 - Assert both the URL and what the user sees. Use `expect.soft()` for the URL so both checks are reported.
 - Arrange state through the real services _(e.g. `auth.signIn()`)_, or fakes for adapters.
@@ -18,24 +18,26 @@
 
 ```ts
 describe(isSignedInGuard.name, () => {
-  it('allows access to the route if user is signed in', async () => {
+  it("allows access to the route if user is signed in", async () => {
     const { auth, getCurrentUrl, navigate } = await mountRoutes();
 
     auth.signIn();
 
-    await navigate('/meal-plan');
+    await navigate("/meal-plan");
 
-    expect.soft(getCurrentUrl()).toBe('/meal-plan');
-    await expect.element(page.getByRole('heading')).toHaveTextContent('Meal Plan');
+    expect.soft(getCurrentUrl()).toBe("/meal-plan");
+    await expect
+      .element(page.getByRole("heading"))
+      .toHaveTextContent("Meal Plan");
   });
 
-  it('redirects to /search if user is not signed in and first visit', async () => {
+  it("redirects to /search if user is not signed in and first visit", async () => {
     const { getCurrentUrl, navigate } = await mountRoutes();
 
-    await navigate('/meal-plan');
+    await navigate("/meal-plan");
 
-    expect.soft(getCurrentUrl()).toBe('/search');
-    await expect.element(page.getByRole('heading')).toHaveTextContent('Search');
+    expect.soft(getCurrentUrl()).toBe("/search");
+    await expect.element(page.getByRole("heading")).toHaveTextContent("Search");
   });
 
   async function mountRoutes() {
@@ -43,12 +45,12 @@ describe(isSignedInGuard.name, () => {
       providers: [
         provideRouter(
           [
-            { path: 'landing', component: Dummy, data: { title: 'Landing' } },
-            { path: 'search', component: Dummy, data: { title: 'Search' } },
+            { path: "landing", component: Dummy, data: { title: "Landing" } },
+            { path: "search", component: Dummy, data: { title: "Search" } },
             {
-              path: 'meal-plan',
+              path: "meal-plan",
               component: Dummy,
-              data: { title: 'Meal Plan' },
+              data: { title: "Meal Plan" },
               canActivate: [isSignedInGuard],
             },
           ],
@@ -63,7 +65,7 @@ describe(isSignedInGuard.name, () => {
     return {
       auth: TestBed.inject(Auth),
       getCurrentUrl: () => TestBed.inject(Router).url,
-      navigate: (url: '/landing' | '/search' | '/meal-plan') =>
+      navigate: (url: "/landing" | "/search" | "/meal-plan") =>
         harness.navigateByUrl(url),
     };
   }
