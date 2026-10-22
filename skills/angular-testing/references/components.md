@@ -15,11 +15,11 @@
 
 ## Choosing the Test Flavor
 
-| Flavor | What it does | When |
-| --- | --- | --- |
-| **Integration** | Renders the component with its real children | ✅ Default. Presentational components, and containers that stay simple enough |
-| **Shallow** | Renders the component without its children, checks what it passes to their inputs and how it reacts to their outputs | To narrow down: children are slow, complex, widely shared, not implemented yet, or make failures hard to diagnose |
-| **Renderless** _("isolated")_ | Injects the component class like a service and calls its methods | ❌ Avoid |
+| Flavor                        | What it does                                                                                                         | When                                                                                                                              |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Integration**               | Renders the component with its real children                                                                         | ✅ Default. Presentational components, and containers that stay simple enough                                                     |
+| **Shallow**                   | Renders the component without its children, checks what it passes to their inputs and how it reacts to their outputs | ⚠️ Last resort, to narrow down: children are slow, complex, widely shared, not implemented yet, or make failures hard to diagnose |
+| **Renderless** _("isolated")_ | Injects the component class like a service and calls its methods                                                     | ❌ Avoid                                                                                                                          |
 
 - **Integration** tests are the most meaningful _(closest to the user)_ but the slowest, and changes in shared children can break many of them.
 - **Shallow** tests are fast and precise, and insensitive to the children's internals. They are coupled to the parent ↔ children interface _(inputs and outputs)_, so choose that boundary wisely.
@@ -36,8 +36,8 @@ function mountRecipeSearch() {
 
   /* 2. Arrange the fakes. */
   TestBed.inject(RecipeRepositoryFake).setRecipes([
-    recipeMother.withBasicInfo('Burger').build(),
-    recipeMother.withBasicInfo('Salad').build(),
+    recipeMother.withBasicInfo("Burger").build(),
+    recipeMother.withBasicInfo("Salad").build(),
   ]);
 
   /* 3. Mount. The returned fixture is deliberately ignored. */
@@ -45,7 +45,7 @@ function mountRecipeSearch() {
 
   /* 4. Return locators and gloves. */
   return {
-    recipeNames: page.getByRole('heading'),
+    recipeNames: page.getByRole("heading"),
   };
 }
 ```
@@ -64,21 +64,21 @@ function mountRecipeSearch() {
 
 ```ts
 function mountRecipePreview() {
-  const recipe = signal(recipeMother.withBasicInfo('Burger').build());
+  const recipe = signal(recipeMother.withBasicInfo("Burger").build());
 
   TestBed.createComponent(RecipePreview, {
-    bindings: [inputBinding('recipe', recipe)],
+    bindings: [inputBinding("recipe", recipe)],
   });
 
-  return { recipe, recipeName: page.getByRole('heading') };
+  return { recipe, recipeName: page.getByRole("heading") };
 }
 
-it('shows the new recipe when the input changes', async () => {
+it("shows the new recipe when the input changes", async () => {
   const { recipe, recipeName } = mountRecipePreview();
 
-  recipe.set(recipeMother.withBasicInfo('Salad').build());
+  recipe.set(recipeMother.withBasicInfo("Salad").build());
 
-  await expect.element(recipeName).toHaveTextContent('Salad');
+  await expect.element(recipeName).toHaveTextContent("Salad");
 });
 ```
 
@@ -92,13 +92,17 @@ it('shows the new recipe when the input changes', async () => {
 const filterChangeSpy = vi.fn<(filter: RecipeFilterCriteria) => void>();
 
 TestBed.createComponent(RecipeFilter, {
-  bindings: [outputBinding<RecipeFilterCriteria>('filterChange', filterChangeSpy)],
+  bindings: [
+    outputBinding<RecipeFilterCriteria>("filterChange", filterChangeSpy),
+  ],
 });
 
-await page.getByLabelText('Max Ingredients').fill('3');
+await page.getByLabelText("Max Ingredients").fill("3");
 
 expect(filterChangeSpy).toHaveBeenLastCalledWith(
-  expect.objectContaining({ maxIngredientCount: 3 } satisfies Partial<RecipeFilterCriteria>),
+  expect.objectContaining({
+    maxIngredientCount: 3,
+  } satisfies Partial<RecipeFilterCriteria>),
 );
 ```
 
@@ -110,12 +114,12 @@ If the output is delayed _(e.g. debounced)_, control time first: see [time.md](t
 const filter = signal(createDefaultRecipeFilterCriteria());
 
 TestBed.createComponent(RecipeFilter, {
-  bindings: [twoWayBinding('filter', filter)],
+  bindings: [twoWayBinding("filter", filter)],
 });
 
-await page.getByLabelText('Keywords').fill('Burger');
+await page.getByLabelText("Keywords").fill("Burger");
 
-await expect.poll(() => filter()).toMatchObject({ keywords: 'Burger' });
+await expect.poll(() => filter()).toMatchObject({ keywords: "Burger" });
 ```
 
 Inputs, outputs and models are imported from `@angular/core` (`inputBinding`, `outputBinding`, `twoWayBinding`).
@@ -128,9 +132,9 @@ Use the `page` API from `vitest/browser`, in this order of preference: `getByRol
 
   ```ts
   page
-    .getByRole('article')
-    .filter({ hasText: 'Burger' })
-    .getByRole('button', { name: 'ADD' });
+    .getByRole("article")
+    .filter({ hasText: "Burger" })
+    .getByRole("button", { name: "ADD" });
   ```
 
 - Don't locate elements with CSS classes or component selectors.
@@ -146,7 +150,7 @@ Use the `page` API from `vitest/browser`, in this order of preference: `getByRol
 
 - What the user sees: `await expect.element(locator).toHaveTextContent(...)`, `.toBeDisabled()`, `.toBeVisible()`, `.toHaveLength(n)`.
 - Side effects on application state: `await expect.poll(() => getMealPlannerRecipeNames()).toEqual(['Burger'])`. Don't render another page _(e.g. the meal plan)_ to verify a side effect: the test would become too wide.
-- Outputs: assert on the spy after the action _(after advancing time with manual fake timers)_.
+- Outputs: assert on the spy after the action.
 
 ## Shallow Tests
 
@@ -166,8 +170,8 @@ function mountRecipeSearch() {
   });
 
   TestBed.inject(RecipeRepositoryFake).setRecipes([
-    recipeMother.withBasicInfo('Burger').build(),
-    recipeMother.withBasicInfo('Salad').build(),
+    recipeMother.withBasicInfo("Burger").build(),
+    recipeMother.withBasicInfo("Salad").build(),
   ]);
 
   TestBed.createComponent(RecipeSearch);
@@ -176,25 +180,29 @@ function mountRecipeSearch() {
     /* Read what the parent passes to the children's inputs. */
     getRecipePreviewNames: () =>
       page
-        .getByTestId('recipe-preview')
+        .getByTestId("recipe-preview")
         .elements()
-        .map((el) => new DebugElement(el).properties['recipe'].name),
+        .map((el) => new DebugElement(el).properties["recipe"].name),
     /* Simulate a child's output. */
     updateFilter: async (filter: RecipeFilterCriteria) => {
       const filterEl = await vi.waitFor(() =>
-        page.getByTestId('recipe-filter').element(),
+        page.getByTestId("recipe-filter").element(),
       );
-      new DebugElement(filterEl).triggerEventHandler('filterChange', filter);
+      new DebugElement(filterEl).triggerEventHandler("filterChange", filter);
     },
   };
 }
 
-it('searches recipes using the filter emitted by recipe filter', async () => {
+it("searches recipes using the filter emitted by recipe filter", async () => {
   const { getRecipePreviewNames, updateFilter } = mountRecipeSearch();
 
-  await updateFilter({ keywords: 'Burg', maxIngredientCount: null, maxStepCount: null });
+  await updateFilter({
+    keywords: "Burg",
+    maxIngredientCount: null,
+    maxStepCount: null,
+  });
 
-  await expect.poll(() => getRecipePreviewNames()).toEqual(['Burger']);
+  await expect.poll(() => getRecipePreviewNames()).toEqual(["Burger"]);
 });
 ```
 
@@ -217,14 +225,14 @@ For content projection, directives, or anything that needs a parent template, de
   </wm-recipe-preview>`,
 })
 class RecipePreviewHost {
-  burger = recipeMother.withBasicInfo('Burger').build();
+  burger = recipeMother.withBasicInfo("Burger").build();
 }
 
-it('projects content', async () => {
+it("projects content", async () => {
   TestBed.createComponent(RecipePreviewHost);
 
   await expect
-    .element(page.getByRole('article').getByRole('button', { name: 'Cook' }))
+    .element(page.getByRole("article").getByRole("button", { name: "Cook" }))
     .toBeVisible();
 });
 ```
