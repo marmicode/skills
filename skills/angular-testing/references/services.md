@@ -26,7 +26,7 @@
 ## Setup Functions
 
 ```ts
-describe(MealPlanner.name, () => {
+describe(MealPlanner, () => {
   it("adds recipes", async () => {
     const { mealPlanner, burger, salad } = createMealPlanner();
 

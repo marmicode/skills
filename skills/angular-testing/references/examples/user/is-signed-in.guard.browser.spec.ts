@@ -1,50 +1,50 @@
-import { Component, input } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { Component, input } from "@angular/core";
+import { TestBed } from "@angular/core/testing";
 import {
   provideRouter,
   Router,
   withComponentInputBinding,
-} from '@angular/router';
-import { RouterTestingHarness } from '@angular/router/testing';
-import { page } from 'vitest/browser';
-import { recipeRouterHelper } from '../recipe/recipe.router-helper';
-import { Auth } from './auth';
-import { isSignedInGuard } from './is-signed-in.guard';
+} from "@angular/router";
+import { RouterTestingHarness } from "@angular/router/testing";
+import { page } from "vitest/browser";
+import { recipeRouterHelper } from "../recipe/recipe.router-helper";
+import { Auth } from "./auth";
+import { isSignedInGuard } from "./is-signed-in.guard";
 
-describe(isSignedInGuard.name, () => {
-  it('allows access to the route if user is signed in', async () => {
+describe(isSignedInGuard, () => {
+  it("allows access to the route if user is signed in", async () => {
     const { auth, getCurrentUrl, navigate } = await mountRoutes();
 
     auth.signIn();
 
-    await navigate('/meal-plan');
+    await navigate("/meal-plan");
 
-    expect.soft(getCurrentUrl()).toBe('/meal-plan');
+    expect.soft(getCurrentUrl()).toBe("/meal-plan");
     await expect
-      .element(page.getByRole('heading'))
-      .toHaveTextContent('Meal Plan');
+      .element(page.getByRole("heading"))
+      .toHaveTextContent("Meal Plan");
   });
 
-  it('prevents navigation if user is not signed in and has already navigated', async () => {
+  it("prevents navigation if user is not signed in and has already navigated", async () => {
     const { getCurrentUrl, navigate } = await mountRoutes();
 
-    await navigate('/landing');
+    await navigate("/landing");
 
-    await navigate('/meal-plan');
+    await navigate("/meal-plan");
 
-    expect.soft(getCurrentUrl()).toBe('/landing');
+    expect.soft(getCurrentUrl()).toBe("/landing");
     await expect
-      .element(page.getByRole('heading'))
-      .toHaveTextContent('Landing');
+      .element(page.getByRole("heading"))
+      .toHaveTextContent("Landing");
   });
 
-  it('redirects to /search if user is not signed in and first visit', async () => {
+  it("redirects to /search if user is not signed in and first visit", async () => {
     const { getCurrentUrl, navigate } = await mountRoutes();
 
-    await navigate('/meal-plan');
+    await navigate("/meal-plan");
 
-    expect.soft(getCurrentUrl()).toBe('/search');
-    await expect.element(page.getByRole('heading')).toHaveTextContent('Search');
+    expect.soft(getCurrentUrl()).toBe("/search");
+    await expect.element(page.getByRole("heading")).toHaveTextContent("Search");
   });
 
   async function mountRoutes() {
@@ -53,19 +53,19 @@ describe(isSignedInGuard.name, () => {
         provideRouter(
           [
             {
-              path: 'landing',
+              path: "landing",
               component: Dummy,
-              data: { title: 'Landing' },
+              data: { title: "Landing" },
             },
             {
               path: recipeRouterHelper.SEARCH_PATH,
               component: Dummy,
-              data: { title: 'Search' },
+              data: { title: "Search" },
             },
             {
-              path: 'meal-plan',
+              path: "meal-plan",
               component: Dummy,
-              data: { title: 'Meal Plan' },
+              data: { title: "Meal Plan" },
               canActivate: [isSignedInGuard],
             },
           ],
@@ -82,9 +82,9 @@ describe(isSignedInGuard.name, () => {
       getCurrentUrl: () => TestBed.inject(Router).url,
       navigate: (
         url:
-          | '/landing'
+          | "/landing"
           | `/${typeof recipeRouterHelper.SEARCH_PATH}`
-          | '/meal-plan',
+          | "/meal-plan",
       ) => harness.navigateByUrl(url),
     };
   }

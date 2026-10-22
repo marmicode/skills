@@ -1,8 +1,8 @@
-import { MealRepositoryFake } from './meal-repository.fake';
-import { verifyMealRepositoryContract } from './meal-repository.contract';
-import { TestBed } from '@angular/core/testing';
+import { MealRepositoryFake } from "./meal-repository.fake";
+import { verifyMealRepositoryContract } from "./meal-repository.contract";
+import { TestBed } from "@angular/core/testing";
 
-describe(MealRepositoryFake.name, () => {
+describe(MealRepositoryFake, () => {
   verifyMealRepositoryContract(createMealRepositoryFake);
 
   function createMealRepositoryFake() {

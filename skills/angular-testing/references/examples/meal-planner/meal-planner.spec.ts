@@ -1,33 +1,33 @@
-import { TestBed } from '@angular/core/testing';
-import { watch } from '../testing/watch';
-import { recipeMother } from '../testing/recipe.mother';
-import { MealPlanner } from './meal-planner';
+import { TestBed } from "@angular/core/testing";
+import { watch } from "../testing/watch";
+import { recipeMother } from "../testing/recipe.mother";
+import { MealPlanner } from "./meal-planner";
 import {
   MealRepositoryFake,
   provideMealRepositoryFake,
-} from './meal-repository.fake';
+} from "./meal-repository.fake";
 
-describe(MealPlanner.name, () => {
-  it('adds recipes', async () => {
+describe(MealPlanner, () => {
+  it("adds recipes", async () => {
     const { mealPlanner, burger, salad } = createMealPlanner();
 
     await mealPlanner.addRecipe(burger);
     await mealPlanner.addRecipe(salad);
 
     expect(mealPlanner.recipes()).toEqual([
-      expect.objectContaining({ name: 'Burger' }),
-      expect.objectContaining({ name: 'Salad' }),
+      expect.objectContaining({ name: "Burger" }),
+      expect.objectContaining({ name: "Salad" }),
     ]);
   });
 
-  it('does not allow recipe duplicates', async () => {
+  it("does not allow recipe duplicates", async () => {
     const { mealPlanner, burgerDuplicate } =
       await createMealPlannerWithBurger();
 
     expect(mealPlanner.canAddRecipe(burgerDuplicate)).toBe(false);
   });
 
-  it('throws error if recipe is already present', async () => {
+  it("throws error if recipe is already present", async () => {
     const { mealPlanner, burgerDuplicate } =
       await createMealPlannerWithBurger();
 
@@ -36,17 +36,17 @@ describe(MealPlanner.name, () => {
     );
   });
 
-  it('adds recipes to meal repository', async () => {
+  it("adds recipes to meal repository", async () => {
     const { mealPlanner, mealRepoFake, burger } = createMealPlanner();
 
     await mealPlanner.addRecipe(burger);
 
     expect(mealRepoFake.getMealsSync()).toEqual([
-      expect.objectContaining({ name: 'Burger' }),
+      expect.objectContaining({ name: "Burger" }),
     ]);
   });
 
-  it('notifies when recipes change', async () => {
+  it("notifies when recipes change", async () => {
     const { mealPlanner, burger, salad } = createMealPlanner();
 
     const recipes = watch(mealPlanner.recipes);
@@ -54,28 +54,28 @@ describe(MealPlanner.name, () => {
     await mealPlanner.addRecipe(burger);
     await mealPlanner.addRecipe(salad);
 
-    expect(recipes()).toMatchObject([{ name: 'Burger' }, { name: 'Salad' }]);
+    expect(recipes()).toMatchObject([{ name: "Burger" }, { name: "Salad" }]);
   });
 
-  it('fetches recipes from meal repository', async () => {
+  it("fetches recipes from meal repository", async () => {
     const { getMealPlanner, mealRepoFake, burger } = setUpMealPlanner();
 
     mealRepoFake.setMeals([burger]);
 
     const mealPlanner = getMealPlanner();
     expect(mealPlanner.recipes()).toEqual([
-      expect.objectContaining({ name: 'Burger' }),
+      expect.objectContaining({ name: "Burger" }),
     ]);
   });
 
-  describe('canAddRecipe', () => {
-    it('allows new recipes', async () => {
+  describe("canAddRecipe", () => {
+    it("allows new recipes", async () => {
       const { mealPlanner, salad } = await createMealPlannerWithBurger();
 
       expect(mealPlanner.canAddRecipe(salad)).toBe(true);
     });
 
-    it('updates when recipes change', async () => {
+    it("updates when recipes change", async () => {
       const { mealPlanner, salad } = await createMealPlannerWithBurger();
 
       const canAddRecipe = watch(() => mealPlanner.canAddRecipe(salad));
@@ -113,9 +113,9 @@ describe(MealPlanner.name, () => {
 
     return {
       getMealPlanner: () => TestBed.inject(MealPlanner),
-      burger: recipeMother.withBasicInfo('Burger').build(),
-      burgerDuplicate: recipeMother.withBasicInfo('Burger').build(),
-      salad: recipeMother.withBasicInfo('Salad').build(),
+      burger: recipeMother.withBasicInfo("Burger").build(),
+      burgerDuplicate: recipeMother.withBasicInfo("Burger").build(),
+      salad: recipeMother.withBasicInfo("Salad").build(),
       mealRepoFake: TestBed.inject(MealRepositoryFake),
     };
   }

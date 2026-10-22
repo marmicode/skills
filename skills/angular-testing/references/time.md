@@ -21,11 +21,11 @@ Debounce, throttling, delays, polling, auto-dismissed toasts, dates.
 In manual mode _(Vitest's default)_, time stands still until the test advances it. That also pauses Angular's own scheduling: flush it right after mounting.
 
 ```ts
-describe(RecipeFilter.name, () => {
-  it('does not trigger filterChange output before debounce', async () => {
+describe(RecipeFilter, () => {
+  it("does not trigger filterChange output before debounce", async () => {
     const { filterChangeSpy, setInputValue } = await mountRecipeFilter();
 
-    await setInputValue('Keywords', 'Cauliflower');
+    await setInputValue("Keywords", "Cauliflower");
 
     /* Debounce is 300ms: stay ~10ms away from the boundary. */
     await vi.advanceTimersByTimeAsync(290);
@@ -33,16 +33,16 @@ describe(RecipeFilter.name, () => {
     expect(filterChangeSpy).not.toHaveBeenCalled();
   });
 
-  it('triggers filterChange output after debounce', async () => {
+  it("triggers filterChange output after debounce", async () => {
     const { filterChangeSpy, setInputValue } = await mountRecipeFilter();
 
-    await setInputValue('Keywords', 'Cauliflower');
+    await setInputValue("Keywords", "Cauliflower");
 
     await vi.advanceTimersByTimeAsync(310);
 
     expect(filterChangeSpy).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        keywords: 'Cauliflower',
+        keywords: "Cauliflower",
       } satisfies Partial<RecipeFilterCriteria>),
     );
   });
@@ -58,7 +58,7 @@ describe(RecipeFilter.name, () => {
 
     TestBed.createComponent(RecipeFilter, {
       bindings: [
-        outputBinding<RecipeFilterCriteria>('filterChange', filterChangeSpy),
+        outputBinding<RecipeFilterCriteria>("filterChange", filterChangeSpy),
       ],
     });
 
@@ -68,7 +68,7 @@ describe(RecipeFilter.name, () => {
     return {
       filterChangeSpy,
       setInputValue: (
-        label: 'Keywords' | 'Max Ingredients' | 'Max Steps',
+        label: "Keywords" | "Max Ingredients" | "Max Steps",
         value: string,
       ) => page.getByLabelText(label).fill(value),
     };
@@ -121,30 +121,34 @@ export class FormsTimingConfig {
   inputDebounce = 300;
 }
 
-export function provideFormsTimingConfig(config: FormsTimingConfig): Provider[] {
+export function provideFormsTimingConfig(
+  config: FormsTimingConfig,
+): Provider[] {
   return [{ provide: FormsTimingConfig, useValue: config }];
 }
 
 const MAX_TIMEOUT = Math.pow(2, 31) - 1;
 
 export function provideTestingFormsTimingConfig(
-  mode: 'instant-debounce' | 'never-ending-debounce',
+  mode: "instant-debounce" | "never-ending-debounce",
 ) {
   return provideFormsTimingConfig({
-    inputDebounce: mode === 'instant-debounce' ? 0 : MAX_TIMEOUT,
+    inputDebounce: mode === "instant-debounce" ? 0 : MAX_TIMEOUT,
   });
 }
 ```
 
 ```ts
-it('disables submit button while waiting for debounce', async () => {
+it("disables submit button while waiting for debounce", async () => {
   TestBed.configureTestingModule({
-    providers: [provideTestingFormsTimingConfig('never-ending-debounce')],
+    providers: [provideTestingFormsTimingConfig("never-ending-debounce")],
   });
 
   // ... mount the component and fill the form ...
 
-  await expect.element(page.getByRole('button', { name: 'Submit' })).toBeDisabled();
+  await expect
+    .element(page.getByRole("button", { name: "Submit" }))
+    .toBeDisabled();
 });
 ```
 

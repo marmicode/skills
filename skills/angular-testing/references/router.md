@@ -17,7 +17,7 @@
 ## Testing a Guard
 
 ```ts
-describe(isSignedInGuard.name, () => {
+describe(isSignedInGuard, () => {
   it("allows access to the route if user is signed in", async () => {
     const { auth, getCurrentUrl, navigate } = await mountRoutes();
 

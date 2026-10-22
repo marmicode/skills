@@ -97,7 +97,7 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 | `vi.spyOn(repo, 'search').mockReturnValue(of(recipes))`                | `TestBed.inject(RecipeRepositoryFake).configure({recipes})`                                    |
 | `{ provide: RecipeRepository, useValue: { search: vi.fn() } }`         | a fake implementing the same interface                                                         |
 | `MockComponent(RecipePreview)`, `MockProvider(MealPlanner)` (ng-mocks) | real children; `CUSTOM_ELEMENTS_SCHEMA` for a shallow test; a fake for adapters                |
-| a fake server or `HttpTestingController` where a repository exists    | fake the repository that wraps `HttpClient`                                                    |
+| a fake server or `HttpTestingController` where a repository exists     | fake the repository that wraps `HttpClient`                                                    |
 | `beforeEach(() => { fixture = ...; component = ...; })`                | `function mountRecipeSearch() { ...; return { ... }; }`                                        |
 | `fixture.detectChanges()`, `await fixture.whenStable()`                | `await expect.element(locator)...`, `await expect.poll(...)`                                   |
 | `fixture.componentRef.setInput('recipe', burger)`                      | `bindings: [inputBinding('recipe', recipe)]`, then `recipe.set(...)`                           |
@@ -119,7 +119,7 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 import { TestBed } from "@angular/core/testing";
 import { page } from "vitest/browser";
 
-describe(RecipeSearch.name, () => {
+describe(RecipeSearch, () => {
   it("adds recipe to meal planner", async () => {
     const { getAddButton, getMealPlannerRecipeNames } = mountRecipeSearch();
 

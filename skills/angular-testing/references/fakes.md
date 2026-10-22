@@ -290,7 +290,7 @@ export function verifyMealRepositoryContract(
 ```
 
 ```ts title="meal-repository.fake.spec.ts"
-describe(MealRepositoryFake.name, () => {
+describe(MealRepositoryFake, () => {
   verifyMealRepositoryContract(() => {
     TestBed.configureTestingModule({ providers: [MealRepositoryFake] });
     return { mealRepo: TestBed.inject(MealRepositoryFake) };
@@ -299,7 +299,7 @@ describe(MealRepositoryFake.name, () => {
 ```
 
 ```ts title="meal-repository.spec.ts"
-describe(MealRepository.name, () => {
+describe(MealRepository, () => {
   verifyMealRepositoryContract(createMealRepository);
 
   /* Implementation-specific behavior stays here. */

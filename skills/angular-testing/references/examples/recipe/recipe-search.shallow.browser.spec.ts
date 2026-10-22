@@ -1,36 +1,36 @@
-import { CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { page } from 'vitest/browser';
-import { recipeMother } from '../testing/recipe.mother';
-import { RecipeFilterCriteria } from './recipe-filter-criteria';
+import { CUSTOM_ELEMENTS_SCHEMA, DebugElement } from "@angular/core";
+import { TestBed } from "@angular/core/testing";
+import { page } from "vitest/browser";
+import { recipeMother } from "../testing/recipe.mother";
+import { RecipeFilterCriteria } from "./recipe-filter-criteria";
 import {
   provideRecipeRepositoryFake,
   RecipeRepositoryFake,
-} from './recipe-repository.fake';
-import { RecipeSearch } from './recipe-search.ng';
+} from "./recipe-repository.fake";
+import { RecipeSearch } from "./recipe-search.ng";
 
 /* Shallow test: RecipeSearch is rendered without its children.
  * The test checks what it passes to the children's inputs
  * and how it reacts to the children's outputs. */
-describe(RecipeSearch.name, () => {
-  it('passes found recipes to recipe previews', async () => {
+describe(RecipeSearch, () => {
+  it("passes found recipes to recipe previews", async () => {
     const { getRecipePreviewNames } = mountRecipeSearch();
 
     await expect
       .poll(() => getRecipePreviewNames())
-      .toEqual(['Burger', 'Salad']);
+      .toEqual(["Burger", "Salad"]);
   });
 
-  it('searches recipes using the filter emitted by recipe filter', async () => {
+  it("searches recipes using the filter emitted by recipe filter", async () => {
     const { getRecipePreviewNames, updateFilter } = mountRecipeSearch();
 
     await updateFilter({
-      keywords: 'Burg',
+      keywords: "Burg",
       maxIngredientCount: null,
       maxStepCount: null,
     });
 
-    await expect.poll(() => getRecipePreviewNames()).toEqual(['Burger']);
+    await expect.poll(() => getRecipePreviewNames()).toEqual(["Burger"]);
   });
 
   function mountRecipeSearch() {
@@ -47,8 +47,8 @@ describe(RecipeSearch.name, () => {
     });
 
     TestBed.inject(RecipeRepositoryFake).setRecipes([
-      recipeMother.withBasicInfo('Burger').build(),
-      recipeMother.withBasicInfo('Salad').build(),
+      recipeMother.withBasicInfo("Burger").build(),
+      recipeMother.withBasicInfo("Salad").build(),
     ]);
 
     TestBed.createComponent(RecipeSearch);
@@ -56,14 +56,14 @@ describe(RecipeSearch.name, () => {
     return {
       getRecipePreviewNames: () =>
         page
-          .getByTestId('recipe-preview')
+          .getByTestId("recipe-preview")
           .elements()
-          .map((el) => new DebugElement(el).properties['recipe'].name),
+          .map((el) => new DebugElement(el).properties["recipe"].name),
       updateFilter: async (filter: RecipeFilterCriteria) => {
         const filterEl = await vi.waitFor(() =>
-          page.getByTestId('recipe-filter').element(),
+          page.getByTestId("recipe-filter").element(),
         );
-        new DebugElement(filterEl).triggerEventHandler('filterChange', filter);
+        new DebugElement(filterEl).triggerEventHandler("filterChange", filter);
       },
     };
   }
