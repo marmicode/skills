@@ -115,7 +115,8 @@ Fast-forward mode is not synchronous: it advances time in a macrotask, so it app
 Make durations injectable, and let tests make them instant or endless. No timer is intercepted, so Angular's scheduling runs normally, and tests don't depend on the testing framework.
 
 ```ts title="forms-timing.config.ts"
-@Injectable({ providedIn: 'root' })
+/* Angular ≥ 22.1. Before that: @Injectable({ providedIn: 'root' }). */
+@Service()
 export class FormsTimingConfig {
   inputDebounce = 300;
 }

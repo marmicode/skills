@@ -18,7 +18,7 @@ Why fakes beat stubs, spies and mocks: [principles.md](principles.md#test-double
 ## Anatomy of a Fake
 
 1. **Interface**: extract the public API of the real service into an interface (`RecipeRepositoryDef`). The real service and the fake both implement it, so the fake doesn't have to mimic private members or depend on infrastructure.
-2. **Fake class**: `@Injectable()` — **not** `providedIn: 'root'`, so that forgetting to provide it fails loudly instead of silently using the real service.
+2. **Fake class**: `@Service({ autoProvided: false })` — not `@Service()`. Forgetting to provide it then fails loudly instead of silently using the real service. Before Angular 22.1, that is `@Injectable()` with no `providedIn`.
 3. **In-memory state**, shared by all methods so they stay consistent.
 4. **Lazy observables**: wrap the work in `defer(...)` so nothing happens until the caller subscribes, like a real HTTP call. A SUT that forgets to subscribe then fails the test instead of passing by accident.
 5. **Testing helpers**: methods to arrange (`setRecipes()`, `configure()`) and to inspect (`getMealsSync()`). Add them only when a test needs them.
@@ -29,7 +29,7 @@ export interface RecipeRepositoryDef {
   search(filter?: RecipeFilterCriteria): Observable<Recipe[]>;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class RecipeRepository implements RecipeRepositoryDef {
   private _httpClient = inject(HttpClient);
   ...
@@ -37,7 +37,7 @@ export class RecipeRepository implements RecipeRepositoryDef {
 ```
 
 ```ts title="recipe-repository.fake.ts"
-@Injectable()
+@Service({ autoProvided: false })
 export class RecipeRepositoryFake implements RecipeRepositoryDef {
   private _recipes: Recipe[] = [];
 
@@ -145,7 +145,7 @@ function setUpMealPlanner() {
 Give the fake a simple, documented trigger instead of reprogramming it per test:
 
 ```ts
-@Injectable()
+@Service({ autoProvided: false })
 export class CookbookRepositoryFake implements CookbookRepositoryDef {
   /**
    * Searching with keywords containing this token fails.
@@ -172,9 +172,8 @@ await typeKeywords(`Ottolenghi ${CookbookRepositoryFake.INVALID_TOKEN}`);
 Fakes are not only for the network. Turn the browser API into an injectable abstraction whose default implementation is the real API:
 
 ```ts title="local-storage.ts"
-@Injectable({
-  providedIn: 'root',
-  useFactory: () => localStorage,
+@Service({
+  factory: () => localStorage,
 })
 export abstract class LocalStorage {
   abstract getItem(key: string): string | null;
@@ -183,7 +182,7 @@ export abstract class LocalStorage {
 ```
 
 ```ts title="local-storage.fake.ts"
-@Injectable()
+@Service({ autoProvided: false })
 export class LocalStorageFake implements LocalStorage {
   private _map = new Map<string, string>();
 
@@ -220,7 +219,7 @@ export interface DialogDef {
   open<RESULT>(component: Type<unknown>): DialogRef<RESULT>;
 }
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class Dialog implements DialogDef {
   private _matDialog = inject(MatDialog);
 
@@ -232,7 +231,7 @@ export class Dialog implements DialogDef {
 ```
 
 ```ts title="dialog.fake.ts"
-@Injectable()
+@Service({ autoProvided: false })
 export class DialogFake implements DialogDef {
   private _openDialog?: {
     component: Type<unknown>;

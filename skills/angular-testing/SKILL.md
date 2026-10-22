@@ -1,6 +1,6 @@
 ---
 name: angular-testing
-description: Writes, fixes and reviews Angular tests following the Pragmatic Angular Testing approach — fakes over mocks, real collaborators by default, components tested through the DOM rather than through fixtures. Targets Vitest (Browser Mode preferred, jsdom and happy-dom supported) and also applies to Jest, Jasmine/Karma and Angular Testing Library projects, including migrating them to Vitest. Use whenever adding, editing, reviewing or debugging unit tests in an Angular project — *.spec.ts files, TestBed, components, services, signals, guards, routing, and timers — including when tests are written as part of a feature or bug fix, when replacing mocks or spies with fakes, and when fixing slow or flaky tests. Prefer this over general Angular skills for anything test-related. Not for Playwright or Cypress end-to-end tests.
+description: Writes, fixes and reviews Angular tests following the Pragmatic Angular Testing approach — fakes over mocks, real collaborators by default, components tested through the DOM rather than through fixtures. Targets Vitest (Browser Mode preferred, jsdom and happy-dom supported) and also applies to Jest, Jasmine/Karma and Angular Testing Library projects, including migrating them to Vitest. Use whenever adding, editing, reviewing or debugging unit tests in an Angular project — *.spec.ts files, TestBed, components, services (`@Service` or `@Injectable`), signals, guards, routing, and timers — including when tests are written as part of a feature or bug fix, when replacing mocks or spies with fakes, when declaring or faking a service, and when fixing slow or flaky tests. Prefer this over general Angular skills for anything test-related. Not for Playwright or Cypress end-to-end tests.
 ---
 
 # Angular Testing
@@ -74,7 +74,8 @@ Read [references/principles.md](references/principles.md) when deciding what to 
 
 ### Angular
 
-- Services: `TestBed.inject(Service)`, never `new Service()`. See [references/services.md](references/services.md).
+- Services: `TestBed.inject(MealPlanner)`, never `new MealPlanner()`. See [references/services.md](references/services.md).
+- Angular ≥ 22.1: `@Service()` is the root singleton (`@Injectable({ providedIn: 'root' })` before that), and a fake is `@Service({ autoProvided: false })` (`@Injectable()` before that). See [references/fakes.md](references/fakes.md#anatomy-of-a-fake).
 - Components: mount with `TestBed.createComponent(Component, { bindings })` _(Angular ≥ 20.1)_ and **ignore the returned fixture** — no `detectChanges()`, `fixture.whenStable()`, `componentInstance`, `debugElement` or `nativeElement`. On older versions, set inputs with `fixture.componentRef.setInput()`.
 - Inputs: `inputBinding('recipe', recipe)` where `recipe` is a signal; change the input with `recipe.set(...)`. Outputs: `outputBinding('filterChange', spy)`. Models: `twoWayBinding('filter', filter)`.
 - Query with `page.getByRole(...)`, `page.getByLabelText(...)`, `page.getByText(...)` from `vitest/browser`. Act with locator actions (`click()`, `fill()`). Assert with `await expect.element(locator)...`.

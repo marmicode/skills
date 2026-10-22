@@ -1,11 +1,11 @@
 import {
   EnvironmentProviders,
-  Injectable,
+  Service,
   makeEnvironmentProviders,
 } from '@angular/core';
 import { LocalStorage } from './local-storage';
 
-@Injectable()
+@Service({ autoProvided: false })
 export class LocalStorageFake implements LocalStorage {
   private _map = new Map<string, string>();
 

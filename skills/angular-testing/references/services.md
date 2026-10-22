@@ -12,7 +12,7 @@
 ## Getting the Service
 
 - Always `TestBed.inject(MealPlanner)`, never `new MealPlanner(...)`: tests stay insensitive to how dependencies are injected, and to logic moving into other injectable services.
-- `providedIn: 'root'` services need no providers. Only provide fakes for the dependencies that must be replaced:
+- A root service needs no provider. Only provide fakes for the dependencies that must be replaced:
 
   ```ts
   TestBed.configureTestingModule({
@@ -27,20 +27,21 @@
 
 ```ts
 describe(MealPlanner.name, () => {
-  it('adds recipes', async () => {
+  it("adds recipes", async () => {
     const { mealPlanner, burger, salad } = createMealPlanner();
 
     await mealPlanner.addRecipe(burger);
     await mealPlanner.addRecipe(salad);
 
     expect(mealPlanner.recipes()).toEqual([
-      expect.objectContaining({ name: 'Burger' }),
-      expect.objectContaining({ name: 'Salad' }),
+      expect.objectContaining({ name: "Burger" }),
+      expect.objectContaining({ name: "Salad" }),
     ]);
   });
 
-  it('does not allow recipe duplicates', async () => {
-    const { mealPlanner, burgerDuplicate } = await createMealPlannerWithBurger();
+  it("does not allow recipe duplicates", async () => {
+    const { mealPlanner, burgerDuplicate } =
+      await createMealPlannerWithBurger();
 
     expect(mealPlanner.canAddRecipe(burgerDuplicate)).toBe(false);
   });
@@ -68,9 +69,9 @@ describe(MealPlanner.name, () => {
     return {
       getMealPlanner: () => TestBed.inject(MealPlanner),
       mealRepoFake: TestBed.inject(MealRepositoryFake),
-      burger: recipeMother.withBasicInfo('Burger').build(),
-      burgerDuplicate: recipeMother.withBasicInfo('Burger').build(),
-      salad: recipeMother.withBasicInfo('Salad').build(),
+      burger: recipeMother.withBasicInfo("Burger").build(),
+      burgerDuplicate: recipeMother.withBasicInfo("Burger").build(),
+      salad: recipeMother.withBasicInfo("Salad").build(),
     };
   }
 });
@@ -91,7 +92,7 @@ await expect(mealPlanner.addRecipe(burgerDuplicate)).rejects.toThrow(
 
 /* Method returning an observable. */
 await expect(firstValueFrom(recipeRepo.search(filter))).rejects.toThrow(
-  'Search failed.',
+  "Search failed.",
 );
 ```
 
@@ -102,13 +103,13 @@ When the error type is part of the contract, assert it: `toThrow(RecipeAlreadyAd
 Read signals directly:
 
 ```ts
-expect(mealPlanner.recipes()).toMatchObject([{ name: 'Burger' }]);
+expect(mealPlanner.recipes()).toMatchObject([{ name: "Burger" }]);
 ```
 
 Reading a value after an action doesn't prove that it is **reactive**: a plain getter would pass too. When reactivity matters _(the view depends on it)_, read the value through a `computed`, which only updates when its signal dependencies change:
 
 ```ts
-it('notifies when recipes change', async () => {
+it("notifies when recipes change", async () => {
   const { mealPlanner, salad } = await createMealPlannerWithBurger();
 
   const canAddSalad = watch(() => mealPlanner.canAddRecipe(salad));
@@ -122,7 +123,7 @@ it('notifies when recipes change', async () => {
 If the project has no such helper, add it to the shared testing utilities:
 
 ```ts title="testing/watch.ts"
-import { computed, Signal } from '@angular/core';
+import { computed, Signal } from "@angular/core";
 
 /**
  * Returns a signal that only updates if `fn` is reactive.
@@ -147,7 +148,7 @@ export function watch<T>(fn: () => T): Signal<T> {
 - **Several values over time**: subscribe with a spy, unsubscribe when the test finishes, and clear the initial emission when another test covers it.
 
   ```ts
-  it('emits recipes when added', async () => {
+  it("emits recipes when added", async () => {
     const { mealPlanner, burger } = createMealPlanner();
 
     const next = vi.fn<(recipes: Recipe[]) => void>();
@@ -159,7 +160,7 @@ export function watch<T>(fn: () => T): Signal<T> {
     await mealPlanner.addRecipe(burger);
 
     expect(next).toHaveBeenCalledExactlyOnceWith([
-      expect.objectContaining({ name: 'Burger' }),
+      expect.objectContaining({ name: "Burger" }),
     ]);
   });
   ```
@@ -176,17 +177,17 @@ export function watch<T>(fn: () => T): Signal<T> {
 - To test a signal factory that needs an injection context on its own, wrap it with a helper:
 
   ```ts
-  it('auto-saves the recipe when it changes', async () => {
+  it("auto-saves the recipe when it changes", async () => {
     TestBed.configureTestingModule({ providers: [provideStorageFake()] });
     const storage = TestBed.inject(StorageFake);
-    const recipe = signal('babaganoush');
+    const recipe = signal("babaganoush");
 
     await runInAngular(() => {
-      autoSave('favorite-recipe', recipe);
-      recipe.set('burger');
+      autoSave("favorite-recipe", recipe);
+      recipe.set("burger");
     });
 
-    expect(storage.getSync('favorite-recipe')).toBe('"burger"');
+    expect(storage.getSync("favorite-recipe")).toBe('"burger"');
   });
 
   async function runInAngular<RETURN>(

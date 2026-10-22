@@ -1,6 +1,6 @@
 # Examples
 
-Complete spec files from **Whiskmate**, the meal-planning app of the [Pragmatic Angular Testing](https://courses.marmicode.io) workshop _(Angular 21, Vitest 4.1, Browser Mode with Playwright, zoneless)_. They all pass against the app, where `RecipePreview` renders an `<article>` and the `<wm-recipe-filter>` host in `RecipeSearch` has `data-testid="recipe-filter"`. The one exception is `recipe/recipe-preview.spec.ts`, an emulated-DOM variant derived from its Browser Mode sibling.
+Complete spec files from **Whiskmate**, the meal-planning app of the [Pragmatic Angular Testing](https://courses.marmicode.io) workshop _(Angular 21, Vitest 4.1, Browser Mode with Playwright, zoneless)_. They pass against the app, where `RecipePreview` renders an `<article>` and the `<wm-recipe-filter>` host in `RecipeSearch` has `data-testid="recipe-filter"`. The one exception is `recipe/recipe-preview.spec.ts`, an emulated-DOM variant derived from its Browser Mode sibling. Fake classes in this folder use `@Service({ autoProvided: false })`, the Angular ≥ 22.1 form of the `@Injectable()` those fakes use in the Angular 21 app.
 
 Conventions that belong to Whiskmate, not to this skill:
 

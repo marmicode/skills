@@ -239,7 +239,7 @@ it("projects content", async () => {
 
 ## Pipes and Directives
 
-- **Pipes**: inject the pipe class with `TestBed.inject(MyPipe)` _(provide it in `TestBed.configureTestingModule` if it isn't `providedIn: 'root'`)_ and test `transform()` as a pure function. Render it in a host component only when the behavior depends on the template _(e.g. a pipe that subscribes, like `async`)_.
+- **Pipes**: inject the pipe class with `TestBed.inject(MyPipe)` _(provide it in `TestBed.configureTestingModule` unless `@Pipe` sets `providedIn: 'root'`. `@Pipe` is unchanged by `@Service`)_ and test `transform()` as a pure function. Render it in a host component only when the behavior depends on the template _(e.g. a pipe that subscribes, like `async`)_.
 - **Directives**: always through a [host component](#host-components) and the DOM, never by instantiating the directive class.
 
 ## Angular Material and CDK
