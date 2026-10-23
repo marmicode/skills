@@ -172,7 +172,6 @@ export function watch<T>(fn: () => T): Signal<T> {
 ## Effects, Resources and Signal Factories
 
 - Prefer testing effects and resources through the service or component that uses them, and assert the outcome with `await expect.poll(() => ...)`.
-- When the test must wait for Angular to settle _(before acting, or before a negative expectation)_, use `await TestBed.inject(ApplicationRef).whenStable()` — not the component fixture's `whenStable()`.
 - Don't reach for `TestBed.tick()` _(or the deprecated `TestBed.flushEffects()`)_ to make a test pass: Angular's synchronization is an implementation detail.
 - To test a signal factory that needs an injection context on its own, wrap it with a helper:
 
