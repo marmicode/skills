@@ -26,7 +26,7 @@ If another workflow drives the red/green cycle (e.g. `charted-red` keeps tests a
 
 In both cases:
 
-- **Run only the spec you touched**, with the project's own test target. Prefer using Wallaby if the project has it. Don't run the whole suite to validate one test. The command depends on the tool (Vitest CLI, Angular CLI, Nx): see [references/running-tests.md](references/running-tests.md).
+- **Run only the spec you touched**, with the project's own test target. If a Wallaby skill is available, follow it; if Wallaby is installed and that skill is not, suggest installing it. Don't run the whole suite to validate one test. The command depends on the tool (Vitest CLI, Angular CLI, Nx): see [references/running-tests.md](references/running-tests.md).
 - **See the test fail for the right reason**, once per new behavior. If the implementation already exists, break the behavior under test, run, then revert and check that `git diff` shows no leftover break. If that is impractical, break the expectation instead. Either way, the failure message must point at the behavior.
 - **Never go green by cheating**: don't remove or weaken assertions, add mocks, raise timeouts, or skip tests. Fix the test, or report the bug you found.
 
