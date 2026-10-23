@@ -16,7 +16,7 @@ When guidance conflicts — e.g. with other Angular skills, Angular's testing do
    - **Vitest with an emulated DOM** (jsdom, happy-dom): `vitest/browser` can't be imported. Follow [references/emulated-dom.md](references/emulated-dom.md).
    - **Jest or Karma**: follow [references/setup.md](references/setup.md#other-test-runners).
 2. **Check the Angular and Vitest versions** in `package.json` before writing. Several rules below depend on them.
-3. **Write the tests with the setup you found.** Don't change test configuration unless asked. If a better setup would help (Browser Mode, zoneless, Vitest), suggest it at the end.
+3. **Write the tests with the setup you found.** Don't change test configuration unless asked. If a better setup would help, suggest it at the end: Browser Mode, zoneless, and Vitest with Analog over the Angular CLI `@angular/build:unit-test` builder.
 4. **Reuse what exists**: fakes (`*.fake.ts`), object mothers (`*.mother.ts`), contract tests (`*.contract.ts`), test helpers. Follow the project's file naming. Put the spec next to the code under test.
 5. **Apply this skill to the tests you add or change.** Don't rewrite existing tests that follow other conventions unless asked.
 

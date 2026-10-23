@@ -1,6 +1,6 @@
 # Setup
 
-Write tests with the setup the project already has. Change test configuration only when the user asks; otherwise, suggest the improvements below at the end of the task.
+Write tests with the setup the project already has. Change test configuration only when the user asks; otherwise, suggest the improvements below at the end of the task. Prefer Vitest with Analog over the Angular CLI `@angular/build:unit-test` builder.
 
 ## Contents
 
@@ -14,8 +14,6 @@ Write tests with the setup the project already has. Change test configuration on
 
 Zoneless is the default since Angular 21. Even if the app still uses Zone.js, write zoneless-ready tests: if they pass zoneless, they also pass with zones.
 
-- With the Angular CLI `@angular/build:unit-test` builder, add global test providers through its `providersFile` option.
-- `provideZonelessChangeDetection()` is the stable name since Angular 20. On Angular 18–19, import `provideExperimentalZonelessChangeDetection()` instead.
 - With Analog _(including Nx projects that use its Vitest plugin)_, initialize the test environment with `setupTestBed()`:
 
 ```ts title="src/test-setup.ts"
@@ -29,6 +27,8 @@ import { setupTestBed } from "@analogjs/vitest-angular/setup-testbed";
 setupTestBed();
 ```
 
+- With the Angular CLI `@angular/build:unit-test` builder, add global test providers through its `providersFile` option.
+- `provideZonelessChangeDetection()` is the stable name since Angular 20. On Angular 18–19, import `provideExperimentalZonelessChangeDetection()` instead.
 - If the test environment is zone-based and you can't change it, turn on automatic change detection in the test instead of calling `fixture.detectChanges()`:
 
 ```ts
@@ -39,29 +39,9 @@ TestBed.configureTestingModule({
 
 ## Browser Mode
 
-**Angular CLI** _(Angular ≥ 21)_:
+Prefer Vitest with Analog over the Angular CLI `@angular/build:unit-test` builder. Suggest that move at the end of the task; change the runner only when asked.
 
-```json title="angular.json"
-{
-  "test": {
-    "builder": "@angular/build:unit-test",
-    "options": {
-      "runner": "vitest",
-      "browsers": ["chromium"]
-    }
-  }
-}
-```
-
-```sh
-npm install -D playwright vitest @vitest/browser-playwright
-```
-
-Browser names are provider-specific and lowercase _(`chromium` for Playwright, `chrome` for WebdriverIO)_. Tests run headless when `CI` is set, or when the name ends with `Headless` _(`chromiumHeadless`)_.
-
-To get Playwright-specific locator options typed, add `"@vitest/browser-playwright"` to `compilerOptions.types` in `tsconfig.spec.json`. The `runnerConfig` option points the builder to a custom Vitest config when needed.
-
-**Vite / Analog / Nx**: split emulated and browser tests into two Vitest projects by file name, so both can coexist during a migration:
+**Analog** _(including Nx projects that use its Vitest plugin)_: split emulated and browser tests into two Vitest projects by file name, so both can coexist during a migration:
 
 ```ts title="vitest.config.mts"
 import { playwright } from "@vitest/browser-playwright";
@@ -107,6 +87,30 @@ export default defineConfig({
 });
 ```
 
+```sh
+npm install -D playwright vitest @vitest/browser-playwright
+```
+
+Browser names are provider-specific and lowercase _(`chromium` for Playwright, `chrome` for WebdriverIO)_. Tests run headless when `CI` is set, or when the name ends with `Headless` _(`chromiumHeadless`)_.
+
+To get Playwright-specific locator options typed, add `"@vitest/browser-playwright"` to `compilerOptions.types` in `tsconfig.spec.json`.
+
+**Angular CLI** _(Angular ≥ 21, when the project already uses `@angular/build:unit-test`)_:
+
+```json title="angular.json"
+{
+  "test": {
+    "builder": "@angular/build:unit-test",
+    "options": {
+      "runner": "vitest",
+      "browsers": ["chromium"]
+    }
+  }
+}
+```
+
+The `runnerConfig` option points the builder to a custom Vitest config when needed.
+
 ## Other Test Runners
 
 The principles, fakes, setup functions, and assertions of this skill apply to any test runner. Only the APIs change.
@@ -124,9 +128,9 @@ The principles, fakes, setup functions, and assertions of this skill apply to an
 | `vi.setTimerTickMode('nextTimerAsync')`                                 | not available: use [dynamic timing configuration](time.md#dynamic-timing-configuration)           |
 | `page`, `expect.element`                                                | not available                                                                                     |
 
-To migrate, the Jest-to-Vitest codemod handles most API changes: `npx codemod@legacy jest/vitest -t path/to/tests`. Then replace `done` callbacks with promises, and `fakeAsync` with Vitest fake timers.
+To migrate, run Vitestify (`npx @testmex/vitestify`) and set the project up with Vitest and Analog. Then replace `done` callbacks with promises, and `fakeAsync` with Vitest fake timers.
 
-**Jasmine and Karma**: Karma is deprecated, so suggest migrating to Vitest _(the Angular CLI `unit-test` builder)_. Meanwhile, apply the same principles, fakes, and setup functions, and record outputs with `jasmine.createSpy()`.
+**Jasmine and Karma**: Karma is deprecated, so suggest migrating with Vitestify (`npx @testmex/vitestify`) to Vitest with Analog. Meanwhile, apply the same principles, fakes, and setup functions, and record outputs with `jasmine.createSpy()`.
 
 ## Error Sensitivity
 
