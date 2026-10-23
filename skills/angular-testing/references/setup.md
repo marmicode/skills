@@ -16,42 +16,26 @@ Zoneless is the default since Angular 21. Even if the app still uses Zone.js, wr
 
 - With the Angular CLI `@angular/build:unit-test` builder, add global test providers through its `providersFile` option.
 - `provideZonelessChangeDetection()` is the stable name since Angular 20. On Angular 18–19, import `provideExperimentalZonelessChangeDetection()` instead.
-- With a custom setup _(e.g. Analog's Vite plugin or Nx)_, initialize the test environment in the setup file:
+- With Analog _(including Nx projects that use its Vitest plugin)_, initialize the test environment with `setupTestBed()`:
 
-  ```ts title="src/test-setup.ts"
-  /* Global styles, so that visibility and actionability checks see the real layout (Browser Mode). */
-  import './styles.css';
-  import '@testing-library/jest-dom/vitest';
-  import { NgModule, provideZonelessChangeDetection } from '@angular/core';
-  import { getTestBed } from '@angular/core/testing';
-  import {
-    BrowserTestingModule,
-    platformBrowserTesting,
-  } from '@angular/platform-browser/testing';
+```ts title="src/test-setup.ts"
+/* Global styles, so that visibility and actionability checks see the real layout (Browser Mode). */
+import "./styles.css";
+import "@angular/compiler";
+import "@testing-library/jest-dom/vitest";
+import { setupTestBed } from "@analogjs/vitest-angular/setup-testbed";
 
-  @NgModule({ providers: [provideZonelessChangeDetection()] })
-  class ZonelessTestModule {}
-
-  const testBed = getTestBed();
-
-  /* Reset between tests, even when test files share the same context (`isolate: false`). */
-  afterEach(() => testBed.resetTestingModule());
-
-  if (!testBed.platform) {
-    testBed.initTestEnvironment(
-      [BrowserTestingModule, ZonelessTestModule],
-      platformBrowserTesting(),
-    );
-  }
-  ```
+/* Zoneless by default. Resets TestBed between tests, including when files share a context (`isolate: false`). */
+setupTestBed();
+```
 
 - If the test environment is zone-based and you can't change it, turn on automatic change detection in the test instead of calling `fixture.detectChanges()`:
 
-  ```ts
-  TestBed.configureTestingModule({
-    providers: [{ provide: ComponentFixtureAutoDetect, useValue: true }],
-  });
-  ```
+```ts
+TestBed.configureTestingModule({
+  providers: [{ provide: ComponentFixtureAutoDetect, useValue: true }],
+});
+```
 
 ## Browser Mode
 
@@ -80,39 +64,39 @@ To get Playwright-specific locator options typed, add `"@vitest/browser-playwrig
 **Vite / Analog / Nx**: split emulated and browser tests into two Vitest projects by file name, so both can coexist during a migration:
 
 ```ts title="vitest.config.mts"
-import { playwright } from '@vitest/browser-playwright';
-import { defineConfig } from 'vitest/config';
+import { playwright } from "@vitest/browser-playwright";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   // ... Angular plugin (e.g. `@analogjs/vite-plugin-angular`) ...
   test: {
     globals: true,
-    setupFiles: ['src/test-setup.ts'],
+    setupFiles: ["src/test-setup.ts"],
     testTimeout: process.env.CI ? 3_000 : 500,
     /* TestBed already isolates tests: sharing the context between test files is much faster.
-     * Requires the `afterEach` reset in the setup file.
+     * `setupTestBed()` resets TestBed between tests.
      * Vitest 5 reads this top-level option for Browser Mode too; Vitest 4 needs `browser.isolate` (below). */
     isolate: false,
     projects: [
       {
         extends: true,
         test: {
-          name: 'emulated',
-          environment: 'jsdom',
-          include: ['src/**/!(*.browser).spec.ts'],
+          name: "emulated",
+          environment: "jsdom",
+          include: ["src/**/!(*.browser).spec.ts"],
           /* Node only: `pool` doesn't apply to Browser Mode. */
-          pool: 'threads',
+          pool: "threads",
         },
       },
       {
         extends: true,
         test: {
-          name: 'browser',
-          include: ['src/**/*.browser.spec.ts'],
+          name: "browser",
+          include: ["src/**/*.browser.spec.ts"],
           browser: {
             enabled: true,
             provider: playwright(),
-            instances: [{ browser: 'chromium' }],
+            instances: [{ browser: "chromium" }],
             /* Vitest 4 only (deprecated in Vitest 5 in favor of the top-level `isolate`). */
             isolate: false,
           },
@@ -129,16 +113,16 @@ The principles, fakes, setup functions, and assertions of this skill apply to an
 
 **Jest** _(emulated DOM only: also follow [emulated-dom.md](emulated-dom.md))_:
 
-| Vitest | Jest |
-| --- | --- |
-| `vi.fn()` | `jest.fn()` |
-| `vi.useFakeTimers()`, `vi.useRealTimers()` | `jest.useFakeTimers()`, `jest.useRealTimers()` |
-| `await vi.advanceTimersByTimeAsync(ms)`, `await vi.runAllTimersAsync()` | `await jest.advanceTimersByTimeAsync(ms)`, `await jest.runAllTimersAsync()` |
-| `onTestFinished(() => vi.useRealTimers())` | `afterEach(() => jest.useRealTimers())` |
-| `await expect.poll(() => value).toEqual(expected)` | `await waitFor(() => expect(value).toEqual(expected))` with `waitFor` from `@testing-library/dom` |
-| `toHaveBeenCalledExactlyOnceWith(value)` | `toHaveBeenCalledTimes(1)` and `toHaveBeenCalledWith(value)` |
-| `vi.setTimerTickMode('nextTimerAsync')` | not available: use [dynamic timing configuration](time.md#dynamic-timing-configuration) |
-| `page`, `expect.element` | not available |
+| Vitest                                                                  | Jest                                                                                              |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `vi.fn()`                                                               | `jest.fn()`                                                                                       |
+| `vi.useFakeTimers()`, `vi.useRealTimers()`                              | `jest.useFakeTimers()`, `jest.useRealTimers()`                                                    |
+| `await vi.advanceTimersByTimeAsync(ms)`, `await vi.runAllTimersAsync()` | `await jest.advanceTimersByTimeAsync(ms)`, `await jest.runAllTimersAsync()`                       |
+| `onTestFinished(() => vi.useRealTimers())`                              | `afterEach(() => jest.useRealTimers())`                                                           |
+| `await expect.poll(() => value).toEqual(expected)`                      | `await waitFor(() => expect(value).toEqual(expected))` with `waitFor` from `@testing-library/dom` |
+| `toHaveBeenCalledExactlyOnceWith(value)`                                | `toHaveBeenCalledTimes(1)` and `toHaveBeenCalledWith(value)`                                      |
+| `vi.setTimerTickMode('nextTimerAsync')`                                 | not available: use [dynamic timing configuration](time.md#dynamic-timing-configuration)           |
+| `page`, `expect.element`                                                | not available                                                                                     |
 
 To migrate, the Jest-to-Vitest codemod handles most API changes: `npx codemod@legacy jest/vitest -t path/to/tests`. Then replace `done` callbacks with promises, and `fakeAsync` with Vitest fake timers.
 
