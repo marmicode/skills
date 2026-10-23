@@ -16,7 +16,7 @@ Framework-agnostic Vitest usage for this skill.
 
 ## Structure and Naming
 
-- Name suites after the SUT so they follow renames: `describe(MealPlanner.name, ...)`.
+- Name suites after the SUT so they follow renames: `describe(MealPlanner, ...)`.
 - Name tests after the behavior, lowercase, present tense: `it('adds recipes', ...)`, not `it('should work', ...)`.
 - Plan tests with `it.todo('...')` before implementing them.
 - Put the spec next to the code under test. Follow the project's file patterns _(e.g. `*.browser.spec.ts` for Browser Mode)_.
