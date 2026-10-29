@@ -1,0 +1,10 @@
+node_modules/
+
+# Agent workspace copies kept after each eval. promptfoo deletes its own copy.
+tmp/
+
+# Per-provider fixture clones created by evals/shared/hooks.ts.
+evals/*/fixtures/tmp/
+
+# Copied from skills/ before each eval (see evals/shared/hooks.ts).
+evals/*/fixtures/*/.claude/skills/
