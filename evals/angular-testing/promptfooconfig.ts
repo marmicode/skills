@@ -22,7 +22,7 @@ export default defineUnifiedConfig({
         ..._sharedOptions(),
         /* Absolute: `beforeAll` clones the fixture here and copies the skill in. */
         working_dir: WITH_SKILLS_DIR,
-        /* Discovers `.claude/skills/*` but ignores user-level skills and settings. */
+        /* Discovers `.claude/skil ls/*` but ignores user-level skills and settings. */
         setting_sources: ["project"],
         skills: ["angular-testing"],
       }),
@@ -41,7 +41,10 @@ export default defineUnifiedConfig({
   /* Grades llm-rubric assertions with the same model as the agent. */
   defaultTest: {
     options: {
-      provider: `anthropic:messages:${SONNET}`,
+      provider: {
+        id: `anthropic:messages:${SONNET}`,
+        config: { apiKeyRequired: isCI },
+      },
     },
   },
   tests: [componentWithRepository],
