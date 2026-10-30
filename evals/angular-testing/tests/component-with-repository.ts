@@ -12,7 +12,7 @@ import {
 } from "../../shared/assertions.ts";
 
 const fixtureDir = join(import.meta.dirname, "../fixtures/angular-app");
-const specPath = "src/app/recipe-search.spec.ts";
+const specPath = "src/app/recipe-search.browser.spec.ts";
 
 /* llm-rubric grades the agent's message. Feed it the files instead. */
 const gradeWorkspace = workspaceAsOutput({

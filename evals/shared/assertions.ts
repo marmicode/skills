@@ -84,6 +84,15 @@ export function globExists(pattern: string): AssertionValueFunction {
     globSync(pattern, { cwd: workspaceDir(context) }).length > 0;
 }
 
+export function globAbsent(pattern: string): AssertionValueFunction {
+  return (_, context) => {
+    const matches = globSync(pattern, { cwd: workspaceDir(context) });
+    return matches.length === 0
+      ? true
+      : _fail(`unexpected ${matches.join(", ")}`);
+  };
+}
+
 export function workspaceDir(context: AssertionValueFunctionContext): string {
   return _workspaceDir(context.metadata);
 }

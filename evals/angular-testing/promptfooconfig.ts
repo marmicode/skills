@@ -3,7 +3,16 @@ import {
   defineUnifiedConfig,
 } from "../shared/config.ts";
 import { WITH_SKILLS_DIR, NO_SKILLS_DIR } from "./fixtures/config.ts";
+import catalogSearchJsdom from "./tests/catalog-search-jsdom.ts";
 import componentWithRepository from "./tests/component-with-repository.ts";
+import cookbookSearchError from "./tests/cookbook-search-error.ts";
+import keywordDebounce from "./tests/keyword-debounce.ts";
+import mealPlannerService from "./tests/meal-planner-service.ts";
+import previewAndFilter from "./tests/preview-and-filter.ts";
+import recipeOfTheDayShallow from "./tests/recipe-of-the-day-shallow.ts";
+import seasonalExtractRepository from "./tests/seasonal-extract-repository.ts";
+import signedInGuard from "./tests/signed-in-guard.ts";
+import weeknightDinner from "./tests/weeknight-dinner.ts";
 
 const isCI = !!process.env.CI;
 
@@ -47,7 +56,18 @@ export default defineUnifiedConfig({
       },
     },
   },
-  tests: [componentWithRepository],
+  tests: [
+    componentWithRepository,
+    mealPlannerService,
+    previewAndFilter,
+    keywordDebounce,
+    catalogSearchJsdom,
+    signedInGuard,
+    seasonalExtractRepository,
+    weeknightDinner,
+    recipeOfTheDayShallow,
+    cookbookSearchError,
+  ],
 });
 
 function _sharedOptions() {
