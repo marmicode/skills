@@ -4,6 +4,7 @@ import type {
   AssertionValueFunction,
   AssertionValueFunctionContext,
   GradingResult,
+  TransformFunction,
 } from "promptfoo";
 
 /**
@@ -74,11 +75,34 @@ export function globExists(pattern: string): AssertionValueFunction {
 }
 
 export function workspaceDir(context: AssertionValueFunctionContext): string {
-  const workingDir = context.metadata?.workingDir;
-  if (typeof workingDir !== "string") {
-    throw new Error("missing metadata.workingDir");
-  }
-  return workingDir;
+  return _workspaceDir(context.metadata);
+}
+
+/**
+ * Assertion transform for `llm-rubric`. The rubric grades this string instead
+ * of the agent's message. Each key is a heading; each value is a glob.
+ */
+export function workspaceAsOutput(
+  sections: Readonly<Record<string, string>>,
+): TransformFunction {
+  return (_output, context) => {
+    const dir = _workspaceDir(context.metadata);
+    return Object.entries(sections)
+      .map(([label, pattern]) => {
+        const files = [...new Set(globSync(pattern, { cwd: dir }))].sort();
+        const body =
+          files.length === 0
+            ? "(none)"
+            : files
+                .map(
+                  (filePath) =>
+                    `# ${filePath}\n${readFileSync(join(dir, filePath), "utf8")}`,
+                )
+                .join("\n\n");
+        return `## ${label}\n${body}`;
+      })
+      .join("\n\n");
+  };
 }
 
 function readWorkspaceFile(
@@ -88,6 +112,17 @@ function readWorkspaceFile(
   const fullPath = join(workspaceDir(context), filePath);
   if (!existsSync(fullPath)) return undefined;
   return readFileSync(fullPath, "utf8");
+}
+
+function _workspaceDir(metadata: object | undefined): string {
+  if (
+    metadata == null ||
+    !("workingDir" in metadata) ||
+    typeof metadata.workingDir !== "string"
+  ) {
+    throw new Error("missing metadata.workingDir");
+  }
+  return metadata.workingDir;
 }
 
 function _fail(reason: string): GradingResult {

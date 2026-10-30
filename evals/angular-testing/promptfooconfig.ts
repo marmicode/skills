@@ -38,6 +38,12 @@ export default defineUnifiedConfig({
     },
   ],
   extensions: ["file://../shared/hooks.ts:beforeAll"],
+  /* Grades llm-rubric assertions with the same model as the agent. */
+  defaultTest: {
+    options: {
+      provider: `anthropic:messages:${SONNET}`,
+    },
+  },
   tests: [componentWithRepository],
 });
 
