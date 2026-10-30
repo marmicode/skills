@@ -57,15 +57,25 @@ export function filesEqual(
   expectedDir: string,
 ): AssertionValueFunction {
   return (_, context) => {
-    const changed = filePaths.filter((filePath) => {
+    const changed = filePaths.flatMap((filePath) => {
       const actual = readWorkspaceFile(context, filePath);
       const expectedPath = join(expectedDir, filePath);
-      if (actual === undefined || !existsSync(expectedPath)) return true;
-      return actual !== readFileSync(expectedPath, "utf8");
+      const expected = existsSync(expectedPath)
+        ? readFileSync(expectedPath, "utf8")
+        : undefined;
+      const same =
+        actual !== undefined && expected !== undefined && actual === expected;
+      return same ? [] : [{ filePath, actual }];
     });
-    return changed.length === 0
-      ? true
-      : _fail(`differs: ${changed.join(", ")}`);
+    if (changed.length === 0) return true;
+    return _fail(
+      `differs: ${changed.map((file) => file.filePath).join(", ")}`,
+      changed
+        .map(
+          ({ filePath, actual }) => `# ${filePath}\n${actual ?? "(missing)"}`,
+        )
+        .join("\n\n"),
+    );
   };
 }
 
@@ -125,6 +135,12 @@ function _workspaceDir(metadata: object | undefined): string {
   return metadata.workingDir;
 }
 
-function _fail(reason: string): GradingResult {
-  return { pass: false, score: 0, reason };
+function _fail(reason: string, final?: string): GradingResult {
+  return {
+    pass: false,
+    score: 0,
+    reason,
+    /* `final` is the key promptfoo labels "Grader output" and renders in a <pre>. */
+    ...(final === undefined ? {} : { metadata: { graderOutputs: { final } } }),
+  };
 }
