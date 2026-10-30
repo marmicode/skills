@@ -5,7 +5,7 @@ import { $ } from "zx";
 import {
   FIXTURE_DIR,
   WITH_SKILLS_DIR,
-  WITHOUT_SKILLS_DIR,
+  NO_SKILLS_DIR,
 } from "../angular-testing/fixtures/config.ts";
 
 const REPO_ROOT = resolve(import.meta.dirname, "../..");
@@ -22,8 +22,8 @@ const SKILLS_DIR = join(REPO_ROOT, "skills");
  * rejects symlinks pointing outside of `working_dir`.
  */
 export async function beforeAll(_context: BeforeAllExtensionHookContext) {
+  await _cloneFixture(NO_SKILLS_DIR);
   await _cloneFixture(WITH_SKILLS_DIR);
-  await _cloneFixture(WITHOUT_SKILLS_DIR);
 
   const target = join(WITH_SKILLS_DIR, ".claude/skills/angular-testing");
   mkdirSync(dirname(target), { recursive: true });

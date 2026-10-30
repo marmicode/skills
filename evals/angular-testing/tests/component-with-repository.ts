@@ -32,7 +32,7 @@ const testCase: TestCase = {
           cwd: workspaceDir(context),
           quiet: true,
           nothrow: true,
-        })`node_modules/.bin/vitest run ${specPath}`;
+        })`pnpm vitest run ${specPath}`;
         if (result.ok) return true;
         return { pass: false, score: 0, reason: result.stdall };
       },
@@ -52,8 +52,18 @@ const testCase: TestCase = {
     },
     {
       type: "javascript",
+      metric: "browser-mode-locators",
+      value: fileContains(specPath, /\bpage\.getBy/),
+    },
+    {
+      type: "javascript",
+      metric: "expect-element",
+      value: fileContains(specPath, /\bexpect\.element\(/),
+    },
+    {
+      type: "javascript",
       metric: "suite-named-after-sut",
-      value: fileContains(specPath, /describe\(RecipeSearch\b/),
+      value: fileContains(specPath, /describe\(RecipeSearch,/),
     },
     {
       type: "javascript",
@@ -79,11 +89,6 @@ const testCase: TestCase = {
       type: "javascript",
       metric: "no-http-testing-controller",
       value: fileOmits(specPath, /\bHttpTestingController\b/),
-    },
-    {
-      type: "javascript",
-      metric: "browser-mode-locators",
-      value: fileContains(specPath, /\bpage\.getBy/),
     },
     {
       type: "javascript",
