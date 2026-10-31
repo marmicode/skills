@@ -14,6 +14,10 @@ export const inputBindingCall = _callOf("inputBinding");
 export const outputBindingCall = _callOf("outputBinding");
 export const viFnCall = _callOf(String.raw`vi\.fn`);
 export const expectElementCall = /\bexpect\s*\.\s*element\s*\(/;
+/* `expect` then `.poll(`, including a line break and indent before `.poll`. */
+export const expectPollCall = /\bexpect\s*\.\s*poll\s*\(/;
+/* `try {` or `catch (`, not `promise.catch(`. */
+export const tryCatch = /\btry\s*\{|(?<!\.)\bcatch\s*\(/;
 /* toHaveBeenCalledWith, toHaveBeenLastCalledWith, toHaveBeenCalledExactlyOnceWith. */
 export const calledWith = /toHaveBeen\w*Called\w*With/;
 

@@ -7,7 +7,11 @@ import {
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { inputBindingCall, specPasses } from "../../shared/helpers.ts";
+import {
+  expectPollCall,
+  inputBindingCall,
+  specPasses,
+} from "../../shared/helpers.ts";
 
 const SPEC_PATH = "src/app/recipe-of-the-day.browser.spec.ts";
 
@@ -54,7 +58,7 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "polls-the-input",
-      value: fileContains(SPEC_PATH, /\bexpect\.poll\(/),
+      value: fileContains(SPEC_PATH, expectPollCall),
     },
     {
       type: "javascript",

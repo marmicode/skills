@@ -8,7 +8,11 @@ import {
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { expectElementCall, specPasses } from "../../shared/helpers.ts";
+import {
+  expectElementCall,
+  specPasses,
+  tryCatch,
+} from "../../shared/helpers.ts";
 
 const SPEC_PATH = "src/app/cookbook-search.browser.spec.ts";
 
@@ -66,7 +70,7 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "no-try-catch",
-      value: fileOmits(SPEC_PATH, /\btry\s*\{|\bcatch\s*\(/),
+      value: fileOmits(SPEC_PATH, tryCatch),
     },
     {
       type: "javascript",
