@@ -11,7 +11,7 @@ import {
   OUTPUT_BINDING_CALL,
   VI_FN_CALL,
 } from "../../shared/helpers.ts";
-import { componentTestAssertions } from "../../shared/component-assertions.ts";
+import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const PREVIEW_SPEC_PATH = "src/app/recipe-preview.browser.spec.ts";
 const FILTER_SPEC_PATH = "src/app/recipe-filter.browser.spec.ts";
@@ -31,8 +31,8 @@ export default defineTestCase({
         ANGULAR_APP_BASE_DIR,
       ),
     },
-    ...componentTestAssertions({
-      specPath: PREVIEW_SPEC_PATH,
+    ...testFileAssertions({
+      testPath: PREVIEW_SPEC_PATH,
       expected: {
         suiteName: "RecipePreview",
         pageLocators: true,
@@ -49,8 +49,8 @@ export default defineTestCase({
       metric: "preview-signal-set",
       value: fileContains(PREVIEW_SPEC_PATH, /\.set\(/),
     },
-    ...componentTestAssertions({
-      specPath: FILTER_SPEC_PATH,
+    ...testFileAssertions({
+      testPath: FILTER_SPEC_PATH,
       expected: { suiteName: "RecipeFilter", pageLocators: true },
     }),
     {

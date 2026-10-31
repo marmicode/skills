@@ -1,7 +1,6 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  fileExists,
   fileOmits,
   filesEqual as filesUntouched,
   globAbsent,
@@ -9,7 +8,7 @@ import {
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { specPasses, TRY_CATCH } from "../../shared/helpers.ts";
+import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/meal-planner.spec.ts";
 
@@ -19,16 +18,10 @@ export default defineTestCase({
     request: "Write tests for the MealPlanner service.",
   },
   assert: [
-    {
-      type: "javascript",
-      metric: "spec-next-to-service",
-      value: fileExists(SPEC_PATH),
-    },
-    {
-      type: "javascript",
-      metric: "spec-passes",
-      value: specPasses(SPEC_PATH),
-    },
+    ...testFileAssertions({
+      testPath: SPEC_PATH,
+      expected: { suiteName: "MealPlanner" },
+    }),
     {
       type: "javascript",
       metric: "source-untouched",
@@ -55,11 +48,6 @@ export default defineTestCase({
     },
     {
       type: "javascript",
-      metric: "suite-named-after-sut",
-      value: fileContains(SPEC_PATH, /describe\(MealPlanner,/),
-    },
-    {
-      type: "javascript",
       metric: "partial-match",
       value: fileContains(SPEC_PATH, /objectContaining|toMatchObject/),
     },
@@ -67,46 +55,6 @@ export default defineTestCase({
       type: "javascript",
       metric: "throws",
       value: fileContains(SPEC_PATH, /\.toThrow\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-constructor",
-      value: fileOmits(SPEC_PATH, /\bnew MealPlanner\b/),
-    },
-    {
-      type: "javascript",
-      metric: "no-spy-on",
-      value: fileOmits(SPEC_PATH, /\bvi\.spyOn\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-module-mocks",
-      value: fileOmits(SPEC_PATH, /\bvi\.mock\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-use-value",
-      value: fileOmits(SPEC_PATH, /\buseValue\b/),
-    },
-    {
-      type: "javascript",
-      metric: "no-mock-return",
-      value: fileOmits(SPEC_PATH, /\bmockReturnValue\b/),
-    },
-    {
-      type: "javascript",
-      metric: "no-http-testing-controller",
-      value: fileOmits(SPEC_PATH, /\bHttpTestingController\b/),
-    },
-    {
-      type: "javascript",
-      metric: "no-before-each",
-      value: fileOmits(SPEC_PATH, /\bbeforeEach\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-try-catch",
-      value: fileOmits(SPEC_PATH, TRY_CATCH),
     },
     {
       type: "javascript",

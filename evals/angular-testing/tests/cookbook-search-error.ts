@@ -6,7 +6,7 @@ import {
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { componentTestAssertions } from "../../shared/component-assertions.ts";
+import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/cookbook-search.browser.spec.ts";
 
@@ -17,8 +17,8 @@ export default defineTestCase({
       "Write tests for CookbookSearch, including the failure when a search fails.",
   },
   assert: [
-    ...componentTestAssertions({
-      specPath: SPEC_PATH,
+    ...testFileAssertions({
+      testPath: SPEC_PATH,
       expected: {
         suiteName: "CookbookSearch",
         pageLocators: true,

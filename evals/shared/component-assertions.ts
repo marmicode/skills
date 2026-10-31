@@ -3,17 +3,18 @@ import { fileContains, fileExists, fileOmits } from "./assertions.ts";
 import { EXPECT_ELEMENT_CALL, specPasses, TRY_CATCH } from "./helpers.ts";
 
 /**
- * Shared checks for a browser component spec. The spec file exists, vitest
- * passes, and the spec skips `beforeEach`, `detectChanges`,
- * `componentInstance`, `vi.mock`, `mockReturnValue`, `HttpTestingController`,
+ * Shared checks for a test file. The file exists, vitest passes, and the
+ * file skips `beforeEach`, `detectChanges`, `componentInstance`, `vi.mock`,
+ * `vi.spyOn`, `useValue`, `mockReturnValue`, `HttpTestingController`,
  * `querySelector`, `try`/`catch`, `MockComponent`, and `setInput`. `expected`
- * opts into the suite name, `page.getBy`, and `expect.element`.
+ * opts into the suite name, `new` of that name, `page.getBy`, and
+ * `expect.element`.
  */
-export function componentTestAssertions({
-  specPath,
+export function testFileAssertions({
+  testPath,
   expected = {},
 }: {
-  specPath: string;
+  testPath: string;
   expected?: {
     suiteName?: string;
     pageLocators?: true;
@@ -22,16 +23,16 @@ export function componentTestAssertions({
 }): Assertion[] {
   const { suiteName, pageLocators, expectElement } = expected;
   return [
-    _assertion("spec-next-to-component", fileExists(specPath)),
-    _assertion("spec-passes", specPasses(specPath)),
+    _assertion("spec-next-to-sut", fileExists(testPath)),
+    _assertion("spec-passes", specPasses(testPath)),
     ...(pageLocators
-      ? [_assertion("locators", fileContains(specPath, /\bpage\.getBy/))]
+      ? [_assertion("locators", fileContains(testPath, /\bpage\.getBy/))]
       : []),
     ...(expectElement
       ? [
           _assertion(
             "expect-element",
-            fileContains(specPath, EXPECT_ELEMENT_CALL),
+            fileContains(testPath, EXPECT_ELEMENT_CALL),
           ),
         ]
       : []),
@@ -40,34 +41,40 @@ export function componentTestAssertions({
           _assertion(
             "suite-named-after-sut",
             fileContains(
-              specPath,
+              testPath,
               new RegExp(String.raw`describe\(${suiteName},`),
             ),
           ),
+          _assertion(
+            "no-constructor",
+            fileOmits(testPath, new RegExp(String.raw`\bnew ${suiteName}\b`)),
+          ),
         ]
       : []),
-    _assertion("no-before-each", fileOmits(specPath, /\bbeforeEach\(/)),
-    _assertion("no-detect-changes", fileOmits(specPath, /\.detectChanges\(/)),
+    _assertion("no-before-each", fileOmits(testPath, /\bbeforeEach\(/)),
+    _assertion("no-detect-changes", fileOmits(testPath, /\.detectChanges\(/)),
     _assertion(
       "no-component-instance",
-      fileOmits(specPath, /\.componentInstance\b/),
+      fileOmits(testPath, /\.componentInstance\b/),
     ),
-    _assertion("no-module-mocks", fileOmits(specPath, /\bvi\.mock\(/)),
+    _assertion("no-module-mocks", fileOmits(testPath, /\bvi\.mock\(/)),
+    _assertion("no-spy-on", fileOmits(testPath, /\bvi\.spyOn\(/)),
+    _assertion("no-use-value", fileOmits(testPath, /\buseValue\b/)),
     _assertion(
       "no-http-testing-controller",
-      fileOmits(specPath, /\bHttpTestingController\b/),
+      fileOmits(testPath, /\bHttpTestingController\b/),
     ),
     _assertion(
       "no-query-selector",
-      fileOmits(specPath, /\bquerySelector(All)?\(/),
+      fileOmits(testPath, /\bquerySelector(All)?\(/),
     ),
-    _assertion("no-try-catch", fileOmits(specPath, TRY_CATCH)),
+    _assertion("no-try-catch", fileOmits(testPath, TRY_CATCH)),
     _assertion(
       "no-mock-return",
-      fileOmits(specPath, /\bmockReturnValue\b|\bmockRejectedValue\b/),
+      fileOmits(testPath, /\bmockReturnValue\b|\bmockRejectedValue\b/),
     ),
-    _assertion("no-mock-component", fileOmits(specPath, /\bMockComponent\b/)),
-    _assertion("no-set-input", fileOmits(specPath, /\.setInput\(/)),
+    _assertion("no-mock-component", fileOmits(testPath, /\bMockComponent\b/)),
+    _assertion("no-set-input", fileOmits(testPath, /\.setInput\(/)),
   ];
 }
 

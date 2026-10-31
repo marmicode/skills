@@ -5,7 +5,7 @@ import {
   globExists,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
-import { componentTestAssertions } from "../../shared/component-assertions.ts";
+import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/seasonal-recipes.browser.spec.ts";
 const COMPONENT_PATH = "src/app/seasonal-recipes.ts";
@@ -16,8 +16,8 @@ export default defineTestCase({
     request: "Write tests for SeasonalRecipes. You may change production code.",
   },
   assert: [
-    ...componentTestAssertions({
-      specPath: SPEC_PATH,
+    ...testFileAssertions({
+      testPath: SPEC_PATH,
       expected: { pageLocators: true, expectElement: true },
     }),
     {

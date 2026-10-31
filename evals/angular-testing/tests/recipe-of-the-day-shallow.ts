@@ -6,7 +6,7 @@ import {
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import { EXPECT_POLL_CALL, INPUT_BINDING_CALL } from "../../shared/helpers.ts";
-import { componentTestAssertions } from "../../shared/component-assertions.ts";
+import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/recipe-of-the-day.browser.spec.ts";
 
@@ -17,8 +17,8 @@ export default defineTestCase({
       "Write tests for RecipeOfTheDay. RecipePreview is slow, so test RecipeOfTheDay without rendering RecipePreview.",
   },
   assert: [
-    ...componentTestAssertions({
-      specPath: SPEC_PATH,
+    ...testFileAssertions({
+      testPath: SPEC_PATH,
       expected: { suiteName: "RecipeOfTheDay" },
     }),
     {
