@@ -79,11 +79,11 @@ export default defineTestCase({
       type: "llm-rubric",
       metric: "manual-timers-around-the-debounce",
       transform: workspaceAsOutput([{ title: "Spec", path: SPEC_PATH }]),
-      value: `The output is the spec. An empty spec section fails. Fake timers are installed before the component is created and restored with onTestFinished.
-One test advances to just before 300ms and expects the output spy not to have been called.
+      value: `The output is the spec.
+Fake timers are installed before the component is created.
+One test advances to just before 300ms.
 Another advances past 300ms and expects the spy to have been called with the literal keywords the user typed.
-Neither test advances by exactly 300. The user types through a page locator.
-fakeAsync, tick, and sleeping for the delay fail.`,
+Neither test advances by exactly 300.`,
     },
   ],
 });

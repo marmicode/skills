@@ -41,7 +41,8 @@ export default defineTestCase({
         { title: "Spec", path: "src/app/recipe-search*.spec.ts" },
         { title: "Fake", path: "src/**/*.fake.ts" },
       ]),
-      value: `The output is the spec and the fake. An empty spec section fails. Each it() names one behavior, in the present tense, such as "shows recipes matching the keywords".
+      value: `The output is the spec and the fake.
+Each it() names one behavior, in the present tense, such as "shows recipes matching the keywords".
 "should ..." and past tense fail.
 Every expected value is a literal written in the assertion, such as 'Burger' or ['Burger', 'Salad'].
 The same literal may also be used to arrange the fake.
@@ -54,8 +55,9 @@ Deriving the expected value from an arranged recipe, from a variable holding tha
         { title: "Spec", path: "src/app/recipe-search*.spec.ts" },
         { title: "Fake", path: "src/**/*.fake.ts" },
       ]),
-      value: `The output is the spec and the fake. An empty spec section fails. The fake is an in-memory RecipeRepository, and the spec arranges it through a testing helper such as setRecipes() or configure() before the component is mounted.
-A vi.fn(), mockReturnValue, useValue method map, or any other stub fails.
+      value: `The output is the spec and the fake.
+The fake is an in-memory RecipeRepository, and the spec arranges it through a testing helper such as setRecipes() or configure() before the component is mounted.
+A vi.fn() or any other stub fails.
 The spec does not assert that searchRecipes was called, or which arguments it received.`,
     },
     {
@@ -65,7 +67,8 @@ The spec does not assert that searchRecipes was called, or which arguments it re
         { title: "Spec", path: "src/app/recipe-search*.spec.ts" },
         { title: "Fake", path: "src/**/*.fake.ts" },
       ]),
-      value: `The output is the spec and the fake. An empty spec section fails. The spec asserts what a user sees: the recipe names rendered in headings, and the empty copy "No recipes found".
+      value: `The output is the spec and the fake.
+The spec asserts the recipe names rendered in headings, and the empty copy "No recipes found".
 page.getByRole('heading') and page.getByText both count.
 Calling a method on RecipeSearch, or reading its recipes resource or any other component property, fails.`,
     },

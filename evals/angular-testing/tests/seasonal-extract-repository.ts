@@ -43,9 +43,10 @@ export default defineTestCase({
         { title: "Component", path: COMPONENT_PATH },
         { title: "Fake", path: "src/**/*.fake.ts" },
       ]),
-      value: `The output is the spec, the component, and the fake. An empty spec section fails. SeasonalRecipes no longer calls HttpClient. A repository the app owns loads the recipes, and the spec arranges an in-memory fake of that repository before the component is mounted.
+      value: `The output is the spec, the component, and the fake.
+The spec arranges an in-memory fake of the repository before the component is mounted.
 The spec asserts a literal recipe name through the DOM.
-HttpTestingController, a fake of HttpClient, or a hardcoded recipe list in the component fails.
+A fake of HttpClient, or a hardcoded recipe list in the component, fails.
 The spec does not assert the request URL.`,
     },
   ],

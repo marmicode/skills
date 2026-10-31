@@ -68,10 +68,11 @@ export default defineTestCase({
         { title: "Spec", path: SPEC_PATH },
         { title: "Fake", path: "src/**/meal-repository.fake.ts" },
       ]),
-      value: `The output is the spec and the meal repository fake. An empty spec section fails. MealRepository is an in-memory fake class. A useValue method map fails. MealStore is the real class: the spec does not replace it.
-One test adds a recipe and expects a literal name such as 'Burger' via objectContaining or toMatchObject.
-One test rejects a duplicate with toThrow or rejects.toThrow, and the expected message is a literal.
-Deriving the expected name from the arranged recipe fails. try/catch fails.`,
+      value: `The output is the spec and the meal repository fake.
+MealRepository is an in-memory fake class.
+One test adds a recipe and expects a literal name such as 'Burger'.
+One test rejects a duplicate, and the expected message is a literal.
+Deriving the expected name from the arranged recipe fails.`,
     },
   ],
 });

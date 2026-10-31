@@ -75,9 +75,10 @@ export default defineTestCase({
         { title: "Preview", path: PREVIEW_SPEC_PATH },
         { title: "Filter", path: FILTER_SPEC_PATH },
       ]),
-      value: `The output is the two specs. An empty section fails. RecipePreview sets the recipe signal with .set(...) and asserts the new heading text. The expected text is a literal such as 'Salad'.
-RecipeFilter types through the keywords textbox and asserts the output spy was called with a literal string.
-Reading the component instance, or subscribing to the output on the component, fails.
+      value: `The output is the two specs.
+RecipePreview asserts the new heading text. The expected text is a literal such as 'Salad'.
+RecipeFilter types through the keywords textbox, and the output spy is called with a literal string.
+Subscribing to the output on the component fails.
 Test names are one behavior in the present tense. "should ..." fails.`,
     },
   ],

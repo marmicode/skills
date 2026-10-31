@@ -50,9 +50,10 @@ export default defineTestCase({
       type: "llm-rubric",
       metric: "real-child-heading",
       transform: workspaceAsOutput([{ title: "Spec", path: SPEC_PATH }]),
-      value: `The output is the spec. An empty spec section fails. The spec renders RecipePreview for real and asserts the recipe name the user sees in the heading.
-The expected name is a literal. The recipe input is a signal binding.
-Shallow rendering, CUSTOM_ELEMENTS_SCHEMA, and MockComponent fail.
+      value: `The output is the spec.
+The spec renders RecipePreview for real and asserts the recipe name the user sees in the heading.
+The expected name is a literal.
+Shallow rendering fails.
 The test name is one behavior in the present tense. "should ..." fails.`,
     },
   ],

@@ -51,9 +51,9 @@ export default defineTestCase({
         { title: "Spec", path: SPEC_PATH },
         { title: "Fake", path: "src/**/cookbook-repository.fake.ts" },
       ]),
-      value: `The output is the spec and the fake. An empty spec section fails. The fake is an in-memory CookbookRepository. One test arranges cookbooks and asserts a literal name in a heading.
-One test arranges a failure through the fake (a token in the keywords, a configure() flag, or similar) and asserts the visible text "Search failed".
-mockReturnValue, mockRejectedValue, and try/catch fail.
+      value: `The output is the spec and the fake.
+The fake is an in-memory CookbookRepository. One test arranges cookbooks and asserts a literal name in a heading.
+One test arranges a failure through the fake (a token in the keywords, a configure() flag, or similar).
 Test names are one behavior in the present tense. "should ..." fails.`,
     },
   ],

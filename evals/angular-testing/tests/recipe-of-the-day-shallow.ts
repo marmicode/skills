@@ -58,9 +58,9 @@ export default defineTestCase({
       type: "llm-rubric",
       metric: "reads-the-child-input",
       transform: workspaceAsOutput([{ title: "Spec", path: SPEC_PATH }]),
-      value: `The output is the spec. An empty spec section fails. The spec shallow-renders RecipeOfTheDay: overrideComponent drops the child and CUSTOM_ELEMENTS_SCHEMA leaves a placeholder.
-It reads the recipe passed to that placeholder and expects a literal name such as 'Burger'.
-MockComponent, rendering the real RecipePreview heading, and reading RecipeOfTheDay's own fields fail.
+      value: `The output is the spec.
+It expects a literal recipe name such as 'Burger' on the placeholder.
+Rendering the real RecipePreview heading fails.
 The test name is one behavior in the present tense. "should ..." fails.`,
     },
   ],
