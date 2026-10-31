@@ -1,20 +1,17 @@
-import type { TestCase } from "promptfoo";
+import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
   fileExists,
   fileOmits,
   filesEqual as filesUntouched,
+  workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { FIXTURE_DIR } from "../fixtures/config.ts";
-import {
-  outputBindingCall,
-  specPasses,
-  workspaceRubric,
-} from "../../shared/helpers.ts";
+import { outputBindingCall, specPasses } from "../../shared/helpers.ts";
 
-const specPath = "src/app/keyword-search.browser.spec.ts";
+const SPEC_PATH = "src/app/keyword-search.browser.spec.ts";
 
-const testCase: TestCase = {
+export default defineTestCase({
   description: "tests a debounce with fake timers",
   vars: {
     request:
@@ -24,12 +21,12 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "spec-next-to-component",
-      value: fileExists(specPath),
+      value: fileExists(SPEC_PATH),
     },
     {
       type: "javascript",
       metric: "spec-passes",
-      value: specPasses(specPath),
+      value: specPasses(SPEC_PATH),
     },
     {
       type: "javascript",
@@ -39,82 +36,77 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "fake-timers",
-      value: fileContains(specPath, /\bvi\.useFakeTimers\(/),
+      value: fileContains(SPEC_PATH, /\bvi\.useFakeTimers\(/),
     },
     {
       type: "javascript",
       metric: "advance-async",
-      value: fileContains(specPath, /\badvanceTimersByTimeAsync\(/),
+      value: fileContains(SPEC_PATH, /\badvanceTimersByTimeAsync\(/),
     },
     {
       type: "javascript",
       metric: "restore-timers",
-      value: fileContains(specPath, /\bonTestFinished\(/),
+      value: fileContains(SPEC_PATH, /\bonTestFinished\(/),
     },
     {
       type: "javascript",
       metric: "output-binding",
-      value: fileContains(specPath, outputBindingCall),
+      value: fileContains(SPEC_PATH, outputBindingCall),
     },
     {
       type: "javascript",
       metric: "not-called-yet",
-      value: fileContains(specPath, /not\.toHaveBeenCalled\(/),
+      value: fileContains(SPEC_PATH, /not\.toHaveBeenCalled\(/),
     },
     {
       type: "javascript",
       metric: "locators",
-      value: fileContains(specPath, /\bpage\.getBy/),
+      value: fileContains(SPEC_PATH, /\bpage\.getBy/),
     },
     {
       type: "javascript",
       metric: "no-sync-advance",
-      value: fileOmits(specPath, /\bvi\.advanceTimersByTime\(/),
+      value: fileOmits(SPEC_PATH, /\bvi\.advanceTimersByTime\(/),
     },
     {
       type: "javascript",
       metric: "no-sync-run-all",
-      value: fileOmits(specPath, /\bvi\.runAllTimers\(/),
+      value: fileOmits(SPEC_PATH, /\bvi\.runAllTimers\(/),
     },
     {
       type: "javascript",
       metric: "no-fake-async",
-      value: fileOmits(specPath, /\bfakeAsync\b|\btick\(|\bwaitForAsync\b/),
+      value: fileOmits(SPEC_PATH, /\bfakeAsync\b|\btick\(|\bwaitForAsync\b/),
     },
     {
       type: "javascript",
       metric: "no-sleep",
-      value: fileOmits(specPath, /\bsetTimeout\(/),
+      value: fileOmits(SPEC_PATH, /\bsetTimeout\(/),
     },
     {
       type: "javascript",
       metric: "no-before-each",
-      value: fileOmits(specPath, /\bbeforeEach\(/),
+      value: fileOmits(SPEC_PATH, /\bbeforeEach\(/),
     },
     {
       type: "javascript",
       metric: "no-detect-changes",
-      value: fileOmits(specPath, /\.detectChanges\(/),
+      value: fileOmits(SPEC_PATH, /\.detectChanges\(/),
     },
     {
       type: "javascript",
       metric: "no-component-instance",
-      value: fileOmits(specPath, /\.componentInstance\b/),
+      value: fileOmits(SPEC_PATH, /\.componentInstance\b/),
     },
-    workspaceRubric(
-      { spec: specPath },
-      "The output is the spec. An empty spec section fails.",
-      {
-        type: "llm-rubric",
-        metric: "manual-timers-around-the-debounce",
-        value: `Fake timers are installed before the component is created and restored with onTestFinished.
+    {
+      type: "llm-rubric",
+      metric: "manual-timers-around-the-debounce",
+      transform: workspaceAsOutput([{ title: "Spec", path: SPEC_PATH }]),
+      value: `The output is the spec. An empty spec section fails. Fake timers are installed before the component is created and restored with onTestFinished.
 One test advances to just before 300ms and expects the output spy not to have been called.
 Another advances past 300ms and expects the spy to have been called with the literal keywords the user typed.
 Neither test advances by exactly 300. The user types through a page locator.
 fakeAsync, tick, and sleeping for the delay fail.`,
-      },
-    ),
+    },
   ],
-};
-
-export default testCase;
+});

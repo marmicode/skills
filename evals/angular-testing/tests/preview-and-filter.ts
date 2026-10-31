@@ -1,9 +1,10 @@
-import type { TestCase } from "promptfoo";
+import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
   fileExists,
   fileOmits,
   filesEqual as filesUntouched,
+  workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { FIXTURE_DIR } from "../fixtures/config.ts";
 import {
@@ -13,13 +14,12 @@ import {
   outputBindingCall,
   specPasses,
   viFnCall,
-  workspaceRubric,
 } from "../../shared/helpers.ts";
 
-const previewSpec = "src/app/recipe-preview.browser.spec.ts";
-const filterSpec = "src/app/recipe-filter.browser.spec.ts";
+const PREVIEW_SPEC_PATH = "src/app/recipe-preview.browser.spec.ts";
+const FILTER_SPEC_PATH = "src/app/recipe-filter.browser.spec.ts";
 
-const testCase: TestCase = {
+export default defineTestCase({
   description: "binds an input signal and an output spy",
   vars: {
     request:
@@ -29,17 +29,17 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "preview-spec",
-      value: fileExists(previewSpec),
+      value: fileExists(PREVIEW_SPEC_PATH),
     },
     {
       type: "javascript",
       metric: "filter-spec",
-      value: fileExists(filterSpec),
+      value: fileExists(FILTER_SPEC_PATH),
     },
     {
       type: "javascript",
       metric: "spec-passes",
-      value: specPasses([previewSpec, filterSpec]),
+      value: specPasses([PREVIEW_SPEC_PATH, FILTER_SPEC_PATH]),
     },
     {
       type: "javascript",
@@ -49,62 +49,62 @@ const testCase: TestCase = {
         FIXTURE_DIR,
       ),
     },
-    ..._componentChecks(previewSpec, "preview", true),
+    ..._componentChecks(PREVIEW_SPEC_PATH, "preview", true),
     {
       type: "javascript",
       metric: "preview-input-binding",
-      value: fileContains(previewSpec, inputBindingCall),
+      value: fileContains(PREVIEW_SPEC_PATH, inputBindingCall),
     },
     {
       type: "javascript",
       metric: "preview-signal-set",
-      value: fileContains(previewSpec, /\.set\(/),
+      value: fileContains(PREVIEW_SPEC_PATH, /\.set\(/),
     },
     {
       type: "javascript",
       metric: "preview-suite-name",
-      value: fileContains(previewSpec, /describe\(RecipePreview,/),
+      value: fileContains(PREVIEW_SPEC_PATH, /describe\(RecipePreview,/),
     },
     {
       type: "javascript",
       metric: "preview-no-set-input",
-      value: fileOmits(previewSpec, /\.setInput\(/),
+      value: fileOmits(PREVIEW_SPEC_PATH, /\.setInput\(/),
     },
-    ..._componentChecks(filterSpec, "filter", false),
+    ..._componentChecks(FILTER_SPEC_PATH, "filter", false),
     {
       type: "javascript",
       metric: "filter-output-binding",
-      value: fileContains(filterSpec, outputBindingCall),
+      value: fileContains(FILTER_SPEC_PATH, outputBindingCall),
     },
     {
       type: "javascript",
       metric: "filter-spy",
-      value: fileContains(filterSpec, viFnCall),
+      value: fileContains(FILTER_SPEC_PATH, viFnCall),
     },
     {
       type: "javascript",
       metric: "filter-called-with",
-      value: fileContains(filterSpec, calledWith),
+      value: fileContains(FILTER_SPEC_PATH, calledWith),
     },
     {
       type: "javascript",
       metric: "filter-suite-name",
-      value: fileContains(filterSpec, /describe\(RecipeFilter,/),
+      value: fileContains(FILTER_SPEC_PATH, /describe\(RecipeFilter,/),
     },
-    workspaceRubric(
-      { preview: previewSpec, filter: filterSpec },
-      "The output is the two specs. An empty section fails.",
-      {
-        type: "llm-rubric",
-        metric: "bindings-and-literals",
-        value: `RecipePreview sets the recipe signal with .set(...) and asserts the new heading text. The expected text is a literal such as 'Salad'.
+    {
+      type: "llm-rubric",
+      metric: "bindings-and-literals",
+      transform: workspaceAsOutput([
+        { title: "Preview", path: PREVIEW_SPEC_PATH },
+        { title: "Filter", path: FILTER_SPEC_PATH },
+      ]),
+      value: `The output is the two specs. An empty section fails. RecipePreview sets the recipe signal with .set(...) and asserts the new heading text. The expected text is a literal such as 'Salad'.
 RecipeFilter types through the keywords textbox and asserts the output spy was called with a literal string.
 Reading the component instance, or subscribing to the output on the component, fails.
 Test names are one behavior in the present tense. "should ..." fails.`,
-      },
-    ),
+    },
   ],
-};
+});
 
 function _componentChecks(
   specPath: string,
@@ -143,5 +143,3 @@ function _componentChecks(
     },
   ];
 }
-
-export default testCase;

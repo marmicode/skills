@@ -99,26 +99,27 @@ export function workspaceDir(context: AssertionValueFunctionContext): string {
 
 /**
  * Assertion transform for `llm-rubric`. The rubric grades this string instead
- * of the agent's message. Each key is a heading; each value is a glob.
+ * of the agent's message. Each entry is a heading and a workspace path.
+ * A `*` in the path makes it a glob.
  */
 export function workspaceAsOutput(
-  sections: Readonly<Record<string, string>>,
+  files: readonly { title: string; path: string }[],
 ): TransformFunction {
   return (_output, context) => {
     const dir = _workspaceDir(context.metadata);
-    return Object.entries(sections)
-      .map(([label, pattern]) => {
-        const files = [...new Set(globSync(pattern, { cwd: dir }))].sort();
+    return files
+      .map(({ title, path }) => {
+        const matches = [...new Set(globSync(path, { cwd: dir }))].sort();
         const body =
-          files.length === 0
+          matches.length === 0
             ? "(none)"
-            : files
+            : matches
                 .map(
                   (filePath) =>
                     `# ${filePath}\n${readFileSync(join(dir, filePath), "utf8")}`,
                 )
                 .join("\n\n");
-        return `## ${label}\n${body}`;
+        return `## ${title}\n${body}`;
       })
       .join("\n\n");
   };

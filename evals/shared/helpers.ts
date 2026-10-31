@@ -1,10 +1,6 @@
-import type { Assertion, AssertionValueFunction } from "promptfoo";
+import type { AssertionValueFunction } from "promptfoo";
 import { $ } from "zx";
-import {
-  workspaceAsOutput,
-  workspaceDir,
-  workspaceFiles,
-} from "./assertions.ts";
+import { workspaceDir, workspaceFiles } from "./assertions.ts";
 
 /* `<T>`, including `=>` and one nested `<>`, then `(`. */
 const typeArg = String.raw`(?:<(?:[^<>]|=>|<[^<>]*>)*>)?`;
@@ -43,19 +39,5 @@ export function specPasses(
     })`pnpm vitest run ${paths}`;
     if (result.ok) return true;
     return { pass: false, score: 0, reason: result.stdall };
-  };
-}
-
-/* llm-rubric grades the agent's message. Feed it the workspace files instead. */
-export function workspaceRubric(
-  sections: Readonly<Record<string, string>>,
-  preamble: string,
-  assertion: Assertion,
-): Assertion {
-  return {
-    ...assertion,
-    type: "llm-rubric",
-    transform: workspaceAsOutput(sections),
-    value: `${preamble} ${assertion.value}`,
   };
 }

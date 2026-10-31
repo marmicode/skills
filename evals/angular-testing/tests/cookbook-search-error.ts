@@ -1,21 +1,18 @@
-import type { TestCase } from "promptfoo";
+import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
   fileExists,
   fileOmits,
   filesEqual as filesUntouched,
   globExists,
+  workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { FIXTURE_DIR } from "../fixtures/config.ts";
-import {
-  expectElementCall,
-  specPasses,
-  workspaceRubric,
-} from "../../shared/helpers.ts";
+import { expectElementCall, specPasses } from "../../shared/helpers.ts";
 
-const specPath = "src/app/cookbook-search.browser.spec.ts";
+const SPEC_PATH = "src/app/cookbook-search.browser.spec.ts";
 
-const testCase: TestCase = {
+export default defineTestCase({
   description: "shows a search failure arranged on the fake",
   vars: {
     request:
@@ -25,12 +22,12 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "spec-next-to-component",
-      value: fileExists(specPath),
+      value: fileExists(SPEC_PATH),
     },
     {
       type: "javascript",
       metric: "spec-passes",
-      value: specPasses(specPath),
+      value: specPasses(SPEC_PATH),
     },
     {
       type: "javascript",
@@ -46,71 +43,69 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "error-copy",
-      value: fileContains(specPath, /Search failed/),
+      value: fileContains(SPEC_PATH, /Search failed/),
     },
     {
       type: "javascript",
       metric: "locators",
-      value: fileContains(specPath, /\bpage\.getBy/),
+      value: fileContains(SPEC_PATH, /\bpage\.getBy/),
     },
     {
       type: "javascript",
       metric: "expect-element",
-      value: fileContains(specPath, expectElementCall),
+      value: fileContains(SPEC_PATH, expectElementCall),
     },
     {
       type: "javascript",
       metric: "suite-named-after-sut",
-      value: fileContains(specPath, /describe\(CookbookSearch,/),
+      value: fileContains(SPEC_PATH, /describe\(CookbookSearch,/),
     },
     {
       type: "javascript",
       metric: "no-try-catch",
-      value: fileOmits(specPath, /\btry\s*\{|\bcatch\s*\(/),
+      value: fileOmits(SPEC_PATH, /\btry\s*\{|\bcatch\s*\(/),
     },
     {
       type: "javascript",
       metric: "no-mock-return",
-      value: fileOmits(specPath, /\bmockReturnValue\b|\bmockRejectedValue\b/),
+      value: fileOmits(SPEC_PATH, /\bmockReturnValue\b|\bmockRejectedValue\b/),
     },
     {
       type: "javascript",
       metric: "no-module-mocks",
-      value: fileOmits(specPath, /\bvi\.mock\(/),
+      value: fileOmits(SPEC_PATH, /\bvi\.mock\(/),
     },
     {
       type: "javascript",
       metric: "no-http-testing-controller",
-      value: fileOmits(specPath, /\bHttpTestingController\b/),
+      value: fileOmits(SPEC_PATH, /\bHttpTestingController\b/),
     },
     {
       type: "javascript",
       metric: "no-before-each",
-      value: fileOmits(specPath, /\bbeforeEach\(/),
+      value: fileOmits(SPEC_PATH, /\bbeforeEach\(/),
     },
     {
       type: "javascript",
       metric: "no-detect-changes",
-      value: fileOmits(specPath, /\.detectChanges\(/),
+      value: fileOmits(SPEC_PATH, /\.detectChanges\(/),
     },
     {
       type: "javascript",
       metric: "no-component-instance",
-      value: fileOmits(specPath, /\.componentInstance\b/),
+      value: fileOmits(SPEC_PATH, /\.componentInstance\b/),
     },
-    workspaceRubric(
-      { spec: specPath, fake: "src/**/cookbook-repository.fake.ts" },
-      "The output is the spec and the fake. An empty spec section fails.",
-      {
-        type: "llm-rubric",
-        metric: "success-and-arranged-failure",
-        value: `The fake is an in-memory CookbookRepository. One test arranges cookbooks and asserts a literal name in a heading.
+    {
+      type: "llm-rubric",
+      metric: "success-and-arranged-failure",
+      transform: workspaceAsOutput([
+        { title: "Spec", path: SPEC_PATH },
+        { title: "Fake", path: "src/**/cookbook-repository.fake.ts" },
+      ]),
+      value: `The output is the spec and the fake. An empty spec section fails. The fake is an in-memory CookbookRepository. One test arranges cookbooks and asserts a literal name in a heading.
 One test arranges a failure through the fake (a token in the keywords, a configure() flag, or similar) and asserts the visible text "Search failed".
 mockReturnValue, mockRejectedValue, and try/catch fail.
 Test names are one behavior in the present tense. "should ..." fails.`,
-      },
-    ),
+    },
   ],
-};
-
-export default testCase;
+});
