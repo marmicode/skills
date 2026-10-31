@@ -7,7 +7,8 @@ import {
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 
-const SPEC_PATH = "src/app/seasonal-recipes.browser.spec.ts";
+const TEST_PATH = "src/app/seasonal-recipes.browser.spec.ts";
+const TEST_PATTERN = "src/app/seasonal-recipes*.spec.ts";
 const COMPONENT_PATH = "src/app/seasonal-recipes.ts";
 
 export default defineTestCase({
@@ -17,8 +18,12 @@ export default defineTestCase({
   },
   assert: [
     ...testFileAssertions({
-      testPath: SPEC_PATH,
-      expected: { pageLocators: true, expectElement: true },
+      testPath: TEST_PATTERN,
+      expected: {
+        testPath: TEST_PATH,
+        pageLocators: true,
+        expectElement: true,
+      },
     }),
     {
       type: "javascript",
@@ -40,7 +45,7 @@ export default defineTestCase({
       threshold: 0.9,
       metric: "repository-boundary",
       transform: workspaceAsOutput([
-        { title: "Spec", path: SPEC_PATH },
+        { title: "Spec", path: TEST_PATTERN },
         { title: "Component", path: COMPONENT_PATH },
         { title: "Fake", path: "src/**/*.fake.ts" },
       ]),

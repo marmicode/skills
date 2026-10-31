@@ -9,7 +9,8 @@ import {
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import { OUTPUT_BINDING_CALL } from "../../shared/helpers.ts";
 
-const SPEC_PATH = "src/app/keyword-search.browser.spec.ts";
+const TEST_PATH = "src/app/keyword-search.browser.spec.ts";
+const TEST_PATTERN = "src/app/keyword-search*.spec.ts";
 
 export default defineTestCase({
   description: "tests a debounce with fake timers",
@@ -19,8 +20,8 @@ export default defineTestCase({
   },
   assert: [
     ...testFileAssertions({
-      testPath: SPEC_PATH,
-      expected: { pageLocators: true },
+      testPath: TEST_PATTERN,
+      expected: { testPath: TEST_PATH, pageLocators: true },
     }),
     {
       type: "javascript",
@@ -33,53 +34,53 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "fake-timers",
-      value: fileContains(SPEC_PATH, /\bvi\.useFakeTimers\(/),
+      value: fileContains(TEST_PATTERN, /\bvi\.useFakeTimers\(/),
     },
     {
       type: "javascript",
       metric: "advance-async",
-      value: fileContains(SPEC_PATH, /\badvanceTimersByTimeAsync\(/),
+      value: fileContains(TEST_PATTERN, /\badvanceTimersByTimeAsync\(/),
     },
     {
       type: "javascript",
       metric: "restore-timers",
-      value: fileContains(SPEC_PATH, /\bonTestFinished\(/),
+      value: fileContains(TEST_PATTERN, /\bonTestFinished\(/),
     },
     {
       type: "javascript",
       metric: "output-binding",
-      value: fileContains(SPEC_PATH, OUTPUT_BINDING_CALL),
+      value: fileContains(TEST_PATTERN, OUTPUT_BINDING_CALL),
     },
     {
       type: "javascript",
       metric: "not-called-yet",
-      value: fileContains(SPEC_PATH, /not\.toHaveBeenCalled\(/),
+      value: fileContains(TEST_PATTERN, /not\.toHaveBeenCalled\(/),
     },
     {
       type: "javascript",
       metric: "no-sync-advance",
-      value: fileOmits(SPEC_PATH, /\bvi\.advanceTimersByTime\(/),
+      value: fileOmits(TEST_PATTERN, /\bvi\.advanceTimersByTime\(/),
     },
     {
       type: "javascript",
       metric: "no-sync-run-all",
-      value: fileOmits(SPEC_PATH, /\bvi\.runAllTimers\(/),
+      value: fileOmits(TEST_PATTERN, /\bvi\.runAllTimers\(/),
     },
     {
       type: "javascript",
       metric: "no-fake-async",
-      value: fileOmits(SPEC_PATH, /\bfakeAsync\b|\btick\(|\bwaitForAsync\b/),
+      value: fileOmits(TEST_PATTERN, /\bfakeAsync\b|\btick\(|\bwaitForAsync\b/),
     },
     {
       type: "javascript",
       metric: "no-sleep",
-      value: fileOmits(SPEC_PATH, /\bsetTimeout\(/),
+      value: fileOmits(TEST_PATTERN, /\bsetTimeout\(/),
     },
     {
       type: "llm-rubric",
       threshold: 0.9,
       metric: "manual-timers-around-the-debounce",
-      transform: workspaceAsOutput([{ title: "Spec", path: SPEC_PATH }]),
+      transform: workspaceAsOutput([{ title: "Spec", path: TEST_PATTERN }]),
       value: `The output is the spec.
 Fake timers are installed before the component is created.
 One test advances to just before 300ms.

@@ -17,8 +17,9 @@ import { EXPECT_ELEMENT_CALL, TRY_CATCH } from "./helpers.ts";
  */
 export function fileExists(filePath: string): AssertionValueFunction {
   return (_, context) => {
-    const content = readWorkspaceFile(context, filePath);
-    if (content === undefined) return _fail(`missing ${filePath}`);
+    const absolutePath = join(workspaceDir(context), filePath);
+    if (!existsSync(absolutePath)) return _fail(`missing ${filePath}`);
+    const content = readFileSync(absolutePath, "utf8");
     return {
       pass: true,
       score: 1,
@@ -34,11 +35,11 @@ export function fileContains(
   pattern: RegExp,
 ): AssertionValueFunction {
   return (_, context) => {
-    const content = readWorkspaceFile(context, filePath);
-    if (content === undefined) return _fail(`missing ${filePath}`);
-    return pattern.test(content)
+    const file = readOneWorkspaceFile(context, filePath);
+    if (!file.ok) return file.result;
+    return pattern.test(file.content)
       ? true
-      : _fail(`${filePath} does not match ${pattern}`);
+      : _fail(`${file.path} does not match ${pattern}`);
   };
 }
 
@@ -47,10 +48,10 @@ export function fileOmits(
   pattern: RegExp,
 ): AssertionValueFunction {
   return (_, context) => {
-    const content = readWorkspaceFile(context, filePath);
-    if (content === undefined) return _fail(`missing ${filePath}`);
-    return pattern.test(content)
-      ? _fail(`${filePath} matches ${pattern}`)
+    const file = readOneWorkspaceFile(context, filePath);
+    if (!file.ok) return file.result;
+    return pattern.test(file.content)
+      ? _fail(`${file.path} matches ${pattern}`)
       : true;
   };
 }
@@ -60,23 +61,23 @@ export function filesUntouched(
   originalDir: string,
 ): AssertionValueFunction {
   return (_, context) => {
-    const changed = filePaths.flatMap((filePath) => {
-      const actual = readWorkspaceFile(context, filePath);
-      const expectedPath = join(originalDir, filePath);
+    const changed: { filePath: string; actual: string }[] = [];
+    for (const filePath of filePaths) {
+      const file = readOneWorkspaceFile(context, filePath);
+      if (!file.ok) return file.result;
+      const expectedPath = join(originalDir, file.path);
       const expected = existsSync(expectedPath)
         ? readFileSync(expectedPath, "utf8")
         : undefined;
-      const same =
-        actual !== undefined && expected !== undefined && actual === expected;
-      return same ? [] : [{ filePath, actual }];
-    });
+      if (file.content !== expected) {
+        changed.push({ filePath: file.path, actual: file.content });
+      }
+    }
     if (changed.length === 0) return true;
     return _fail(
       `differs: ${changed.map((file) => file.filePath).join(", ")}`,
       changed
-        .map(
-          ({ filePath, actual }) => `# ${filePath}\n${actual ?? "(missing)"}`,
-        )
+        .map(({ filePath, actual }) => `# ${filePath}\n${actual}`)
         .join("\n\n"),
     );
   };
@@ -112,7 +113,7 @@ export function workspaceAsOutput(
     const dir = _workspaceDir(context.metadata);
     return files
       .map(({ title, path }) => {
-        const matches = [...new Set(globSync(path, { cwd: dir }))].sort();
+        const matches = _matchWorkspaceFiles(dir, path);
         const body =
           matches.length === 0
             ? "(none)"
@@ -131,24 +132,23 @@ export function workspaceAsOutput(
 /**
  * Paths relative to the test workspace. A `*` makes the path a glob,
  * for example every `*.fake.ts` file under `src`.
+ * Single-file assertions require exactly one match.
  */
 export function workspaceFiles(
   context: AssertionValueFunctionContext,
   filePath: string,
 ): string[] {
-  const dir = workspaceDir(context);
-  if (filePath.includes("*")) {
-    return globSync(filePath, { cwd: dir }).sort();
-  }
-  return existsSync(join(dir, filePath)) ? [filePath] : [];
+  return _matchWorkspaceFiles(workspaceDir(context), filePath);
 }
 
 /**
- * Shared checks for a test file. The file exists, vitest passes, and the
- * file skips `beforeEach`, `detectChanges`, `componentInstance`, `vi.mock`,
- * `vi.spyOn`, `useValue`, `mockReturnValue`, `HttpTestingController`,
- * `querySelector`, `try`/`catch`, `MockComponent`, and `setInput`. `expected`
- * opts into the suite name, `new` of that name, `page.getBy`, and
+ * Shared checks for a test file. `testPath` may be a glob such as
+ * `src/app/weeknight-dinner*.spec.ts`; exactly one file must match.
+ * Vitest passes, and the file skips `beforeEach`, `detectChanges`,
+ * `componentInstance`, `vi.mock`, `vi.spyOn`, `useValue`, `mockReturnValue`,
+ * `HttpTestingController`, `querySelector`, `try`/`catch`, `MockComponent`,
+ * and `setInput`. `expected` opts into an exact `testPath` (the file exists
+ * at that path), the suite name, `new` of that name, `page.getBy`, and
  * `expect.element`.
  */
 export function testFileAssertions({
@@ -157,14 +157,22 @@ export function testFileAssertions({
 }: {
   testPath: string;
   expected?: {
+    testPath?: string;
     suiteName?: string;
     pageLocators?: true;
     expectElement?: true;
   };
 }): Assertion[] {
-  const { suiteName, pageLocators, expectElement } = expected;
+  const {
+    testPath: exactTestPath,
+    suiteName,
+    pageLocators,
+    expectElement,
+  } = expected;
   return [
-    _assertion("spec-next-to-sut", fileExists(testPath)),
+    ...(exactTestPath
+      ? [_assertion("spec-next-to-sut", fileExists(exactTestPath))]
+      : []),
     _assertion("spec-passes", specPasses(testPath)),
     ...(pageLocators
       ? [_assertion("locators", fileContains(testPath, /\bpage\.getBy/))]
@@ -224,15 +232,11 @@ export function specPasses(
 ): AssertionValueFunction {
   const patterns = typeof specPaths === "string" ? [specPaths] : [...specPaths];
   return async (_, context) => {
-    const paths = patterns.flatMap((pattern) =>
-      pattern.includes("*") ? workspaceFiles(context, pattern) : [pattern],
-    );
-    if (paths.length === 0) {
-      return {
-        pass: false,
-        score: 0,
-        reason: `missing ${patterns.join(", ")}`,
-      };
+    const paths: string[] = [];
+    for (const pattern of patterns) {
+      const matches = workspaceFiles(context, pattern);
+      if (matches.length !== 1) return _fail(_matchReason(pattern, matches));
+      paths.push(matches[0]);
     }
     const result = await $({
       cwd: workspaceDir(context),
@@ -244,14 +248,38 @@ export function specPasses(
   };
 }
 
-function readWorkspaceFile(
+/**
+ * The one workspace file at `filePath`. A `*` is a glob.
+ * Zero matches, or more than one, fails the assertion.
+ */
+function readOneWorkspaceFile(
   context: AssertionValueFunctionContext,
   filePath: string,
-): string | undefined {
+):
+  | { ok: true; path: string; content: string }
+  | { ok: false; result: GradingResult } {
   const paths = workspaceFiles(context, filePath);
-  if (paths.length === 0) return undefined;
-  const dir = workspaceDir(context);
-  return paths.map((path) => readFileSync(join(dir, path), "utf8")).join("\n");
+  if (paths.length !== 1) {
+    return { ok: false, result: _fail(_matchReason(filePath, paths)) };
+  }
+  const path = paths[0];
+  return {
+    ok: true,
+    path,
+    content: readFileSync(join(workspaceDir(context), path), "utf8"),
+  };
+}
+
+function _matchWorkspaceFiles(dir: string, filePath: string): string[] {
+  if (!filePath.includes("*")) {
+    return existsSync(join(dir, filePath)) ? [filePath] : [];
+  }
+  return [...new Set(globSync(filePath, { cwd: dir }))].sort();
+}
+
+function _matchReason(filePath: string, paths: readonly string[]): string {
+  if (paths.length === 0) return `missing ${filePath}`;
+  return `${filePath} matched ${paths.length} files: ${paths.join(", ")}`;
 }
 
 function _workspaceDir(metadata: object | undefined): string {

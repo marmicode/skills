@@ -8,7 +8,8 @@ import {
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 
-const SPEC_PATH = "src/app/cookbook-search.browser.spec.ts";
+const TEST_PATH = "src/app/cookbook-search.browser.spec.ts";
+const TEST_PATTERN = "src/app/cookbook-search*.spec.ts";
 
 export default defineTestCase({
   description: "shows a search failure arranged on the fake",
@@ -18,8 +19,9 @@ export default defineTestCase({
   },
   assert: [
     ...testFileAssertions({
-      testPath: SPEC_PATH,
+      testPath: TEST_PATTERN,
       expected: {
+        testPath: TEST_PATH,
         suiteName: "CookbookSearch",
         pageLocators: true,
         expectElement: true,
@@ -42,14 +44,14 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "error-copy",
-      value: fileContains(SPEC_PATH, /Search failed/),
+      value: fileContains(TEST_PATTERN, /Search failed/),
     },
     {
       type: "llm-rubric",
       threshold: 0.9,
       metric: "success-and-arranged-failure",
       transform: workspaceAsOutput([
-        { title: "Spec", path: SPEC_PATH },
+        { title: "Spec", path: TEST_PATTERN },
         { title: "Fake", path: "src/**/cookbook-repository.fake.ts" },
       ]),
       value: `The output is the spec and the fake.

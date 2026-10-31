@@ -33,7 +33,7 @@ export default defineUnifiedConfig({
         ..._sharedOptions(),
         /* Absolute: `beforeAll` clones the fixture here and copies the skill in. */
         working_dir: ANGULAR_APP_WITH_SKILLS_DIR,
-        /* Discovers `.claude/skil ls/*` but ignores user-level skills and settings. */
+        /* Discovers `.claude/skills/*` but ignores user-level skills and settings. */
         setting_sources: ["project"],
         skills: ["angular-testing"],
       }),

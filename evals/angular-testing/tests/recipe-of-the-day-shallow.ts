@@ -8,7 +8,8 @@ import {
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import { EXPECT_POLL_CALL, INPUT_BINDING_CALL } from "../../shared/helpers.ts";
 
-const SPEC_PATH = "src/app/recipe-of-the-day.browser.spec.ts";
+const TEST_PATH = "src/app/recipe-of-the-day.browser.spec.ts";
+const TEST_PATTERN = "src/app/recipe-of-the-day*.spec.ts";
 
 export default defineTestCase({
   description: "shallow-renders a slow shared child",
@@ -18,8 +19,8 @@ export default defineTestCase({
   },
   assert: [
     ...testFileAssertions({
-      testPath: SPEC_PATH,
-      expected: { suiteName: "RecipeOfTheDay" },
+      testPath: TEST_PATTERN,
+      expected: { testPath: TEST_PATH, suiteName: "RecipeOfTheDay" },
     }),
     {
       type: "javascript",
@@ -32,33 +33,33 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "override-component",
-      value: fileContains(SPEC_PATH, /\boverrideComponent\(/),
+      value: fileContains(TEST_PATTERN, /\boverrideComponent\(/),
     },
     {
       type: "javascript",
       metric: "custom-elements-schema",
-      value: fileContains(SPEC_PATH, /\bCUSTOM_ELEMENTS_SCHEMA\b/),
+      value: fileContains(TEST_PATTERN, /\bCUSTOM_ELEMENTS_SCHEMA\b/),
     },
     {
       type: "javascript",
       metric: "child-placeholder",
-      value: fileContains(SPEC_PATH, /\bgetByTestId\(/),
+      value: fileContains(TEST_PATTERN, /\bgetByTestId\(/),
     },
     {
       type: "javascript",
       metric: "polls-the-input",
-      value: fileContains(SPEC_PATH, EXPECT_POLL_CALL),
+      value: fileContains(TEST_PATTERN, EXPECT_POLL_CALL),
     },
     {
       type: "javascript",
       metric: "input-binding",
-      value: fileContains(SPEC_PATH, INPUT_BINDING_CALL),
+      value: fileContains(TEST_PATTERN, INPUT_BINDING_CALL),
     },
     {
       type: "llm-rubric",
       threshold: 0.9,
       metric: "reads-the-child-input",
-      transform: workspaceAsOutput([{ title: "Spec", path: SPEC_PATH }]),
+      transform: workspaceAsOutput([{ title: "Spec", path: TEST_PATTERN }]),
       value: `The output is the spec.
 It expects a literal recipe name such as 'Burger' on the placeholder.
 Rendering the real RecipePreview heading fails.

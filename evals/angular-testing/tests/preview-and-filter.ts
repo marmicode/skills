@@ -13,8 +13,10 @@ import {
   VI_FN_CALL,
 } from "../../shared/helpers.ts";
 
-const PREVIEW_SPEC_PATH = "src/app/recipe-preview.browser.spec.ts";
-const FILTER_SPEC_PATH = "src/app/recipe-filter.browser.spec.ts";
+const PREVIEW_TEST_PATH = "src/app/recipe-preview.browser.spec.ts";
+const PREVIEW_TEST_PATTERN = "src/app/recipe-preview*.spec.ts";
+const FILTER_TEST_PATH = "src/app/recipe-filter.browser.spec.ts";
+const FILTER_TEST_PATTERN = "src/app/recipe-filter*.spec.ts";
 
 export default defineTestCase({
   description: "binds an input signal and an output spy",
@@ -32,8 +34,9 @@ export default defineTestCase({
       ),
     },
     ...testFileAssertions({
-      testPath: PREVIEW_SPEC_PATH,
+      testPath: PREVIEW_TEST_PATTERN,
       expected: {
+        testPath: PREVIEW_TEST_PATH,
         suiteName: "RecipePreview",
         pageLocators: true,
         expectElement: true,
@@ -42,39 +45,43 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "preview-input-binding",
-      value: fileContains(PREVIEW_SPEC_PATH, INPUT_BINDING_CALL),
+      value: fileContains(PREVIEW_TEST_PATTERN, INPUT_BINDING_CALL),
     },
     {
       type: "javascript",
       metric: "preview-signal-set",
-      value: fileContains(PREVIEW_SPEC_PATH, /\.set\(/),
+      value: fileContains(PREVIEW_TEST_PATTERN, /\.set\(/),
     },
     ...testFileAssertions({
-      testPath: FILTER_SPEC_PATH,
-      expected: { suiteName: "RecipeFilter", pageLocators: true },
+      testPath: FILTER_TEST_PATTERN,
+      expected: {
+        testPath: FILTER_TEST_PATH,
+        suiteName: "RecipeFilter",
+        pageLocators: true,
+      },
     }),
     {
       type: "javascript",
       metric: "filter-output-binding",
-      value: fileContains(FILTER_SPEC_PATH, OUTPUT_BINDING_CALL),
+      value: fileContains(FILTER_TEST_PATTERN, OUTPUT_BINDING_CALL),
     },
     {
       type: "javascript",
       metric: "filter-spy",
-      value: fileContains(FILTER_SPEC_PATH, VI_FN_CALL),
+      value: fileContains(FILTER_TEST_PATTERN, VI_FN_CALL),
     },
     {
       type: "javascript",
       metric: "filter-called-with",
-      value: fileContains(FILTER_SPEC_PATH, CALLED_WITH),
+      value: fileContains(FILTER_TEST_PATTERN, CALLED_WITH),
     },
     {
       type: "llm-rubric",
       threshold: 0.9,
       metric: "bindings-and-literals",
       transform: workspaceAsOutput([
-        { title: "Preview", path: PREVIEW_SPEC_PATH },
-        { title: "Filter", path: FILTER_SPEC_PATH },
+        { title: "Preview", path: PREVIEW_TEST_PATTERN },
+        { title: "Filter", path: FILTER_TEST_PATTERN },
       ]),
       value: `The output is the two specs.
 RecipePreview asserts the new heading text. The expected text is a literal such as 'Salad'.

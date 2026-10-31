@@ -10,7 +10,8 @@ import {
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 
-const SPEC_PATH = "src/app/meal-planner.spec.ts";
+const TEST_PATH = "src/app/meal-planner.spec.ts";
+const TEST_PATTERN = "src/app/meal-planner*.spec.ts";
 
 export default defineTestCase({
   description: "tests a service with a real store and a faked repository",
@@ -19,8 +20,8 @@ export default defineTestCase({
   },
   assert: [
     ...testFileAssertions({
-      testPath: SPEC_PATH,
-      expected: { suiteName: "MealPlanner" },
+      testPath: TEST_PATTERN,
+      expected: { testPath: TEST_PATH, suiteName: "MealPlanner" },
     }),
     {
       type: "javascript",
@@ -44,29 +45,29 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "injected-through-testbed",
-      value: fileContains(SPEC_PATH, /TestBed\.inject\(MealPlanner\)/),
+      value: fileContains(TEST_PATTERN, /TestBed\.inject\(MealPlanner\)/),
     },
     {
       type: "javascript",
       metric: "partial-match",
-      value: fileContains(SPEC_PATH, /objectContaining|toMatchObject/),
+      value: fileContains(TEST_PATTERN, /objectContaining|toMatchObject/),
     },
     {
       type: "javascript",
       metric: "throws",
-      value: fileContains(SPEC_PATH, /\.toThrow\(/),
+      value: fileContains(TEST_PATTERN, /\.toThrow\(/),
     },
     {
       type: "javascript",
       metric: "store-class-not-replaced",
-      value: fileOmits(SPEC_PATH, /MealStoreFake|provide:\s*MealStore/),
+      value: fileOmits(TEST_PATTERN, /MealStoreFake|provide:\s*MealStore/),
     },
     {
       type: "llm-rubric",
       threshold: 0.9,
       metric: "real-store-and-duplicate-rejection",
       transform: workspaceAsOutput([
-        { title: "Spec", path: SPEC_PATH },
+        { title: "Spec", path: TEST_PATTERN },
         { title: "Fake", path: "src/**/meal-repository.fake.ts" },
       ]),
       value: `The output is the spec and the meal repository fake.

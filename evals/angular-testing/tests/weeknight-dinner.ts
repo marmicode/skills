@@ -9,7 +9,8 @@ import {
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import { INPUT_BINDING_CALL } from "../../shared/helpers.ts";
 
-const SPEC_PATH = "src/app/weeknight-dinner.browser.spec.ts";
+const TEST_PATH = "src/app/weeknight-dinner.browser.spec.ts";
+const TEST_PATTERN = "src/app/weeknight-dinner*.spec.ts";
 
 export default defineTestCase({
   description: "renders a simple child for real",
@@ -18,8 +19,9 @@ export default defineTestCase({
   },
   assert: [
     ...testFileAssertions({
-      testPath: SPEC_PATH,
+      testPath: TEST_PATTERN,
       expected: {
+        testPath: TEST_PATH,
         suiteName: "WeeknightDinner",
         pageLocators: true,
         expectElement: true,
@@ -36,13 +38,13 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "input-binding",
-      value: fileContains(SPEC_PATH, INPUT_BINDING_CALL),
+      value: fileContains(TEST_PATTERN, INPUT_BINDING_CALL),
     },
     {
       type: "javascript",
       metric: "no-shallow-schema",
       value: fileOmits(
-        SPEC_PATH,
+        TEST_PATTERN,
         /\bCUSTOM_ELEMENTS_SCHEMA\b|\bNO_ERRORS_SCHEMA\b/,
       ),
     },
@@ -50,7 +52,7 @@ export default defineTestCase({
       type: "llm-rubric",
       threshold: 0.9,
       metric: "real-child-heading",
-      transform: workspaceAsOutput([{ title: "Spec", path: SPEC_PATH }]),
+      transform: workspaceAsOutput([{ title: "Spec", path: TEST_PATTERN }]),
       value: `The output is the spec.
 The spec renders RecipePreview for real and asserts the recipe name the user sees in the heading.
 The expected name is a literal.

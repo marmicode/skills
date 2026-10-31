@@ -7,7 +7,8 @@ import {
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 
-const SPEC_PATH = "src/app/recipe-search.browser.spec.ts";
+const TEST_PATH = "src/app/recipe-search.browser.spec.ts";
+const TEST_PATTERN = "src/app/recipe-search*.spec.ts";
 
 export default defineTestCase({
   description: "tests a component that loads data through a repository",
@@ -16,8 +17,9 @@ export default defineTestCase({
   },
   assert: [
     ...testFileAssertions({
-      testPath: SPEC_PATH,
+      testPath: TEST_PATTERN,
       expected: {
+        testPath: TEST_PATH,
         suiteName: "RecipeSearch",
         pageLocators: true,
         expectElement: true,
@@ -39,7 +41,7 @@ export default defineTestCase({
       threshold: 0.9,
       metric: "behavior-names-and-literals",
       transform: workspaceAsOutput([
-        { title: "Spec", path: "src/app/recipe-search*.spec.ts" },
+        { title: "Spec", path: TEST_PATTERN },
         { title: "Fake", path: "src/**/*.fake.ts" },
       ]),
       value: `The output is the spec and the fake.
@@ -54,7 +56,7 @@ Deriving the expected value from an arranged recipe, from a variable holding tha
       threshold: 0.9,
       metric: "in-memory-fake",
       transform: workspaceAsOutput([
-        { title: "Spec", path: "src/app/recipe-search*.spec.ts" },
+        { title: "Spec", path: TEST_PATTERN },
         { title: "Fake", path: "src/**/*.fake.ts" },
       ]),
       value: `The output is the spec and the fake.
@@ -67,7 +69,7 @@ The spec does not assert that searchRecipes was called, or which arguments it re
       threshold: 0.9,
       metric: "asserts-through-the-screen",
       transform: workspaceAsOutput([
-        { title: "Spec", path: "src/app/recipe-search*.spec.ts" },
+        { title: "Spec", path: TEST_PATTERN },
         { title: "Fake", path: "src/**/*.fake.ts" },
       ]),
       value: `The output is the spec and the fake.
