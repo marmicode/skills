@@ -4,8 +4,9 @@ import { EXPECT_ELEMENT_CALL, specPasses } from "./helpers.ts";
 
 /**
  * Shared checks for a browser component spec. The spec file exists, vitest
- * passes, and the spec skips `beforeEach`, `detectChanges`, and
- * `componentInstance`. `expected` opts into the suite name, `page.getBy`,
+ * passes, and the spec skips `beforeEach`, `detectChanges`,
+ * `componentInstance`, `vi.mock`, `HttpTestingController`, and
+ * `querySelector`. `expected` opts into the suite name, `page.getBy`,
  * and `expect.element`.
  */
 export function componentTestAssertions({
@@ -50,6 +51,15 @@ export function componentTestAssertions({
     _assertion(
       "no-component-instance",
       fileOmits(specPath, /\.componentInstance\b/),
+    ),
+    _assertion("no-module-mocks", fileOmits(specPath, /\bvi\.mock\(/)),
+    _assertion(
+      "no-http-testing-controller",
+      fileOmits(specPath, /\bHttpTestingController\b/),
+    ),
+    _assertion(
+      "no-query-selector",
+      fileOmits(specPath, /\bquerySelector(All)?\(/),
     ),
   ];
 }

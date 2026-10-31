@@ -1,6 +1,5 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
-  fileOmits,
   filesEqual as filesUntouched,
   globExists,
   workspaceAsOutput,
@@ -34,21 +33,6 @@ export default defineTestCase({
       type: "javascript",
       metric: "repository-faked",
       value: globExists("src/**/*.fake.ts"),
-    },
-    {
-      type: "javascript",
-      metric: "no-module-mocks",
-      value: fileOmits(SPEC_PATH, /\bvi\.mock\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-http-testing-controller",
-      value: fileOmits(SPEC_PATH, /\bHttpTestingController\b/),
-    },
-    {
-      type: "javascript",
-      metric: "no-query-selector",
-      value: fileOmits(SPEC_PATH, /\bquerySelector(All)?\(/),
     },
     {
       type: "llm-rubric",

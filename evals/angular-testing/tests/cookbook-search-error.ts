@@ -57,16 +57,6 @@ export default defineTestCase({
       value: fileOmits(SPEC_PATH, /\bmockReturnValue\b|\bmockRejectedValue\b/),
     },
     {
-      type: "javascript",
-      metric: "no-module-mocks",
-      value: fileOmits(SPEC_PATH, /\bvi\.mock\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-http-testing-controller",
-      value: fileOmits(SPEC_PATH, /\bHttpTestingController\b/),
-    },
-    {
       type: "llm-rubric",
       metric: "success-and-arranged-failure",
       transform: workspaceAsOutput([
