@@ -12,8 +12,7 @@ import {
   workspaceRubric,
 } from "../../shared/helpers.ts";
 
-/* The skill's shallow example is named `*.shallow.browser.spec.ts`. */
-const specPath = "src/app/recipe-of-the-day*.browser.spec.ts";
+const specPath = "src/app/recipe-of-the-day.browser.spec.ts";
 
 const testCase: TestCase = {
   description: "shallow-renders a slow shared child",

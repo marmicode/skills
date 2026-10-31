@@ -8,6 +8,8 @@ Conventions that belong to Whiskmate, not to this skill:
 - The examples rely on Vitest's `globals: true`; `recipe/recipe-preview.spec.ts` shows the explicit `import { ... } from 'vitest'` form.
 - The production code _(`meal-planner.ts`, `recipe-search.ng.ts`, `local-storage.ts`, `auth.ts`, `recipe.ts`, …)_ is intentionally absent: the examples are reading material, not a runnable project.
 
+`shallow/recipe/` exists so the shallow spec can be named `recipe-search.browser.spec.ts`. `shallow/testing` points at the shared examples so `../testing/recipe.mother` resolves. In a project, put the spec next to the component.
+
 | File | Shows |
 | --- | --- |
 | `meal-planner/meal-planner.spec.ts` | Service test: setup functions, composed setup, deferred instantiation, fake, object mother, `watch()` for reactivity, `rejects.toThrow` |
@@ -18,7 +20,7 @@ Conventions that belong to Whiskmate, not to this skill:
 | `recipe/recipe-preview.browser.spec.ts` | Inputs with `inputBinding` and a signal, no fixture |
 | `recipe/recipe-preview.spec.ts` | The same test in an emulated DOM: `screen` from `@testing-library/dom` and `expect.poll` |
 | `recipe/recipe-filter.browser.spec.ts` | Outputs with `outputBinding`, debounce with manual fake timers |
-| `recipe/recipe-search.shallow.browser.spec.ts` | Shallow test: child inputs through `DebugElement.properties`, child outputs through `triggerEventHandler` |
+| `shallow/recipe/recipe-search.browser.spec.ts` | Shallow test: child inputs through `DebugElement.properties`, child outputs through `triggerEventHandler` |
 | `recipe/recipe-repository.fake.ts` | Fake with filtering logic and `defer` |
 | `user/is-signed-in.guard.browser.spec.ts` | Guard test with `RouterTestingHarness` and a `Dummy` routed component |
 | `shared/local-storage.fake.ts` | Fake for a browser API |

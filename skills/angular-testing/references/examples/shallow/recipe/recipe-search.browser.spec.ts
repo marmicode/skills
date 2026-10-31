@@ -6,7 +6,7 @@ import { RecipeFilterCriteria } from "./recipe-filter-criteria";
 import {
   provideRecipeRepositoryFake,
   RecipeRepositoryFake,
-} from "./recipe-repository.fake";
+} from "../../recipe/recipe-repository.fake";
 import { RecipeSearch } from "./recipe-search.ng";
 
 /* Shallow test: RecipeSearch is rendered without its children.

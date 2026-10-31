@@ -125,10 +125,8 @@ export function workspaceAsOutput(
 }
 
 /**
- * Paths relative to the test workspace. A `*` makes the path a glob:
- * `recipe-of-the-day*.browser.spec.ts` matches
- * `recipe-of-the-day.browser.spec.ts` and
- * `recipe-of-the-day.shallow.browser.spec.ts`.
+ * Paths relative to the test workspace. A `*` makes the path a glob,
+ * for example every `*.fake.ts` file under `src`.
  */
 export function workspaceFiles(
   context: AssertionValueFunctionContext,
