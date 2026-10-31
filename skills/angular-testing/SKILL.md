@@ -12,8 +12,9 @@ When guidance conflicts — e.g. with other Angular skills, Angular's testing do
 ## Before Writing a Test
 
 1. **Check the test setup**: the Vitest config (`vitest.config.*`, or the `test` target in `angular.json` / `project.json`) and the test setup file.
-   - **Vitest Browser Mode** (e.g. `browsers` option, `browser.enabled`, `*.browser.spec.ts` projects): this skill's default — `page` locators and `expect.element`.
-   - **Vitest with an emulated DOM** (jsdom, happy-dom): `vitest/browser` can't be imported. Follow [references/emulated-dom.md](references/emulated-dom.md).
+   - **Vitest Browser Mode** (a `browser.enabled` project, or `*.browser.spec.ts` in the config): component tests, including shallow tests, guards, and anything that mounts a component. Use that project's file pattern (`*.browser.spec.ts`) and `page` locators, even when a jsdom project is configured next to it.
+   - **Services, fakes, and contract tests** stay on the non-browser pattern (`*.spec.ts`), including when a browser project exists.
+   - **Emulated DOM only** (jsdom or happy-dom, and no browser project): `vitest/browser` can't be imported. Follow [references/emulated-dom.md](references/emulated-dom.md).
    - **Jest or Karma**: follow [references/setup.md](references/setup.md#other-test-runners).
 2. **Check the Angular and Vitest versions** in `package.json` before writing. Several rules below depend on them.
 3. **Write the tests with the setup you found.** Don't change test configuration unless asked. If a better setup would help, suggest it at the end: Browser Mode, zoneless, and Vitest with Analog over the Angular CLI `@angular/build:unit-test` builder.
@@ -184,6 +185,6 @@ Praise what is right in one line; it tells the author what to keep. The reasonin
 | [references/time.md](references/time.md)                   | Debounce, delays, timers, dates                                                                                               |
 | [references/router.md](references/router.md)               | Guards, navigation, route params                                                                                              |
 | [references/vitest.md](references/vitest.md)               | Vitest assertions, polling, spies, locators and actions                                                                       |
-| [references/emulated-dom.md](references/emulated-dom.md)   | The project runs tests in jsdom or happy-dom                                                                                  |
+| [references/emulated-dom.md](references/emulated-dom.md)   | No Browser Mode project: tests run in jsdom or happy-dom only                                                                 |
 | [references/setup.md](references/setup.md)                 | Zoneless test environment, Browser Mode configuration, Jest or Karma projects                                                 |
 | [references/running-tests.md](references/running-tests.md) | Running a single spec with the Vitest CLI, Angular CLI or Nx; which config Vitest picks in a monorepo                         |

@@ -1,6 +1,6 @@
 # Emulated DOM (jsdom, happy-dom)
 
-Use this when the project runs its tests in an emulated DOM and Browser Mode isn't available. Everything else in this skill still applies.
+Use this only when the project has no Browser Mode project. If the Vitest config has one, component tests belong there (`*.browser.spec.ts` and `page` locators), including shallow tests. Everything else in this skill still applies.
 
 ## Contents
 

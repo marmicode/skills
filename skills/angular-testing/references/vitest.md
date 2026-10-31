@@ -148,7 +148,7 @@ Pick `toHaveTextContent` when the whole text is the behavior, `toMatchTextConten
 
 ## Browser Mode vs. Emulated DOM
 
-`vitest/browser` can only be imported in Browser Mode; in jsdom or happy-dom it throws `vitest/browser can be imported only inside the Browser Mode`. When a project runs both, put browser-only tests in files matched by the browser configuration _(e.g. `*.browser.spec.ts`)_. What emulated environments can't do, and how to test there, is in [emulated-dom.md](emulated-dom.md).
+`vitest/browser` can only be imported in Browser Mode; in jsdom or happy-dom it throws `vitest/browser can be imported only inside the Browser Mode`. When a project runs both, component tests (including shallow tests and guards) go in the browser project's file pattern _(e.g. `*.browser.spec.ts`)_. Services, fakes, and contract tests stay in the emulated project. What emulated environments can't do, and how to test there when there is no browser project, is in [emulated-dom.md](emulated-dom.md).
 
 ## Timeouts
 
