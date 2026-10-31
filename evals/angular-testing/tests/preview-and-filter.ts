@@ -1,7 +1,8 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  filesEqual as filesUntouched,
+  filesUntouched,
+  testFileAssertions,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
@@ -11,7 +12,6 @@ import {
   OUTPUT_BINDING_CALL,
   VI_FN_CALL,
 } from "../../shared/helpers.ts";
-import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const PREVIEW_SPEC_PATH = "src/app/recipe-preview.browser.spec.ts";
 const FILTER_SPEC_PATH = "src/app/recipe-filter.browser.spec.ts";
@@ -70,6 +70,7 @@ export default defineTestCase({
     },
     {
       type: "llm-rubric",
+      threshold: 0.9,
       metric: "bindings-and-literals",
       transform: workspaceAsOutput([
         { title: "Preview", path: PREVIEW_SPEC_PATH },

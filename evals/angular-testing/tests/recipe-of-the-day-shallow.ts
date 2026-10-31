@@ -1,12 +1,12 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  filesEqual as filesUntouched,
+  filesUntouched,
+  testFileAssertions,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import { EXPECT_POLL_CALL, INPUT_BINDING_CALL } from "../../shared/helpers.ts";
-import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/recipe-of-the-day.browser.spec.ts";
 
@@ -56,6 +56,7 @@ export default defineTestCase({
     },
     {
       type: "llm-rubric",
+      threshold: 0.9,
       metric: "reads-the-child-input",
       transform: workspaceAsOutput([{ title: "Spec", path: SPEC_PATH }]),
       value: `The output is the spec.

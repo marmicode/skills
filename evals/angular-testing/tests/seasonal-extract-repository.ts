@@ -3,9 +3,9 @@ import {
   fileContains,
   fileOmits,
   globExists,
+  testFileAssertions,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
-import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/seasonal-recipes.browser.spec.ts";
 const COMPONENT_PATH = "src/app/seasonal-recipes.ts";
@@ -37,6 +37,7 @@ export default defineTestCase({
     },
     {
       type: "llm-rubric",
+      threshold: 0.9,
       metric: "repository-boundary",
       transform: workspaceAsOutput([
         { title: "Spec", path: SPEC_PATH },

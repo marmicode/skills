@@ -1,11 +1,11 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
-  filesEqual as filesUntouched,
+  filesUntouched,
   globExists,
+  testFileAssertions,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/recipe-search.browser.spec.ts";
 
@@ -36,6 +36,7 @@ export default defineTestCase({
     },
     {
       type: "llm-rubric",
+      threshold: 0.9,
       metric: "behavior-names-and-literals",
       transform: workspaceAsOutput([
         { title: "Spec", path: "src/app/recipe-search*.spec.ts" },
@@ -50,6 +51,7 @@ Deriving the expected value from an arranged recipe, from a variable holding tha
     },
     {
       type: "llm-rubric",
+      threshold: 0.9,
       metric: "in-memory-fake",
       transform: workspaceAsOutput([
         { title: "Spec", path: "src/app/recipe-search*.spec.ts" },
@@ -62,6 +64,7 @@ The spec does not assert that searchRecipes was called, or which arguments it re
     },
     {
       type: "llm-rubric",
+      threshold: 0.9,
       metric: "asserts-through-the-screen",
       transform: workspaceAsOutput([
         { title: "Spec", path: "src/app/recipe-search*.spec.ts" },

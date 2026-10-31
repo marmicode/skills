@@ -1,12 +1,12 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  filesEqual as filesUntouched,
+  filesUntouched,
   globExists,
+  testFileAssertions,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/cookbook-search.browser.spec.ts";
 
@@ -46,6 +46,7 @@ export default defineTestCase({
     },
     {
       type: "llm-rubric",
+      threshold: 0.9,
       metric: "success-and-arranged-failure",
       transform: workspaceAsOutput([
         { title: "Spec", path: SPEC_PATH },

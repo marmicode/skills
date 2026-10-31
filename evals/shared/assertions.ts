@@ -1,11 +1,14 @@
 import { existsSync, globSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type {
+  Assertion,
   AssertionValueFunction,
   AssertionValueFunctionContext,
   GradingResult,
   TransformFunction,
 } from "promptfoo";
+import { $ } from "zx";
+import { EXPECT_ELEMENT_CALL, TRY_CATCH } from "./helpers.ts";
 
 /**
  * Factories for assertions that read the test's copy of the fixture.
@@ -52,14 +55,14 @@ export function fileOmits(
   };
 }
 
-export function filesEqual(
+export function filesUntouched(
   filePaths: readonly string[],
-  expectedDir: string,
+  originalDir: string,
 ): AssertionValueFunction {
   return (_, context) => {
     const changed = filePaths.flatMap((filePath) => {
       const actual = readWorkspaceFile(context, filePath);
-      const expectedPath = join(expectedDir, filePath);
+      const expectedPath = join(originalDir, filePath);
       const expected = existsSync(expectedPath)
         ? readFileSync(expectedPath, "utf8")
         : undefined;
@@ -140,6 +143,107 @@ export function workspaceFiles(
   return existsSync(join(dir, filePath)) ? [filePath] : [];
 }
 
+/**
+ * Shared checks for a test file. The file exists, vitest passes, and the
+ * file skips `beforeEach`, `detectChanges`, `componentInstance`, `vi.mock`,
+ * `vi.spyOn`, `useValue`, `mockReturnValue`, `HttpTestingController`,
+ * `querySelector`, `try`/`catch`, `MockComponent`, and `setInput`. `expected`
+ * opts into the suite name, `new` of that name, `page.getBy`, and
+ * `expect.element`.
+ */
+export function testFileAssertions({
+  testPath,
+  expected = {},
+}: {
+  testPath: string;
+  expected?: {
+    suiteName?: string;
+    pageLocators?: true;
+    expectElement?: true;
+  };
+}): Assertion[] {
+  const { suiteName, pageLocators, expectElement } = expected;
+  return [
+    _assertion("spec-next-to-sut", fileExists(testPath)),
+    _assertion("spec-passes", specPasses(testPath)),
+    ...(pageLocators
+      ? [_assertion("locators", fileContains(testPath, /\bpage\.getBy/))]
+      : []),
+    ...(expectElement
+      ? [
+          _assertion(
+            "expect-element",
+            fileContains(testPath, EXPECT_ELEMENT_CALL),
+          ),
+        ]
+      : []),
+    ...(suiteName
+      ? [
+          _assertion(
+            "suite-named-after-sut",
+            fileContains(
+              testPath,
+              new RegExp(String.raw`describe\(${suiteName},`),
+            ),
+          ),
+          _assertion(
+            "no-constructor",
+            fileOmits(testPath, new RegExp(String.raw`\bnew ${suiteName}\b`)),
+          ),
+        ]
+      : []),
+    _assertion("no-before-each", fileOmits(testPath, /\bbeforeEach\(/)),
+    _assertion("no-detect-changes", fileOmits(testPath, /\.detectChanges\(/)),
+    _assertion(
+      "no-component-instance",
+      fileOmits(testPath, /\.componentInstance\b/),
+    ),
+    _assertion("no-module-mocks", fileOmits(testPath, /\bvi\.mock\(/)),
+    _assertion("no-spy-on", fileOmits(testPath, /\bvi\.spyOn\(/)),
+    _assertion("no-use-value", fileOmits(testPath, /\buseValue\b/)),
+    _assertion(
+      "no-http-testing-controller",
+      fileOmits(testPath, /\bHttpTestingController\b/),
+    ),
+    _assertion(
+      "no-query-selector",
+      fileOmits(testPath, /\bquerySelector(All)?\(/),
+    ),
+    _assertion("no-try-catch", fileOmits(testPath, TRY_CATCH)),
+    _assertion(
+      "no-mock-return",
+      fileOmits(testPath, /\bmockReturnValue\b|\bmockRejectedValue\b/),
+    ),
+    _assertion("no-mock-component", fileOmits(testPath, /\bMockComponent\b/)),
+    _assertion("no-set-input", fileOmits(testPath, /\.setInput\(/)),
+  ];
+}
+
+export function specPasses(
+  specPaths: string | readonly string[],
+): AssertionValueFunction {
+  const patterns = typeof specPaths === "string" ? [specPaths] : [...specPaths];
+  return async (_, context) => {
+    const paths = patterns.flatMap((pattern) =>
+      pattern.includes("*") ? workspaceFiles(context, pattern) : [pattern],
+    );
+    if (paths.length === 0) {
+      return {
+        pass: false,
+        score: 0,
+        reason: `missing ${patterns.join(", ")}`,
+      };
+    }
+    const result = await $({
+      cwd: workspaceDir(context),
+      quiet: true,
+      nothrow: true,
+    })`pnpm vitest run ${paths}`;
+    if (result.ok) return true;
+    return { pass: false, score: 0, reason: result.stdall };
+  };
+}
+
 function readWorkspaceFile(
   context: AssertionValueFunctionContext,
   filePath: string,
@@ -159,6 +263,10 @@ function _workspaceDir(metadata: object | undefined): string {
     throw new Error("missing metadata.workingDir");
   }
   return metadata.workingDir;
+}
+
+function _assertion(metric: string, value: AssertionValueFunction): Assertion {
+  return { type: "javascript", metric, value };
 }
 
 function _fail(reason: string, final?: string): GradingResult {

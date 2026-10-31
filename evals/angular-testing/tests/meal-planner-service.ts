@@ -2,13 +2,13 @@ import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
   fileOmits,
-  filesEqual as filesUntouched,
+  filesUntouched,
   globAbsent,
   globExists,
+  testFileAssertions,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { testFileAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/meal-planner.spec.ts";
 
@@ -63,6 +63,7 @@ export default defineTestCase({
     },
     {
       type: "llm-rubric",
+      threshold: 0.9,
       metric: "real-store-and-duplicate-rejection",
       transform: workspaceAsOutput([
         { title: "Spec", path: SPEC_PATH },
