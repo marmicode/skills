@@ -15,7 +15,7 @@ export default defineTestCase({
   description: "shallow-renders a slow shared child",
   vars: {
     request:
-      "Write tests for RecipeOfTheDay. RecipePreview is widely shared and slow, so test RecipeOfTheDay without rendering RecipePreview.",
+      "Write tests for RecipeOfTheDay. RecipePreview is slow, so test RecipeOfTheDay without rendering RecipePreview.",
   },
   assert: [
     {
