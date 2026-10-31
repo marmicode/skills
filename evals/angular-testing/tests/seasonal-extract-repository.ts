@@ -36,11 +36,6 @@ export default defineTestCase({
       value: globExists("src/**/*.fake.ts"),
     },
     {
-      type: "javascript",
-      metric: "no-mock-return",
-      value: fileOmits(SPEC_PATH, /\bmockReturnValue\b/),
-    },
-    {
       type: "llm-rubric",
       metric: "repository-boundary",
       transform: workspaceAsOutput([

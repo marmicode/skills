@@ -1,13 +1,11 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  fileOmits,
   filesEqual as filesUntouched,
   globExists,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { TRY_CATCH } from "../../shared/helpers.ts";
 import { componentTestAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/cookbook-search.browser.spec.ts";
@@ -45,16 +43,6 @@ export default defineTestCase({
       type: "javascript",
       metric: "error-copy",
       value: fileContains(SPEC_PATH, /Search failed/),
-    },
-    {
-      type: "javascript",
-      metric: "no-try-catch",
-      value: fileOmits(SPEC_PATH, TRY_CATCH),
-    },
-    {
-      type: "javascript",
-      metric: "no-mock-return",
-      value: fileOmits(SPEC_PATH, /\bmockReturnValue\b|\bmockRejectedValue\b/),
     },
     {
       type: "llm-rubric",

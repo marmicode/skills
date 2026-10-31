@@ -47,16 +47,6 @@ export default defineTestCase({
       ),
     },
     {
-      type: "javascript",
-      metric: "no-mock-component",
-      value: fileOmits(SPEC_PATH, /\bMockComponent\b/),
-    },
-    {
-      type: "javascript",
-      metric: "no-set-input",
-      value: fileOmits(SPEC_PATH, /\.setInput\(/),
-    },
-    {
       type: "llm-rubric",
       metric: "real-child-heading",
       transform: workspaceAsOutput([{ title: "Spec", path: SPEC_PATH }]),

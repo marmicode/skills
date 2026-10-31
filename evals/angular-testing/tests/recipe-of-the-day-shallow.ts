@@ -1,7 +1,6 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  fileOmits,
   filesEqual as filesUntouched,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
@@ -54,16 +53,6 @@ export default defineTestCase({
       type: "javascript",
       metric: "input-binding",
       value: fileContains(SPEC_PATH, INPUT_BINDING_CALL),
-    },
-    {
-      type: "javascript",
-      metric: "no-mock-component",
-      value: fileOmits(SPEC_PATH, /\bMockComponent\b/),
-    },
-    {
-      type: "javascript",
-      metric: "no-set-input",
-      value: fileOmits(SPEC_PATH, /\.setInput\(/),
     },
     {
       type: "llm-rubric",

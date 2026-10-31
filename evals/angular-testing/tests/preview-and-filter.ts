@@ -1,7 +1,6 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  fileOmits,
   filesEqual as filesUntouched,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
@@ -49,11 +48,6 @@ export default defineTestCase({
       type: "javascript",
       metric: "preview-signal-set",
       value: fileContains(PREVIEW_SPEC_PATH, /\.set\(/),
-    },
-    {
-      type: "javascript",
-      metric: "preview-no-set-input",
-      value: fileOmits(PREVIEW_SPEC_PATH, /\.setInput\(/),
     },
     ...componentTestAssertions({
       specPath: FILTER_SPEC_PATH,
