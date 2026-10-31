@@ -1,17 +1,12 @@
-import { join } from "node:path";
-import { $ } from "zx";
 import { defineTestCase } from "../../shared/config.ts";
 import {
-  fileContains,
-  fileExists,
   fileOmits,
   filesEqual as filesUntouched,
   globExists,
   workspaceAsOutput,
-  workspaceDir,
 } from "../../shared/assertions.ts";
-import { EXPECT_ELEMENT_CALL } from "../../shared/helpers.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
+import { componentTestAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/recipe-search.browser.spec.ts";
 
@@ -21,24 +16,14 @@ export default defineTestCase({
     request: "Write tests for the RecipeSearch component.",
   },
   assert: [
-    {
-      type: "javascript",
-      metric: "spec-next-to-component",
-      value: fileExists(SPEC_PATH),
-    },
-    {
-      type: "javascript",
-      metric: "spec-passes",
-      value: async (_, context) => {
-        const result = await $({
-          cwd: workspaceDir(context),
-          quiet: true,
-          nothrow: true,
-        })`pnpm vitest run ${SPEC_PATH}`;
-        if (result.ok) return true;
-        return { pass: false, score: 0, reason: result.stdall };
+    ...componentTestAssertions({
+      specPath: SPEC_PATH,
+      expected: {
+        suiteName: "RecipeSearch",
+        pageLocators: true,
+        expectElement: true,
       },
-    },
+    }),
     {
       type: "javascript",
       metric: "source-untouched",
@@ -49,36 +34,6 @@ export default defineTestCase({
       type: "javascript",
       metric: "repository-faked",
       value: globExists("src/**/*.fake.ts"),
-    },
-    {
-      type: "javascript",
-      metric: "browser-mode-locators",
-      value: fileContains(SPEC_PATH, /\bpage\.getBy/),
-    },
-    {
-      type: "javascript",
-      metric: "expect-element",
-      value: fileContains(SPEC_PATH, EXPECT_ELEMENT_CALL),
-    },
-    {
-      type: "javascript",
-      metric: "suite-named-after-sut",
-      value: fileContains(SPEC_PATH, /describe\(RecipeSearch,/),
-    },
-    {
-      type: "javascript",
-      metric: "no-before-each",
-      value: fileOmits(SPEC_PATH, /\bbeforeEach\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-detect-changes",
-      value: fileOmits(SPEC_PATH, /\.detectChanges\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-component-instance",
-      value: fileOmits(SPEC_PATH, /\.componentInstance\b/),
     },
     {
       type: "javascript",

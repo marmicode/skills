@@ -1,13 +1,13 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  fileExists,
   fileOmits,
   filesEqual as filesUntouched,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { OUTPUT_BINDING_CALL, specPasses } from "../../shared/helpers.ts";
+import { OUTPUT_BINDING_CALL } from "../../shared/helpers.ts";
+import { componentTestAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/keyword-search.browser.spec.ts";
 
@@ -18,16 +18,10 @@ export default defineTestCase({
       "Write tests for KeywordSearch. The debounce is the behavior under test: cover both before and after the delay.",
   },
   assert: [
-    {
-      type: "javascript",
-      metric: "spec-next-to-component",
-      value: fileExists(SPEC_PATH),
-    },
-    {
-      type: "javascript",
-      metric: "spec-passes",
-      value: specPasses(SPEC_PATH),
-    },
+    ...componentTestAssertions({
+      specPath: SPEC_PATH,
+      expected: { pageLocators: true },
+    }),
     {
       type: "javascript",
       metric: "source-untouched",
@@ -63,11 +57,6 @@ export default defineTestCase({
     },
     {
       type: "javascript",
-      metric: "locators",
-      value: fileContains(SPEC_PATH, /\bpage\.getBy/),
-    },
-    {
-      type: "javascript",
       metric: "no-sync-advance",
       value: fileOmits(SPEC_PATH, /\bvi\.advanceTimersByTime\(/),
     },
@@ -85,21 +74,6 @@ export default defineTestCase({
       type: "javascript",
       metric: "no-sleep",
       value: fileOmits(SPEC_PATH, /\bsetTimeout\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-before-each",
-      value: fileOmits(SPEC_PATH, /\bbeforeEach\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-detect-changes",
-      value: fileOmits(SPEC_PATH, /\.detectChanges\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-component-instance",
-      value: fileOmits(SPEC_PATH, /\.componentInstance\b/),
     },
     {
       type: "llm-rubric",

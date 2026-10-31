@@ -1,12 +1,11 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  fileExists,
   fileOmits,
   globExists,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
-import { EXPECT_ELEMENT_CALL, specPasses } from "../../shared/helpers.ts";
+import { componentTestAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/seasonal-recipes.browser.spec.ts";
 const COMPONENT_PATH = "src/app/seasonal-recipes.ts";
@@ -17,16 +16,10 @@ export default defineTestCase({
     request: "Write tests for SeasonalRecipes. You may change production code.",
   },
   assert: [
-    {
-      type: "javascript",
-      metric: "spec-next-to-component",
-      value: fileExists(SPEC_PATH),
-    },
-    {
-      type: "javascript",
-      metric: "spec-passes",
-      value: specPasses(SPEC_PATH),
-    },
+    ...componentTestAssertions({
+      specPath: SPEC_PATH,
+      expected: { pageLocators: true, expectElement: true },
+    }),
     {
       type: "javascript",
       metric: "http-left-the-component",
@@ -44,16 +37,6 @@ export default defineTestCase({
     },
     {
       type: "javascript",
-      metric: "locators",
-      value: fileContains(SPEC_PATH, /\bpage\.getBy/),
-    },
-    {
-      type: "javascript",
-      metric: "expect-element",
-      value: fileContains(SPEC_PATH, EXPECT_ELEMENT_CALL),
-    },
-    {
-      type: "javascript",
       metric: "no-http-testing-controller",
       value: fileOmits(SPEC_PATH, /\bHttpTestingController\b/),
     },
@@ -66,21 +49,6 @@ export default defineTestCase({
       type: "javascript",
       metric: "no-mock-return",
       value: fileOmits(SPEC_PATH, /\bmockReturnValue\b/),
-    },
-    {
-      type: "javascript",
-      metric: "no-before-each",
-      value: fileOmits(SPEC_PATH, /\bbeforeEach\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-detect-changes",
-      value: fileOmits(SPEC_PATH, /\.detectChanges\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-component-instance",
-      value: fileOmits(SPEC_PATH, /\.componentInstance\b/),
     },
     {
       type: "llm-rubric",

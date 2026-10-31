@@ -1,7 +1,6 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  fileExists,
   fileOmits,
   filesEqual as filesUntouched,
   workspaceAsOutput,
@@ -9,12 +8,11 @@ import {
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import {
   CALLED_WITH,
-  EXPECT_ELEMENT_CALL,
   INPUT_BINDING_CALL,
   OUTPUT_BINDING_CALL,
-  specPasses,
   VI_FN_CALL,
 } from "../../shared/helpers.ts";
+import { componentTestAssertions } from "../../shared/component-assertions.ts";
 
 const PREVIEW_SPEC_PATH = "src/app/recipe-preview.browser.spec.ts";
 const FILTER_SPEC_PATH = "src/app/recipe-filter.browser.spec.ts";
@@ -28,28 +26,20 @@ export default defineTestCase({
   assert: [
     {
       type: "javascript",
-      metric: "preview-spec",
-      value: fileExists(PREVIEW_SPEC_PATH),
-    },
-    {
-      type: "javascript",
-      metric: "filter-spec",
-      value: fileExists(FILTER_SPEC_PATH),
-    },
-    {
-      type: "javascript",
-      metric: "spec-passes",
-      value: specPasses([PREVIEW_SPEC_PATH, FILTER_SPEC_PATH]),
-    },
-    {
-      type: "javascript",
       metric: "source-untouched",
       value: filesUntouched(
         ["src/app/recipe-preview.ts", "src/app/recipe-filter.ts"],
         ANGULAR_APP_BASE_DIR,
       ),
     },
-    ..._componentChecks(PREVIEW_SPEC_PATH, "preview", true),
+    ...componentTestAssertions({
+      specPath: PREVIEW_SPEC_PATH,
+      expected: {
+        suiteName: "RecipePreview",
+        pageLocators: true,
+        expectElement: true,
+      },
+    }),
     {
       type: "javascript",
       metric: "preview-input-binding",
@@ -62,15 +52,13 @@ export default defineTestCase({
     },
     {
       type: "javascript",
-      metric: "preview-suite-name",
-      value: fileContains(PREVIEW_SPEC_PATH, /describe\(RecipePreview,/),
-    },
-    {
-      type: "javascript",
       metric: "preview-no-set-input",
       value: fileOmits(PREVIEW_SPEC_PATH, /\.setInput\(/),
     },
-    ..._componentChecks(FILTER_SPEC_PATH, "filter", false),
+    ...componentTestAssertions({
+      specPath: FILTER_SPEC_PATH,
+      expected: { suiteName: "RecipeFilter", pageLocators: true },
+    }),
     {
       type: "javascript",
       metric: "filter-output-binding",
@@ -87,11 +75,6 @@ export default defineTestCase({
       value: fileContains(FILTER_SPEC_PATH, CALLED_WITH),
     },
     {
-      type: "javascript",
-      metric: "filter-suite-name",
-      value: fileContains(FILTER_SPEC_PATH, /describe\(RecipeFilter,/),
-    },
-    {
       type: "llm-rubric",
       metric: "bindings-and-literals",
       transform: workspaceAsOutput([
@@ -105,41 +88,3 @@ Test names are one behavior in the present tense. "should ..." fails.`,
     },
   ],
 });
-
-function _componentChecks(
-  specPath: string,
-  prefix: string,
-  expectElement: boolean,
-) {
-  return [
-    {
-      type: "javascript" as const,
-      metric: `${prefix}-locators`,
-      value: fileContains(specPath, /\bpage\.getBy/),
-    },
-    ...(expectElement
-      ? [
-          {
-            type: "javascript" as const,
-            metric: `${prefix}-expect-element`,
-            value: fileContains(specPath, EXPECT_ELEMENT_CALL),
-          },
-        ]
-      : []),
-    {
-      type: "javascript" as const,
-      metric: `${prefix}-no-before-each`,
-      value: fileOmits(specPath, /\bbeforeEach\(/),
-    },
-    {
-      type: "javascript" as const,
-      metric: `${prefix}-no-detect-changes`,
-      value: fileOmits(specPath, /\.detectChanges\(/),
-    },
-    {
-      type: "javascript" as const,
-      metric: `${prefix}-no-component-instance`,
-      value: fileOmits(specPath, /\.componentInstance\b/),
-    },
-  ];
-}

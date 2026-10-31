@@ -1,18 +1,14 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  fileExists,
   fileOmits,
   filesEqual as filesUntouched,
   globExists,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import {
-  EXPECT_ELEMENT_CALL,
-  specPasses,
-  TRY_CATCH,
-} from "../../shared/helpers.ts";
+import { TRY_CATCH } from "../../shared/helpers.ts";
+import { componentTestAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/cookbook-search.browser.spec.ts";
 
@@ -23,16 +19,14 @@ export default defineTestCase({
       "Write tests for CookbookSearch, including the failure when a search fails.",
   },
   assert: [
-    {
-      type: "javascript",
-      metric: "spec-next-to-component",
-      value: fileExists(SPEC_PATH),
-    },
-    {
-      type: "javascript",
-      metric: "spec-passes",
-      value: specPasses(SPEC_PATH),
-    },
+    ...componentTestAssertions({
+      specPath: SPEC_PATH,
+      expected: {
+        suiteName: "CookbookSearch",
+        pageLocators: true,
+        expectElement: true,
+      },
+    }),
     {
       type: "javascript",
       metric: "source-untouched",
@@ -54,21 +48,6 @@ export default defineTestCase({
     },
     {
       type: "javascript",
-      metric: "locators",
-      value: fileContains(SPEC_PATH, /\bpage\.getBy/),
-    },
-    {
-      type: "javascript",
-      metric: "expect-element",
-      value: fileContains(SPEC_PATH, EXPECT_ELEMENT_CALL),
-    },
-    {
-      type: "javascript",
-      metric: "suite-named-after-sut",
-      value: fileContains(SPEC_PATH, /describe\(CookbookSearch,/),
-    },
-    {
-      type: "javascript",
       metric: "no-try-catch",
       value: fileOmits(SPEC_PATH, TRY_CATCH),
     },
@@ -86,21 +65,6 @@ export default defineTestCase({
       type: "javascript",
       metric: "no-http-testing-controller",
       value: fileOmits(SPEC_PATH, /\bHttpTestingController\b/),
-    },
-    {
-      type: "javascript",
-      metric: "no-before-each",
-      value: fileOmits(SPEC_PATH, /\bbeforeEach\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-detect-changes",
-      value: fileOmits(SPEC_PATH, /\.detectChanges\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-component-instance",
-      value: fileOmits(SPEC_PATH, /\.componentInstance\b/),
     },
     {
       type: "llm-rubric",

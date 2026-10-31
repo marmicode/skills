@@ -1,17 +1,13 @@
 import { defineTestCase } from "../../shared/config.ts";
 import {
   fileContains,
-  fileExists,
   fileOmits,
   filesEqual as filesUntouched,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import {
-  EXPECT_POLL_CALL,
-  INPUT_BINDING_CALL,
-  specPasses,
-} from "../../shared/helpers.ts";
+import { EXPECT_POLL_CALL, INPUT_BINDING_CALL } from "../../shared/helpers.ts";
+import { componentTestAssertions } from "../../shared/component-assertions.ts";
 
 const SPEC_PATH = "src/app/recipe-of-the-day.browser.spec.ts";
 
@@ -22,16 +18,10 @@ export default defineTestCase({
       "Write tests for RecipeOfTheDay. RecipePreview is slow, so test RecipeOfTheDay without rendering RecipePreview.",
   },
   assert: [
-    {
-      type: "javascript",
-      metric: "spec-next-to-component",
-      value: fileExists(SPEC_PATH),
-    },
-    {
-      type: "javascript",
-      metric: "spec-passes",
-      value: specPasses(SPEC_PATH),
-    },
+    ...componentTestAssertions({
+      specPath: SPEC_PATH,
+      expected: { suiteName: "RecipeOfTheDay" },
+    }),
     {
       type: "javascript",
       metric: "source-untouched",
@@ -67,11 +57,6 @@ export default defineTestCase({
     },
     {
       type: "javascript",
-      metric: "suite-named-after-sut",
-      value: fileContains(SPEC_PATH, /describe\(RecipeOfTheDay,/),
-    },
-    {
-      type: "javascript",
       metric: "no-mock-component",
       value: fileOmits(SPEC_PATH, /\bMockComponent\b/),
     },
@@ -79,21 +64,6 @@ export default defineTestCase({
       type: "javascript",
       metric: "no-set-input",
       value: fileOmits(SPEC_PATH, /\.setInput\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-before-each",
-      value: fileOmits(SPEC_PATH, /\bbeforeEach\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-detect-changes",
-      value: fileOmits(SPEC_PATH, /\.detectChanges\(/),
-    },
-    {
-      type: "javascript",
-      metric: "no-component-instance",
-      value: fileOmits(SPEC_PATH, /\.componentInstance\b/),
     },
     {
       type: "llm-rubric",
