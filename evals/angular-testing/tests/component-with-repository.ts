@@ -10,7 +10,7 @@ import {
   workspaceAsOutput,
   workspaceDir,
 } from "../../shared/assertions.ts";
-import { expectElementCall } from "../../shared/helpers.ts";
+import { EXPECT_ELEMENT_CALL } from "../../shared/helpers.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 
 const SPEC_PATH = "src/app/recipe-search.browser.spec.ts";
@@ -58,7 +58,7 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "expect-element",
-      value: fileContains(SPEC_PATH, expectElementCall),
+      value: fileContains(SPEC_PATH, EXPECT_ELEMENT_CALL),
     },
     {
       type: "javascript",

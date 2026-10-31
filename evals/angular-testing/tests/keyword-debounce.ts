@@ -7,7 +7,7 @@ import {
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { outputBindingCall, specPasses } from "../../shared/helpers.ts";
+import { OUTPUT_BINDING_CALL, specPasses } from "../../shared/helpers.ts";
 
 const SPEC_PATH = "src/app/keyword-search.browser.spec.ts";
 
@@ -54,7 +54,7 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "output-binding",
-      value: fileContains(SPEC_PATH, outputBindingCall),
+      value: fileContains(SPEC_PATH, OUTPUT_BINDING_CALL),
     },
     {
       type: "javascript",

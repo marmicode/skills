@@ -8,12 +8,12 @@ import {
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import {
-  calledWith,
-  expectElementCall,
-  inputBindingCall,
-  outputBindingCall,
+  CALLED_WITH,
+  EXPECT_ELEMENT_CALL,
+  INPUT_BINDING_CALL,
+  OUTPUT_BINDING_CALL,
   specPasses,
-  viFnCall,
+  VI_FN_CALL,
 } from "../../shared/helpers.ts";
 
 const PREVIEW_SPEC_PATH = "src/app/recipe-preview.browser.spec.ts";
@@ -53,7 +53,7 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "preview-input-binding",
-      value: fileContains(PREVIEW_SPEC_PATH, inputBindingCall),
+      value: fileContains(PREVIEW_SPEC_PATH, INPUT_BINDING_CALL),
     },
     {
       type: "javascript",
@@ -74,17 +74,17 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "filter-output-binding",
-      value: fileContains(FILTER_SPEC_PATH, outputBindingCall),
+      value: fileContains(FILTER_SPEC_PATH, OUTPUT_BINDING_CALL),
     },
     {
       type: "javascript",
       metric: "filter-spy",
-      value: fileContains(FILTER_SPEC_PATH, viFnCall),
+      value: fileContains(FILTER_SPEC_PATH, VI_FN_CALL),
     },
     {
       type: "javascript",
       metric: "filter-called-with",
-      value: fileContains(FILTER_SPEC_PATH, calledWith),
+      value: fileContains(FILTER_SPEC_PATH, CALLED_WITH),
     },
     {
       type: "javascript",
@@ -122,7 +122,7 @@ function _componentChecks(
           {
             type: "javascript" as const,
             metric: `${prefix}-expect-element`,
-            value: fileContains(specPath, expectElementCall),
+            value: fileContains(specPath, EXPECT_ELEMENT_CALL),
           },
         ]
       : []),

@@ -7,7 +7,7 @@ import {
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { expectElementCall, specPasses } from "../../shared/helpers.ts";
+import { EXPECT_ELEMENT_CALL, specPasses } from "../../shared/helpers.ts";
 
 const SPEC_PATH = "src/app/is-signed-in.guard.browser.spec.ts";
 
@@ -58,7 +58,7 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "expect-element",
-      value: fileContains(SPEC_PATH, expectElementCall),
+      value: fileContains(SPEC_PATH, EXPECT_ELEMENT_CALL),
     },
     {
       type: "javascript",

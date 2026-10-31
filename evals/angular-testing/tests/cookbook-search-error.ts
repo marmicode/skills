@@ -9,9 +9,9 @@ import {
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import {
-  expectElementCall,
+  EXPECT_ELEMENT_CALL,
   specPasses,
-  tryCatch,
+  TRY_CATCH,
 } from "../../shared/helpers.ts";
 
 const SPEC_PATH = "src/app/cookbook-search.browser.spec.ts";
@@ -60,7 +60,7 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "expect-element",
-      value: fileContains(SPEC_PATH, expectElementCall),
+      value: fileContains(SPEC_PATH, EXPECT_ELEMENT_CALL),
     },
     {
       type: "javascript",
@@ -70,7 +70,7 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "no-try-catch",
-      value: fileOmits(SPEC_PATH, tryCatch),
+      value: fileOmits(SPEC_PATH, TRY_CATCH),
     },
     {
       type: "javascript",

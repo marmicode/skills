@@ -8,8 +8,8 @@ import {
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import {
-  expectPollCall,
-  inputBindingCall,
+  EXPECT_POLL_CALL,
+  INPUT_BINDING_CALL,
   specPasses,
 } from "../../shared/helpers.ts";
 
@@ -58,12 +58,12 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "polls-the-input",
-      value: fileContains(SPEC_PATH, expectPollCall),
+      value: fileContains(SPEC_PATH, EXPECT_POLL_CALL),
     },
     {
       type: "javascript",
       metric: "input-binding",
-      value: fileContains(SPEC_PATH, inputBindingCall),
+      value: fileContains(SPEC_PATH, INPUT_BINDING_CALL),
     },
     {
       type: "javascript",

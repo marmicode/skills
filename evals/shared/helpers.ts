@@ -3,23 +3,23 @@ import { $ } from "zx";
 import { workspaceDir, workspaceFiles } from "./assertions.ts";
 
 /* `<T>`, including `=>` and one nested `<>`, then `(`. */
-const typeArg = String.raw`(?:<(?:[^<>]|=>|<[^<>]*>)*>)?`;
+const TYPE_ARG = `(?:<(?:[^<>]|=>|<[^<>]*>)*>)?`;
 
 function _callOf(name: string): RegExp {
-  return new RegExp(String.raw`\b${name}\s*${typeArg}\s*\(`);
+  return new RegExp(String.raw`\b${name}\s*${TYPE_ARG}\s*\(`);
 }
 
 /* Skill examples write `outputBinding<T>(` and `vi.fn<(...) => void>()`. */
-export const inputBindingCall = _callOf("inputBinding");
-export const outputBindingCall = _callOf("outputBinding");
-export const viFnCall = _callOf(String.raw`vi\.fn`);
-export const expectElementCall = /\bexpect\s*\.\s*element\s*\(/;
+export const INPUT_BINDING_CALL = _callOf("inputBinding");
+export const OUTPUT_BINDING_CALL = _callOf("outputBinding");
+export const VI_FN_CALL = _callOf(String.raw`vi\.fn`);
+export const EXPECT_ELEMENT_CALL = /\bexpect\s*\.\s*element\s*\(/;
 /* `expect` then `.poll(`, including a line break and indent before `.poll`. */
-export const expectPollCall = /\bexpect\s*\.\s*poll\s*\(/;
+export const EXPECT_POLL_CALL = /\bexpect\s*\.\s*poll\s*\(/;
 /* `try {` or `catch (`, not `promise.catch(`. */
-export const tryCatch = /\btry\s*\{|(?<!\.)\bcatch\s*\(/;
+export const TRY_CATCH = /\btry\s*\{|(?<!\.)\bcatch\s*\(/;
 /* toHaveBeenCalledWith, toHaveBeenLastCalledWith, toHaveBeenCalledExactlyOnceWith. */
-export const calledWith = /toHaveBeen\w*Called\w*With/;
+export const CALLED_WITH = /toHaveBeen\w*Called\w*With/;
 
 export function specPasses(
   specPaths: string | readonly string[],

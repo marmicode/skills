@@ -9,7 +9,7 @@ import {
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
 import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
-import { specPasses, tryCatch } from "../../shared/helpers.ts";
+import { specPasses, TRY_CATCH } from "../../shared/helpers.ts";
 
 const SPEC_PATH = "src/app/meal-planner.spec.ts";
 
@@ -106,7 +106,7 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "no-try-catch",
-      value: fileOmits(SPEC_PATH, tryCatch),
+      value: fileOmits(SPEC_PATH, TRY_CATCH),
     },
     {
       type: "javascript",
