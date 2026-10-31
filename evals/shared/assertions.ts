@@ -124,13 +124,31 @@ export function workspaceAsOutput(
   };
 }
 
+/**
+ * Paths relative to the test workspace. A `*` makes the path a glob:
+ * `recipe-of-the-day*.browser.spec.ts` matches
+ * `recipe-of-the-day.browser.spec.ts` and
+ * `recipe-of-the-day.shallow.browser.spec.ts`.
+ */
+export function workspaceFiles(
+  context: AssertionValueFunctionContext,
+  filePath: string,
+): string[] {
+  const dir = workspaceDir(context);
+  if (filePath.includes("*")) {
+    return globSync(filePath, { cwd: dir }).sort();
+  }
+  return existsSync(join(dir, filePath)) ? [filePath] : [];
+}
+
 function readWorkspaceFile(
   context: AssertionValueFunctionContext,
   filePath: string,
 ): string | undefined {
-  const fullPath = join(workspaceDir(context), filePath);
-  if (!existsSync(fullPath)) return undefined;
-  return readFileSync(fullPath, "utf8");
+  const paths = workspaceFiles(context, filePath);
+  if (paths.length === 0) return undefined;
+  const dir = workspaceDir(context);
+  return paths.map((path) => readFileSync(join(dir, path), "utf8")).join("\n");
 }
 
 function _workspaceDir(metadata: object | undefined): string {

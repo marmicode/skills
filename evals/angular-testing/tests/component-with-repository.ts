@@ -10,6 +10,7 @@ import {
   workspaceAsOutput,
   workspaceDir,
 } from "../../shared/assertions.ts";
+import { expectElementCall } from "../../shared/helpers.ts";
 
 const fixtureDir = join(import.meta.dirname, "../fixtures/angular-app");
 const specPath = "src/app/recipe-search.browser.spec.ts";
@@ -47,10 +48,8 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "source-untouched",
-      value: filesUntouched(
-        ["src/app/recipe-search.ts", "src/app/recipe-repository.ts"],
-        fixtureDir,
-      ),
+      /* RecipeRepository is edited to extract RecipeRepositoryDef. */
+      value: filesUntouched(["src/app/recipe-search.ts"], fixtureDir),
     },
     {
       type: "javascript",
@@ -65,7 +64,7 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "expect-element",
-      value: fileContains(specPath, /\bexpect\.element\(/),
+      value: fileContains(specPath, expectElementCall),
     },
     {
       type: "javascript",

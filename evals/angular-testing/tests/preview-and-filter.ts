@@ -6,7 +6,15 @@ import {
   filesEqual as filesUntouched,
 } from "../../shared/assertions.ts";
 import { FIXTURE_DIR } from "../fixtures/config.ts";
-import { specPasses, workspaceRubric } from "./helpers.ts";
+import {
+  calledWith,
+  expectElementCall,
+  inputBindingCall,
+  outputBindingCall,
+  specPasses,
+  viFnCall,
+  workspaceRubric,
+} from "../../shared/helpers.ts";
 
 const previewSpec = "src/app/recipe-preview.browser.spec.ts";
 const filterSpec = "src/app/recipe-filter.browser.spec.ts";
@@ -45,7 +53,7 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "preview-input-binding",
-      value: fileContains(previewSpec, /\binputBinding\(/),
+      value: fileContains(previewSpec, inputBindingCall),
     },
     {
       type: "javascript",
@@ -66,17 +74,17 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "filter-output-binding",
-      value: fileContains(filterSpec, /\boutputBinding\(/),
+      value: fileContains(filterSpec, outputBindingCall),
     },
     {
       type: "javascript",
       metric: "filter-spy",
-      value: fileContains(filterSpec, /\bvi\.fn\(/),
+      value: fileContains(filterSpec, viFnCall),
     },
     {
       type: "javascript",
       metric: "filter-called-with",
-      value: fileContains(filterSpec, /toHaveBeenCalled/),
+      value: fileContains(filterSpec, calledWith),
     },
     {
       type: "javascript",
@@ -114,7 +122,7 @@ function _componentChecks(
           {
             type: "javascript" as const,
             metric: `${prefix}-expect-element`,
-            value: fileContains(specPath, /\bexpect\.element\(/),
+            value: fileContains(specPath, expectElementCall),
           },
         ]
       : []),

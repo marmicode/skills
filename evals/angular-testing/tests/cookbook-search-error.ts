@@ -7,7 +7,11 @@ import {
   globExists,
 } from "../../shared/assertions.ts";
 import { FIXTURE_DIR } from "../fixtures/config.ts";
-import { specPasses, workspaceRubric } from "./helpers.ts";
+import {
+  expectElementCall,
+  specPasses,
+  workspaceRubric,
+} from "../../shared/helpers.ts";
 
 const specPath = "src/app/cookbook-search.browser.spec.ts";
 
@@ -31,10 +35,8 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "source-untouched",
-      value: filesUntouched(
-        ["src/app/cookbook-search.ts", "src/app/cookbook-repository.ts"],
-        FIXTURE_DIR,
-      ),
+      /* The repository is edited to extract CookbookRepositoryDef. */
+      value: filesUntouched(["src/app/cookbook-search.ts"], FIXTURE_DIR),
     },
     {
       type: "javascript",
@@ -54,7 +56,7 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "expect-element",
-      value: fileContains(specPath, /\bexpect\.element\(/),
+      value: fileContains(specPath, expectElementCall),
     },
     {
       type: "javascript",

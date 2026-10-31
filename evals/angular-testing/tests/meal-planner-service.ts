@@ -8,7 +8,7 @@ import {
   globExists,
 } from "../../shared/assertions.ts";
 import { FIXTURE_DIR } from "../fixtures/config.ts";
-import { specPasses, workspaceRubric } from "./helpers.ts";
+import { specPasses, workspaceRubric } from "../../shared/helpers.ts";
 
 const specPath = "src/app/meal-planner.spec.ts";
 
@@ -31,12 +31,9 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "source-untouched",
+      /* MealRepository is edited to extract MealRepositoryDef. */
       value: filesUntouched(
-        [
-          "src/app/meal-planner.ts",
-          "src/app/meal-store.ts",
-          "src/app/meal-repository.ts",
-        ],
+        ["src/app/meal-planner.ts", "src/app/meal-store.ts"],
         FIXTURE_DIR,
       ),
     },

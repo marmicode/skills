@@ -6,7 +6,11 @@ import {
   filesEqual as filesUntouched,
 } from "../../shared/assertions.ts";
 import { FIXTURE_DIR } from "../fixtures/config.ts";
-import { specPasses, workspaceRubric } from "./helpers.ts";
+import {
+  expectElementCall,
+  specPasses,
+  workspaceRubric,
+} from "../../shared/helpers.ts";
 
 const specPath = "src/app/is-signed-in.guard.browser.spec.ts";
 
@@ -57,7 +61,7 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "expect-element",
-      value: fileContains(specPath, /\bexpect\.element\(/),
+      value: fileContains(specPath, expectElementCall),
     },
     {
       type: "javascript",

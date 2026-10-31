@@ -6,9 +6,14 @@ import {
   filesEqual as filesUntouched,
 } from "../../shared/assertions.ts";
 import { FIXTURE_DIR } from "../fixtures/config.ts";
-import { specPasses, workspaceRubric } from "./helpers.ts";
+import {
+  inputBindingCall,
+  specPasses,
+  workspaceRubric,
+} from "../../shared/helpers.ts";
 
-const specPath = "src/app/recipe-of-the-day.browser.spec.ts";
+/* The skill's shallow example is named `*.shallow.browser.spec.ts`. */
+const specPath = "src/app/recipe-of-the-day*.browser.spec.ts";
 
 const testCase: TestCase = {
   description: "shallow-renders a slow shared child",
@@ -58,7 +63,7 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "input-binding",
-      value: fileContains(specPath, /\binputBinding\(/),
+      value: fileContains(specPath, inputBindingCall),
     },
     {
       type: "javascript",

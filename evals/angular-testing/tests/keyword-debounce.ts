@@ -6,7 +6,11 @@ import {
   filesEqual as filesUntouched,
 } from "../../shared/assertions.ts";
 import { FIXTURE_DIR } from "../fixtures/config.ts";
-import { specPasses, workspaceRubric } from "./helpers.ts";
+import {
+  outputBindingCall,
+  specPasses,
+  workspaceRubric,
+} from "../../shared/helpers.ts";
 
 const specPath = "src/app/keyword-search.browser.spec.ts";
 
@@ -50,7 +54,7 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "output-binding",
-      value: fileContains(specPath, /\boutputBinding\(/),
+      value: fileContains(specPath, outputBindingCall),
     },
     {
       type: "javascript",

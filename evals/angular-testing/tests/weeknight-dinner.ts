@@ -6,7 +6,12 @@ import {
   filesEqual as filesUntouched,
 } from "../../shared/assertions.ts";
 import { FIXTURE_DIR } from "../fixtures/config.ts";
-import { specPasses, workspaceRubric } from "./helpers.ts";
+import {
+  expectElementCall,
+  inputBindingCall,
+  specPasses,
+  workspaceRubric,
+} from "../../shared/helpers.ts";
 
 const specPath = "src/app/weeknight-dinner.browser.spec.ts";
 
@@ -37,7 +42,7 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "input-binding",
-      value: fileContains(specPath, /\binputBinding\(/),
+      value: fileContains(specPath, inputBindingCall),
     },
     {
       type: "javascript",
@@ -47,7 +52,7 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "expect-element",
-      value: fileContains(specPath, /\bexpect\.element\(/),
+      value: fileContains(specPath, expectElementCall),
     },
     {
       type: "javascript",
@@ -57,7 +62,10 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "no-shallow-schema",
-      value: fileOmits(specPath, /\bCUSTOM_ELEMENTS_SCHEMA\b|\bNO_ERRORS_SCHEMA\b/),
+      value: fileOmits(
+        specPath,
+        /\bCUSTOM_ELEMENTS_SCHEMA\b|\bNO_ERRORS_SCHEMA\b/,
+      ),
     },
     {
       type: "javascript",

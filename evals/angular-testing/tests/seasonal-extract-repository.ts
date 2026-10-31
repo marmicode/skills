@@ -5,7 +5,11 @@ import {
   fileOmits,
   globExists,
 } from "../../shared/assertions.ts";
-import { specPasses, workspaceRubric } from "./helpers.ts";
+import {
+  expectElementCall,
+  specPasses,
+  workspaceRubric,
+} from "../../shared/helpers.ts";
 
 const specPath = "src/app/seasonal-recipes.browser.spec.ts";
 const componentPath = "src/app/seasonal-recipes.ts";
@@ -13,8 +17,7 @@ const componentPath = "src/app/seasonal-recipes.ts";
 const testCase: TestCase = {
   description: "extracts a repository when HttpClient is called directly",
   vars: {
-    request:
-      "Write tests for SeasonalRecipes. You may change production code.",
+    request: "Write tests for SeasonalRecipes. You may change production code.",
   },
   assert: [
     {
@@ -50,7 +53,7 @@ const testCase: TestCase = {
     {
       type: "javascript",
       metric: "expect-element",
-      value: fileContains(specPath, /\bexpect\.element\(/),
+      value: fileContains(specPath, expectElementCall),
     },
     {
       type: "javascript",
