@@ -49,12 +49,15 @@ export default defineUnifiedConfig({
     },
   ],
   extensions: ["file://../shared/hooks.ts:beforeAll"],
-  /* Grades llm-rubric assertions with the same model as the agent. */
+  /* Grades llm-rubric assertions with the same model as the agent.
+     Sonnet 5.5 thinks by default, and promptfoo prepends that thinking to the
+     grader text. Parsing then takes the first `{...}` in the thinking, which
+     is not `{pass, score}`, and the rubric fails closed. */
   defaultTest: {
     options: {
       provider: {
         id: `anthropic:messages:${SONNET}`,
-        config: { apiKeyRequired: isCI },
+        config: { apiKeyRequired: isCI, showThinking: false },
       },
     },
   },
