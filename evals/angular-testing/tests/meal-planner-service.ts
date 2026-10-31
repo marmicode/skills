@@ -8,7 +8,7 @@ import {
   globExists,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
-import { FIXTURE_DIR } from "../fixtures/config.ts";
+import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import { specPasses } from "../../shared/helpers.ts";
 
 const SPEC_PATH = "src/app/meal-planner.spec.ts";
@@ -35,7 +35,7 @@ export default defineTestCase({
       /* MealRepository is edited to extract MealRepositoryDef. */
       value: filesUntouched(
         ["src/app/meal-planner.ts", "src/app/meal-store.ts"],
-        FIXTURE_DIR,
+        ANGULAR_APP_BASE_DIR,
       ),
     },
     {

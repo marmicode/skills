@@ -2,7 +2,10 @@ import {
   defineClaudeCodeOptions,
   defineUnifiedConfig,
 } from "../shared/config.ts";
-import { WITH_SKILLS_DIR, NO_SKILLS_DIR } from "./fixtures/config.ts";
+import {
+  ANGULAR_APP_WITH_SKILLS_DIR,
+  ANGULAR_APP_NO_SKILLS_DIR,
+} from "./fixtures/config.ts";
 import componentWithRepository from "./tests/component-with-repository.ts";
 import cookbookSearchError from "./tests/cookbook-search-error.ts";
 import keywordDebounce from "./tests/keyword-debounce.ts";
@@ -29,7 +32,7 @@ export default defineUnifiedConfig({
       config: defineClaudeCodeOptions({
         ..._sharedOptions(),
         /* Absolute: `beforeAll` clones the fixture here and copies the skill in. */
-        working_dir: WITH_SKILLS_DIR,
+        working_dir: ANGULAR_APP_WITH_SKILLS_DIR,
         /* Discovers `.claude/skil ls/*` but ignores user-level skills and settings. */
         setting_sources: ["project"],
         skills: ["angular-testing"],
@@ -41,7 +44,7 @@ export default defineUnifiedConfig({
       config: defineClaudeCodeOptions({
         ..._sharedOptions(),
         /* Absolute: `beforeAll` clones the fixture here, without the skill. */
-        working_dir: NO_SKILLS_DIR,
+        working_dir: ANGULAR_APP_NO_SKILLS_DIR,
       }),
     },
   ],

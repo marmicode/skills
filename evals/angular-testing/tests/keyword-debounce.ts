@@ -6,7 +6,7 @@ import {
   filesEqual as filesUntouched,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
-import { FIXTURE_DIR } from "../fixtures/config.ts";
+import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import { outputBindingCall, specPasses } from "../../shared/helpers.ts";
 
 const SPEC_PATH = "src/app/keyword-search.browser.spec.ts";
@@ -31,7 +31,10 @@ export default defineTestCase({
     {
       type: "javascript",
       metric: "source-untouched",
-      value: filesUntouched(["src/app/keyword-search.ts"], FIXTURE_DIR),
+      value: filesUntouched(
+        ["src/app/keyword-search.ts"],
+        ANGULAR_APP_BASE_DIR,
+      ),
     },
     {
       type: "javascript",

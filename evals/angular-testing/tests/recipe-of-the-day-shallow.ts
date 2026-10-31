@@ -6,7 +6,7 @@ import {
   filesEqual as filesUntouched,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
-import { FIXTURE_DIR } from "../fixtures/config.ts";
+import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import { inputBindingCall, specPasses } from "../../shared/helpers.ts";
 
 const SPEC_PATH = "src/app/recipe-of-the-day.browser.spec.ts";
@@ -33,7 +33,7 @@ export default defineTestCase({
       metric: "source-untouched",
       value: filesUntouched(
         ["src/app/recipe-of-the-day.ts", "src/app/recipe-preview.ts"],
-        FIXTURE_DIR,
+        ANGULAR_APP_BASE_DIR,
       ),
     },
     {

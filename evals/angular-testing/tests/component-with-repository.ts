@@ -11,8 +11,8 @@ import {
   workspaceDir,
 } from "../../shared/assertions.ts";
 import { expectElementCall } from "../../shared/helpers.ts";
+import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 
-const fixtureDir = join(import.meta.dirname, "../fixtures/angular-app");
 const SPEC_PATH = "src/app/recipe-search.browser.spec.ts";
 
 export default defineTestCase({
@@ -43,7 +43,7 @@ export default defineTestCase({
       type: "javascript",
       metric: "source-untouched",
       /* RecipeRepository is edited to extract RecipeRepositoryDef. */
-      value: filesUntouched(["src/app/recipe-search.ts"], fixtureDir),
+      value: filesUntouched(["src/app/recipe-search.ts"], ANGULAR_APP_BASE_DIR),
     },
     {
       type: "javascript",

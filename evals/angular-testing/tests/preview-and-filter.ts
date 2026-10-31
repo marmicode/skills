@@ -6,7 +6,7 @@ import {
   filesEqual as filesUntouched,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
-import { FIXTURE_DIR } from "../fixtures/config.ts";
+import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import {
   calledWith,
   expectElementCall,
@@ -46,7 +46,7 @@ export default defineTestCase({
       metric: "source-untouched",
       value: filesUntouched(
         ["src/app/recipe-preview.ts", "src/app/recipe-filter.ts"],
-        FIXTURE_DIR,
+        ANGULAR_APP_BASE_DIR,
       ),
     },
     ..._componentChecks(PREVIEW_SPEC_PATH, "preview", true),

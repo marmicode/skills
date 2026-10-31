@@ -6,7 +6,7 @@ import {
   filesEqual as filesUntouched,
   workspaceAsOutput,
 } from "../../shared/assertions.ts";
-import { FIXTURE_DIR } from "../fixtures/config.ts";
+import { ANGULAR_APP_BASE_DIR } from "../fixtures/config.ts";
 import {
   expectElementCall,
   inputBindingCall,
@@ -36,7 +36,7 @@ export default defineTestCase({
       metric: "source-untouched",
       value: filesUntouched(
         ["src/app/weeknight-dinner.ts", "src/app/recipe-preview.ts"],
-        FIXTURE_DIR,
+        ANGULAR_APP_BASE_DIR,
       ),
     },
     {

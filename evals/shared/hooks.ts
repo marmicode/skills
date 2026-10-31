@@ -3,9 +3,9 @@ import { dirname, join, resolve } from "node:path";
 import type { BeforeAllExtensionHookContext } from "promptfoo";
 import { $ } from "zx";
 import {
-  FIXTURE_DIR,
-  WITH_SKILLS_DIR,
-  NO_SKILLS_DIR,
+  ANGULAR_APP_BASE_DIR,
+  ANGULAR_APP_WITH_SKILLS_DIR,
+  ANGULAR_APP_NO_SKILLS_DIR,
 } from "../angular-testing/fixtures/config.ts";
 
 const REPO_ROOT = resolve(import.meta.dirname, "../..");
@@ -22,10 +22,13 @@ const SKILLS_DIR = join(REPO_ROOT, "skills");
  * rejects symlinks pointing outside of `working_dir`.
  */
 export async function beforeAll(_context: BeforeAllExtensionHookContext) {
-  await _cloneFixture(NO_SKILLS_DIR);
-  await _cloneFixture(WITH_SKILLS_DIR);
+  await _cloneFixture(ANGULAR_APP_NO_SKILLS_DIR);
+  await _cloneFixture(ANGULAR_APP_WITH_SKILLS_DIR);
 
-  const target = join(WITH_SKILLS_DIR, ".claude/skills/angular-testing");
+  const target = join(
+    ANGULAR_APP_WITH_SKILLS_DIR,
+    ".claude/skills/angular-testing",
+  );
   mkdirSync(dirname(target), { recursive: true });
   cpSync(join(SKILLS_DIR, "angular-testing"), target, { recursive: true });
 }
@@ -33,10 +36,10 @@ export async function beforeAll(_context: BeforeAllExtensionHookContext) {
 async function _cloneFixture(workingDir: string) {
   mkdirSync(dirname(workingDir), { recursive: true });
   rmSync(workingDir, { recursive: true, force: true });
-  cpSync(FIXTURE_DIR, workingDir, {
+  cpSync(ANGULAR_APP_BASE_DIR, workingDir, {
     recursive: true,
     verbatimSymlinks: true,
-    filter: (src) => src !== join(FIXTURE_DIR, ".claude"),
+    filter: (src) => src !== join(ANGULAR_APP_BASE_DIR, ".claude"),
   });
   await $({ cwd: workingDir })`pnpm install`;
 }
