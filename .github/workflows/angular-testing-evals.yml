@@ -1,0 +1,85 @@
+# Runs the angular-testing promptfoo suite and uploads the run to Promptfoo Cloud.
+# Repository secrets: ANTHROPIC_API_KEY, PROMPTFOO_API_KEY
+# (https://www.promptfoo.app/welcome).
+
+name: angular-testing evals
+
+on:
+  pull_request:
+    paths:
+      - "evals/angular-testing/**"
+      - "evals/shared/**"
+      - "skills/angular-testing/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig.json"
+      - ".github/workflows/angular-testing-evals.yml"
+  push:
+    branches: [main]
+    paths:
+      - "evals/**"
+      - "skills/angular-testing/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "tsconfig.json"
+      - ".github/workflows/angular-testing-evals.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: angular-testing-evals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eval:
+    name: eval
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 12.6.0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('evals/angular-testing/fixtures/angular-app/pnpm-lock.yaml') }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright system dependencies
+        run: pnpm --filter angular-app exec playwright install-deps chromium-headless-shell
+
+      - name: Run angular-testing evals
+        id: eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PROMPTFOO_API_KEY: ${{ secrets.PROMPTFOO_API_KEY }}
+          EVAL_DESCRIPTION: angular-testing ${{ github.sha }} (${{ github.ref_name }})
+        run: |
+          mkdir -p out
+          pnpm eval:angular-testing -- \
+            --share \
+            --no-progress-bar \
+            --no-table \
+            --description "$EVAL_DESCRIPTION" \
+            -o out/angular-testing-eval.json out/angular-testing-eval.html
+
+      - name: Upload eval report
+        if: ${{ !cancelled() && steps.eval.conclusion != 'skipped' }}
+        uses: actions/upload-artifact@v7
+        with:
+          path: out/angular-testing-eval.html
+          if-no-files-found: error
+          archive: false
