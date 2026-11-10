@@ -7,7 +7,7 @@ sharedWorkspaceLockfile: false
 
 # Not needed by the fixtures' tests.
 allowBuilds:
-  '@parcel/watcher': false
-  esbuild: false
-  lmdb: false
-  msgpackr-extract: false
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
