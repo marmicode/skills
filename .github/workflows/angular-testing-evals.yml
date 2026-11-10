@@ -69,7 +69,7 @@ jobs:
           EVAL_DESCRIPTION: angular-testing ${{ github.sha }} (${{ github.ref_name }})
         run: |
           mkdir -p out
-          pnpm eval:angular-testing -- \
+          pnpm eval:angular-testing \
             --share \
             --no-progress-bar \
             --no-table \
