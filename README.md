@@ -1,4 +1,40 @@
-# Charted Coding Skills
+# Marmicode Skills
+
+A collection of AI agent skills to fix trust issues.
+
+| Skill                                 | Description                                                                                                                |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| [Charted Coding](#charted-coding)     | A workflow that turns feature ideas into production code through incremental steps — design, review, scaffold, red, green. |
+| [`angular-testing`](#angular-testing) | Writes, fixes and reviews Angular tests following the Pragmatic Angular Testing approach.                                  |
+
+## Installation
+
+```sh
+npx skills add marmicode/skills
+```
+
+To install a single skill:
+
+```sh
+npx skills add marmicode/skills --skill angular-testing
+```
+
+## Angular Testing
+
+> Skill: `angular-testing`
+
+Writes, fixes and reviews Angular tests following the **Pragmatic Angular Testing** approach:
+
+- **Fakes over mocks**: real collaborators by default, and fakes of the adapters you own (e.g. HTTP repositories) instead of `vi.mock()` or spies stubbing return values.
+- **The widest narrow test**: tests as wide as possible while staying fast, isolated, and easy to reason about.
+- **Through the DOM**: components are tested the way users interact with them, rather than through `fixture.componentInstance`.
+- **Signals, guards, routing and timers**: dedicated guidance for each.
+
+It targets **Vitest** (Browser Mode preferred, jsdom and happy-dom supported) and also applies to Jest, Jasmine/Karma and Angular Testing Library projects — including migrating them to Vitest. It is not meant for Playwright or Cypress end-to-end tests.
+
+It plays well with the Charted Coding workflow: `charted-red` and `charted-green` drive the red/green cycle while `angular-testing` shapes the content of the tests.
+
+## Charted Coding
 
 **Charted Coding** is a workflow that turns feature ideas into production code through incremental steps — each backed by a dedicated AI skill. Small steps mean, focused and fast prompts, less review fatigue, less context-switching fatigue, and less token usage.
 
@@ -22,13 +58,7 @@
 </tbody>
 </table>
 
-## Installation
-
-```sh
-npx skills add marmicode/skills
-```
-
-## The Charted Coding Steps
+### The Charted Coding Steps
 
 The five steps form a linear pipeline. Each step produces an artifact that feeds into the next.
 
@@ -36,7 +66,7 @@ The five steps form a linear pipeline. Each step produces an artifact that feeds
 design --> review --> scaffold --> red --> green
 ```
 
-### 1. Design
+#### 1. Design
 
 > Skill: `charted-design`
 
@@ -47,7 +77,7 @@ The interview process reduces oversight risk.
 
 **Produces:** a design document (e.g. `design-docs/001-user-auth.md`)
 
-### 2. Review
+#### 2. Review
 
 > Skill: `charted-review`
 
@@ -66,7 +96,7 @@ Their feedback is synthesized into a single review. When experts disagree, a **c
 
 **Produces:** a consolidated review with action items
 
-### 3. Scaffold
+#### 3. Scaffold
 
 > Skill: `charted-scaffold`
 
@@ -81,7 +111,7 @@ The AI reads the (now reviewed) design doc and generates the **skeleton** of the
 
 **Produces:** WIP source files + `it.todo(...)` test files
 
-### 4. Red
+#### 4. Red
 
 > Skill: `charted-red`
 
@@ -95,7 +125,7 @@ Now the TDD cycle begins. The AI picks the **next `it.todo(...)` test**, reads t
 
 **Produces:** a fully implemented (but still `.todo`) test
 
-### 5. Green
+#### 5. Green
 
 > Skill: `charted-green`
 
@@ -109,7 +139,7 @@ The AI activates the test (converts `it.todo(...)` to `it(...)`) and writes **ju
 
 **Produces:** passing tests + minimal production code
 
-## Resuming a PR
+### Resuming a PR
 
 > Skill: `charted-continue`
 
