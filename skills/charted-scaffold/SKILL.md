@@ -75,7 +75,7 @@ Note: test names start in lower case (e.g. "search rules ...").
 ```ts
 import { describe, it } from "vitest";
 
-describe(RuleSearch.name, () => {
+describe(RuleSearch, () => {
   it.todo("search rules without filtering", () => {
     // mount RuleSearch
     // click on first rule

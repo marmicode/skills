@@ -1,0 +1,13 @@
+packages:
+  - evals/*/fixtures/*
+
+# promptfoo's `copy_working_dir` copies each fixture for every test and rejects symlinks
+# pointing outside of it: each fixture needs its own lockfile and self-contained node_modules.
+sharedWorkspaceLockfile: false
+
+# Not needed by the fixtures' tests.
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true

@@ -1,0 +1,8 @@
+# Copied with the fixture into `fixtures/tmp/*` clones (see evals/shared/hooks.ts),
+# which are outside the root workspace and would otherwise not see its `allowBuilds`.
+# Not needed by the fixture's tests.
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
