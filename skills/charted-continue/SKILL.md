@@ -7,6 +7,9 @@ description: Continues Charted Coding work for a PR by routing to scaffold, red,
 
 - designDocPath: $ARGUMENTS[0]
 - prNumber: $ARGUMENTS[1]
+- singleTest: true if the invocation asks for "single test" / "just a single test" / `--single-test`, otherwise false
+
+By default, `charted-red` and `charted-green` work on **all** the pending tests of the PR. With `singleTest`, they work on just the next pending test. Forward the `singleTest` option to whichever downstream skill you invoke.
 
 # Goal
 
@@ -59,9 +62,11 @@ Open `testFilePath` and inspect the `it.todo` body for the pending test:
 
 ## 6. Invoke the downstream skill
 
-**Not implemented** → read and follow the `charted-red` skill with `${designDocPath}` and `${testFilePath}`.
+**Not implemented** → read and follow the `charted-red` skill with `${designDocPath}` and `${testFilePath}` (and the single-test option if `singleTest`).
 
-**Implemented** → read and follow the `charted-green` skill with `${designDocPath}` and `${testFilePath}`.
+**Implemented** → read and follow the `charted-green` skill with `${designDocPath}` and `${testFilePath}` (and the single-test option if `singleTest`).
+
+By default (`singleTest` false), the downstream skill handles all pending tests of the PR: if pending tests live in several test files, run it for each of those files.
 
 # Rules
 

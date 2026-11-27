@@ -1,12 +1,13 @@
 ---
 name: charted-green
-description: Progressively activates todo tests one at a time, updates implementation code until each passes (verified via Wallaby), checks off matching design doc progress, then moves to the next—following the design doc as the single source of truth.
+description: Progressively activates todo tests one at a time (all of them by default, or just the next one with the single-test option), updates implementation code until each passes (verified via Wallaby), checks off matching design doc progress, then moves to the next—following the design doc as the single source of truth.
 ---
 
 # Context
 
 - designDocPath: $ARGUMENTS[0]
 - testFilePath: $ARGUMENTS[1]
+- singleTest: true if the invocation asks for "single test" / "just a single test" / `--single-test`, otherwise false
 
 # Goal
 
@@ -26,6 +27,9 @@ DO NOT IMPLEMENT ANYTHING THAT IS NOT DIRECTLY RELATED TO THE CURRENT TEST.
 3. After the current test passes, update progress in `${designDocPath}` (see [Design Doc Progress](#design-doc-progress) below).
 
 4. STOP when these tests are green.
+
+- **Default (`singleTest` false)**: repeat steps 2–3 for every implemented test, one by one, until they are all green.
+- **Single test (`singleTest` true)**: activate and make green **only the next** implemented test, then STOP.
 
 5. Remove the wiprecation (@deprecated 🚧 work in progress) jsdoc from the implementated item if it is done and safe to use.
 
